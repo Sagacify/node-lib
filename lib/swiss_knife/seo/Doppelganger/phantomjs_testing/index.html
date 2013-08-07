@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Phantom.js testing</title>
+</head>
+<body>
+
+	<h2>Phantom.js JavaScript rendering test.</h2>
+
+	<div></div>
+
+	<span></span>
+
+	<script type="text/javascript">
+		// Test n°1 - SUCCESS
+		var myDiv = document.getElementsByTagName('div')[0];
+		myDiv.innerHTML = 'Test n°1 is successful.';
+		// Test n°2 - FAILS
+		var mySpan = document.getElementsByTagName('span')[0];
+		window.setTimeout(function() {
+			mySpan.innerHTML = 'Test n°2 is successful.';
+		}, 1000);
+	</script>
+	
+</body>
+</html>

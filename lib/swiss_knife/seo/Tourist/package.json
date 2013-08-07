@@ -1,0 +1,16 @@
+{
+	"name": "sitemap_generator",
+	"description": "This is a sitemap generator for Express.js.",
+	"version": "1.0.0",
+	"private": false,
+	"author": "Mickael van der Beek (https://github.com/Mickael-van-der-Beek)",
+	"engines": {
+		"node": "latest"
+	},
+	"dependencies": {
+		"mongoose": "latest",
+		"yaml-config" : "0.1.0",
+		"jstoxml": "latest",
+		"request": "latest"
+	}
+}
