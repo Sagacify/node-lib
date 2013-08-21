@@ -11,6 +11,7 @@
 		"mongoose": "latest",
 		"yaml-config" : "0.1.0",
 		"jstoxml": "latest",
-		"request": "latest"
+		"async": "latest",
+		"zombie": "latest"
 	}
 }

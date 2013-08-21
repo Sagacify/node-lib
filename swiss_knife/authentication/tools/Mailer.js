@@ -1,4 +1,4 @@
-var mail = require('../../../lib/mailler');
+var mail = require('../../../../lib/mailler');
 
 exports.send_VerficationMail = function(token, user) {
 	var url = '/i4/auth/validate/validToken/';

@@ -29,25 +29,28 @@ exports.logger = function(app, express) {
 					json[parameterName] = parameterValue;
 				}
 			}
+			//var request = mongoose.model('SLRequest')(json).save();
 			var paramsURL = json.url.split('/');
 			var file = paramsURL[paramsURL.length - 1];
-			var blacklist = ['.js', '.html', '.jpg', '.jpeg', '.png', '.json'];
+			var blacklist = ['.css', '.js', '.html', '.jpg', '.jpeg', '.png', '.json', '/'];
 			var exlude = false;
-			for(var k = 0; k < blacklist.length; i++) {
-				if(file.indexOf(blacklist[k]) !== -1) {
+			for(var k = 0; k < blacklist.length; k++) {
+				if(file.toLowerCase().indexOf(blacklist[k]) !== -1) {
 					exlude = true;
 					break;
 				}
 			}
+			var slRequest = model('SLRequest')(json);
+			console.log(slRequest.http_method + ' ' + slRequest.response_time + ' ms ' + slRequest.url + ' ' + slRequest.http_status);
 			if(!exlude) {
-				var request = model('SLRequest')(json).saveRequest();
+				slRequest.saveRequest();
 			}
 		}
 	};
 
 	app.use(express.logger({
-		stream 				: 	MongoLogger,
-		format 				:
+		stream				:	MongoLogger,
+		format				:
 		'<<' +
 			'ip_addr*:ip-addr' +
 			'|' +

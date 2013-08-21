@@ -1,5 +1,5 @@
 var LogicLib = require('../logic/Password_reset-logic');
-var Verbose = require('../../../config/verbose_errors.json');
+var Verbose = require('../../../../config/verbose_errors.json');
 
 module.exports = function(app) {
 

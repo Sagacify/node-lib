@@ -3,7 +3,7 @@ var BearerStrategy = require('passport-http-bearer').Strategy;
 
 var LoginLib = require('../logic/Login-logic.js');
 var TokenLib = require('../logic/Authenticate_Token-logic.js');
-var Config = require('../../../config/verbose_errors.json');
+var Config = require('../../../../config/verbose_errors.json');
 
 // LOGIN strategy
 passport.use(new LocalStrategy(function(username, password, done) {
