@@ -1,6 +1,14 @@
-var nodeValidator = require('validator');
-var validate = nodeValidator.check;
-var sanitize = nodeValidator.sanitize;
+var Validator = require('validator').Validator;
+Validator.prototype.error = function (msg) {
+    this._errors.push(msg);
+    return this;
+};
+Validator.prototype.getErrors = function () {
+    return this._errors;
+};
+var v = new Validator();
+var validate = v.check;
+var sanitize = v.sanitize;
 
 function applyValidation (value, condition) {
 	return validate[condition](value);
