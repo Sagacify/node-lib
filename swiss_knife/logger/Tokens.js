@@ -1,7 +1,14 @@
 module.exports = function(express) {
 
 	express.logger.token('ip-addr', function(req) {
-		return req.socket && (req.socket.remoteAddress || (req.socket.socket && req.socket.socket.remoteAddress));
+		var ipAddress = req.get('x-forwarded-for');
+		if((ipAddress != null) && ('socket' in req) && ('remoteAddress' in req.socket)) {
+			ipAddress = req.socket.remoteAddress;
+		}
+		else if((ipAddress != null) && ('socket' in req) && ('socket' in req.socket) && ('remoteAddress' in req.socket.socket)) {
+			ipAddress = req.socket.socket.remoteAddress;
+		}
+		return ipAddress;
 	});
 
 	express.logger.token('ip-version', function(req) {

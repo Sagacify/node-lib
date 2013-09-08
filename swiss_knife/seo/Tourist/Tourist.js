@@ -6,37 +6,35 @@
 
 var fs = require('fs');
 var zlib = require('zlib');
+var async = require('async');
 var Browser = require('zombie');
 var jstoxml = require('jstoxml');
 var mongoose = require('mongoose');
-var yamlConfig = require('yaml-config');
-
-var _NODE_ENV = process.env.NODE_ENV || 'development';
-var config = yamlConfig.readConfig('../../../../config/config.yaml', _NODE_ENV);
-
-exports = model = mongoose.model.bind(mongoose);
-mongoose.connect(config.db.uri, function(error) {
-	if(error) {
-		throw error;
-	}
-});
-
-function handleArgs() {}
 
 function handleError(error, type) {
 	if(error) {
-		if(type === 'critical') {
-			throw error;
-		}
+		console.log('CALLER');
+		console.log(arguments);
+		console.log(arguments.callee.caller.toString());
+		// if(type === 'critical' || !type) {
+		// 	throw error;
+		// }
 		console.log(error);
 	}
 }
+
+exports = model = mongoose.model.bind(mongoose);
+mongoose.connect('localhost/bc_dev', handleError);
+
+//function handleArgs() {}
 
 function crawlRoot(options) {
 	Browser.visit(options.hostname, {
 		debug: options.debug,
 		runScripts: options.runScripts
-	}, waitPageRendering.bind(null, options));
+	}, function(error, browser, status) {
+		waitPageRendering(error, browser, status, options);
+	});
 }
 
 function waitPageRendering(error, browser, status, options) {
@@ -44,7 +42,7 @@ function waitPageRendering(error, browser, status, options) {
 		return window.document.querySelector(options.selector);
 	}
 	handleError(error, 'critical');
-	browser.wait(setDOMSelector.bind(null, options), function() {
+	browser.wait(setDOMSelector.bind(null, options), function () {
 		function regexToURL(regex) {
 			var regexStr = regex.toString();
 			return regexStr.slice(1, regexStr.length - 1).replace(/[^a-zA-Z0-9_\-\/:]/gim, '');
@@ -54,216 +52,151 @@ function waitPageRendering(error, browser, status, options) {
 		var len = routes.length;
 		var asyncConfig = [];
 		while(len--) {
-			route = regexToURL(routes[len]);
-			asyncConfig.push(asyncParallelFunction(route));
+			route = regexToURL(routes[len].route);
+			asyncConfig.push(asyncParallelBuild(route));
 		}
+		asyncParallelCheckout(asyncConfig, options);
 	});
 }
 
 function getMongoModel(modelName) {
-	return mongoose.model(modelName) || handle('ERROR : There probably isn\'t a registered model called ' + modelName, 'critical');
+	return mongoose.model(modelName) || handleError('ERROR: There probably isn\'t a registered model called ' + modelName, 'critical');
+}
+
+function getURIElementCount(keys) {
+	return (keys.length > 2) ? keys.length : handleError('ERROR: The route format should be "/modelname/:key"', 'critical');
+}
+
+function constructURI(obj, firstPointer, elems) {
+	var url = [];
+	for(var i = 0, len = elems.length; i < len; i++) {
+		url.push(i >= firstPointer && ~elems[i].indexOf(':') ? obj[elems[i].replace(/:/g, '')] : elems[i]);
+	}
+	return url.join('/');
 }
 
 function asyncParallelBuild(url) {
-	var keys = url.split('/');
-	var keypointer;
-	if(~(keypointer = url.indexOf(':'))) {
-		return function(callback) {
-			
-		};
+	if(~url.indexOf(':')) {
+		var elems = url.split('/');
+		var len = getURIElementCount(elems);
+		var keys = [];
+		var firstPointer;
+		for(var i = 1; i < len; i++) {
+			if(elems[len].indexOf(':')) {
+				firstPointer = firstPointer ? firstPointer : i;
+				keys.push(elems[len]);
+			}
+		}
+		return getCompositeURI(elems[len - 1], keys, firstPointer, elems);
 	}
 	else {
-		return function(callback) {
-			callback(url);
+		//console.log('URL');
+		//console.log(url);
+		return function (callback) {
+			callback(null, [url]);
 		};
 	}
 }
 
-function asyncParallelCheckout(asyncConfig) {
+function getCompositeURI(modelstring, keys, firstPointer, elems) {
+	var modelname = modelstring.replace(/:/g, '');
+	var model = getMongoModel(modelname);
+	return function (callback) {
+		model.find({}, function (error, items) {
+			handleError(error);
+			var uris = [];
+			var lenI = items.length;
+			while(lenI--) {
+				uris.push(constructURI(items[lenI], firstPointer, elems));
+			}
+			callback(null, uris);
+		});
+	};
+}
 
+function configUrl(hostname, uri) {
+	return (hostname[hostname.length - 1] !== '/') && (uri[uri.length - 1] !== '/') ? hostname + '/' + uri : hostname + uri;
+}
+
+function asyncParallelCheckout(asyncConfig, options) {
+	async.parallel(asyncConfig, function(error, results) {
+		console.log(results);
+		handleError(error);
+		var templateJSON = {
+			_name: 'sitemapindex',
+			_attrs: {
+				xmlns: 'http://www.sitemaps.org/schemas/sitemap/0.9',
+				'xmlns:xsi' : 'http://www.w3.org/2001/XMLSchema-instance',
+				'xsi:schemaLocation': 'http://www.sitemaps.org/schemas/sitemap/0.9 ' +
+									'http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd'
+			},
+			_content: []
+		};
+		var matrixLen = results.length;
+		var urisListLen;
+		var urisList;
+		var uris = [];
+		while(matrixLen--) {
+			urisList = results[matrixLen];
+			if(urisList && (urisList instanceof Array)) {
+				urisListLen = urisList.length;
+				while(urisListLen--) {
+					uris.push({
+						url: {
+							loc: configUrl(options.hostname, urisList[urisListLen])
+							/*priority: 1.0,
+							changefreq: 'monthly'*/
+						}
+					});
+				}
+			}
+		}
+		templateJSON._content = uris;
+		magicJSONtoXML(templateJSON);
+	});
+}
+
+function magicJSONtoXML(templateJSON) {
+	var templateXML = jstoxml.toXML(templateJSON, {
+		header: true,
+		indent: '\t'
+	});
+	var filename = './sitemap.xml';
+	dataGzipAndSave(filename, templateXML);
+}
+
+function dataGzipAndSave(filename, data) {
+	gzip(data, function(gzippedData) {
+		saveDataToFs(filename, data, function() {
+			console.log('XML sitemap created as ' + filename);
+			saveDataToFs(filename + '.gz', gzippedData, function() {
+				console.log('GZIPed XML sitemap created as ' + filename + '.gz');
+				process.exit(0);
+			});
+		});
+	});
+}
+
+function gzip(data, callback) {
+	zlib.gzip(new Buffer(data, 'utf8'), function(error, gzippedData) {
+		handleError(error);
+		callback(gzippedData);
+	});
+}
+
+function saveDataToFs(filename, data, callback) {
+	fs.writeFile(filename, data, function(error) {
+		handleError(error);
+		callback();
+	});
 }
 
 crawlRoot({
 	// URL options
-	hostname: config.hostname,
-
+	hostname: 'http://localhost:8000/',
 	// Zombie config
 	debug: false,
 	runScripts: true,
-
 	// CSS selector config
 	selector: 'body.done'
 });
-
-(function() {
-
-	Browser.visit(config.hostname, { debug: false, runScripts: true }, function(error, browser, status) {
-		if(error) {
-			console.log(error);
-		}
-		else {
-			function classSelector(window) {
-				//console.log('Window exists : ' + (!!window));
-				//console.log('Document exists : ' + (!!window.document));
-				return window.document.querySelector('body.done');
-			}
-			browser.wait(classSelector, function() {
-				var routes = browser.evaluate('Backbone.history.handlers');
-				//browser.close();
-
-				var keys;
-				var path;
-				var item;
-				var items;
-				var itemsLen;
-				var route;
-				var query;
-				var keyPointer;
-				var templatURL;
-				var asyncConfig = [];
-				for(var i = 0, routesLen = routes.length; i < routesLen; i++) {
-					route = routes[i].route;
-					path = regexToString(route);
-					console.log(path);	
-					keys = path.split('/');
-					(function (keys, keyPointer) {
-						asyncConfig.push(function (callback) {
-							var routeMapJSON = [];
-							if(~(keyPointer = path.indexOf(':'))) {
-								try {
-									if(!keyPointer) {
-										throw 'No model specified';
-									}
-									var model = mongoose.model(keys[keyPointer - 1 ]);
-								}
-								catch(e) {
-									console.log('ERROR : There probably isn\'t a registered model called ' + keys[index]);
-									throw e;
-								}
-								model.find({}, function (error, items) {
-									if(error) {
-										throw error;
-									}
-									var itemsLen = items.length;
-									var item;
-									var path;
-									while(itemsLen--) {
-										item = items[itemsLen];
-										path = '';
-										for(var k = keyPointer, keyLen = keys.length; k < keyLen; k++) {
-											path += ~keys[k].indexOf(':') ? keys[k] : item[keys[k].replace(/:/g, '')];
-										}
-										routeMapJSON.push({
-											url: {
-												loc: config.hostname + '/' + path
-												/*priority: 1.0,
-												changefreq: 'monthly'*/
-											}
-										});
-									}
-									callback(routeMapJSON);
-								});
-							}
-							else {
-								callback(routeMapJSON);
-							}
-						});
-					})(keys, keyPointer);
-				}
-			}
-				var templateXML = jstoxml.toXML(templateJSON, {
-					header: true,
-					indent: '\t'
-				});
-				zlib.gzip(new Buffer(templateXML, 'utf8'), function(error, gzippedXMLSitemap) {
-					if(error) {
-						console.log(error);
-					}
-					else {
-						var filename = './sitemap.xml';
-						fs.writeFile(filename, templateXML, function(err) {
-							if(err) {
-								console.log(err);
-							}
-							else {
-								console.log('Uncompressed XML sitemap created as ' + filename);
-								fs.writeFile(filename + '.gz', gzippedXMLSitemap, function(e) {
-									if(e) {
-										console.log(e);
-									}
-									else {
-										console.log('GZIP compressed XML sitemap created as ' + filename + '.gz');
-										process.exit(0);
-									}
-								});
-							}
-						});
-					}
-				});
-			});
-		}
-	});
-
-
-
-	/*request.get({ url: config.hostname + '/me/identity'}, function(req, res, data) {
-		var body = JSON.parse(data);
-		if('me' in body) {
-			var identity = body.me;
-			var route;
-			var keys;
-			var path;
-			var templatURL;
-			for(var i = 0; i < identity.length; i++) {
-				route = identity[i];
-				path = route.path;
-				keys = route.keys;
-				if(keys.length > 0) {
-					// Query MongoDB in the following way :
-					// 		-> collection = URI parameter before the key
-					//		-> query = { keyname: '*' }
-				}
-				// add URL to sitemap XML
-				templatURL = {
-					url: {
-						loc: config.hostname + path,
-						priority: 1.0,
-						changefreq: 'monthly'
-					}
-				};
-				templateJSON._content.push(templatURL);
-			}
-			var templateXML = jstoxml.toXML(templateJSON, {
-				header: true,
-				indent: '\t'
-			});
-			zlib.gzip(new Buffer(templateXML, 'utf8'), function(error, gzippedXMLSitemap) {
-				if(error) {
-					console.log(error);
-				}
-				else {
-					var filename = './sitemap.xml';
-					fs.writeFile(filename, templateXML, function(err) {
-						if(err) {
-							console.log(err);
-						}
-						else {
-							console.log('Uncompressed XML sitemap created as ' + filename);
-							fs.writeFile(filename + '.gz', gzippedXMLSitemap, function(e) {
-								if(e) {
-									console.log(e);
-								}
-								else {
-									console.log('GZIP compressed XML sitemap created as ' + filename + '.gz');
-									process.exit(0);
-								}
-							});
-						}
-					});
-				}
-			});
-		}
-	}).on('error', function(error) {
-		console.log(error);
-	});*/
-})();

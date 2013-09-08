@@ -7,7 +7,7 @@ var FRBugSchema = new Schema({
 });
 
 FRBugSchema.method.getCreationDate = function() {
-	return new Date(parseInt(this._id.toString().slice(0,8), 16) * 1000);
+	return new Date(parseInt(this._id.toString().slice(0, 8), 16) * 1000);
 };
 
 FRBugSchema.methods.upsertBug = function(query) {

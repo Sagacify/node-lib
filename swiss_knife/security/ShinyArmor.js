@@ -10,10 +10,9 @@ var caja = require('./GoogleCaja');
 
 exports.security = function(app) {
 
-	// FIX Issue #154
 	// Redirect non-HTTP requests
 	app.use(function(req, res, next) {
-		if((config.https) && (!req.secure) && (req.get('X-Forwarded-Proto') !== 'https')) {
+		if(config.https && (!req.secure || (req.get('X-Forwarded-Proto') !== 'https'))) {
 			res.redirect('https://' + req.get('Host') + req.url);
 		}
 		else {
