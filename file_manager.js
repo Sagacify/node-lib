@@ -1,16 +1,14 @@
-var fs = require('fs');
 var AWS = require('aws-sdk');
 var ct = require('./content_type');
 var uuid = require('node-uuid');
 
 /* Create AWS environement */
 /* *********************** */
-AWS.config.update({region: config.AWS.region});
+AWS.config.update({region: config.AWS.region, accessKeyId: config.AWS.accessKeyId, secretAccessKey: config.AWS.secretAccessKey});
 s3 = new AWS.S3();
 
 /* Create bucket if not existing */
 exports.s3BucketInitialization = function(){
-	s3 = new AWS.S3();
 	var bucketNames = [];
 	if(config.AWS.s3BucketName)
 		bucketNames.push(config.AWS.s3BucketName);
@@ -23,7 +21,7 @@ exports.s3BucketInitialization = function(){
 	    }
 	    else {
 			bucketNames.forEach(function(bucketName){
-		    	if(!data.Buckets.contains(bucketName)){
+		    	if(data.Buckets.filter(function(bucket){return bucket.Name == bucketName}).length == 0){
 					s3.client.createBucket({Bucket:bucketName}, function(err, data){
 		            	if(err) console.log(err);
 		            	else console.log("Successfully created S3 "+bucketName+ " bucket");
@@ -37,12 +35,12 @@ exports.s3BucketInitialization = function(){
 exports.writeFileToS3 = function (base64data, extension, secure, callback){
 	var name = uuid.v4();
 	var filename = extension?name+"."+extension:extension;
-	s3 = new AWS.S3();
+	console.log(ct.ext.getContentType(extension))
 	s3.client.putObject({
 		Bucket: secure?config.AWS.s3SecuredBucketName:config.AWS.s3BucketName,
 		Key: filename,
 		Body: base64data,
-		ContentType:ct.getContentType(extension)},
+		ContentType:ct.ext.getContentType(extension)},
 		function(err) {
 			callback(err, filename);							
 		}
@@ -50,7 +48,6 @@ exports.writeFileToS3 = function (base64data, extension, secure, callback){
 };
 
 exports.removeFileFromS3 = function(filename, callback){
-	s3 = new AWS.S3();
 	s3.client.deleteObject({
 		Bucket: config.AWS.s3BucketName,
 		Key: filename}, 
@@ -59,7 +56,6 @@ exports.removeFileFromS3 = function(filename, callback){
 
 
 exports.getSecuredFilepath = function(filename) {
-	console.log("secure")
 	var knox = require('knox');
 	var s3Client = knox.createClient({
 		key: config.AWS.accessKeyId,
