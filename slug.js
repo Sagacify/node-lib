@@ -1,4 +1,5 @@
-/* This function takes a piece of text and generate a first attempt to slug*/
+
+
 exports.preprocessSlug = function(text){
 	if(!text)
 		return text;
@@ -7,13 +8,6 @@ exports.preprocessSlug = function(text){
 	if(typeof text === "string"){
 		newSlug = text.toLowerCase();
 	}
-	/*else {
-		var att = "";
-		for (att in text){
-			break;
-		}
-		newSlug = text[att].toLowerCase();
-	}*/
 
 	return newSlug.replace(/\//gi,"|")
 			.replace(/#/g, "-")
