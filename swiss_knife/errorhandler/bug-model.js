@@ -1,4 +1,4 @@
-var FRBugSchema = new Schema({
+var BugSchema = new Schema({
 	message			: { type: String },
 	file			: { type: String },
 	line			: { type: String },
@@ -6,12 +6,12 @@ var FRBugSchema = new Schema({
 	count			: { type: Number, default: 0 }
 });
 
-FRBugSchema.method.getCreationDate = function() {
+BugSchema.method.getCreationDate = function() {
 	return new Date(parseInt(this._id.toString().slice(0, 8), 16) * 1000);
 };
 
-FRBugSchema.methods.upsertBug = function(query) {
-	model('FRBug').update(query, {
+BugSchema.methods.upsertBug = function(query) {
+	model('Bug').update(query, {
 		$inc: { count: 1 }
 	}, {
 		upsert: true
@@ -23,4 +23,4 @@ FRBugSchema.methods.upsertBug = function(query) {
 	});
 };
 
-model('FRBug', FRBugSchema);
+model('Bug', BugSchema);

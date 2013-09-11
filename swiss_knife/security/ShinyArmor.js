@@ -1,12 +1,9 @@
 /**
 * ShinyArmor.js adds security features an middlewares to Expressjs.
 * Notable middlewares are : Expressjs's CSRF, Google Caja and the Helmet.js library.
-* TODO List :
-* -> Find way to implement CSRF tokens for client side template rendering
 */
 
 var helmet = require('helmet');
-var caja = require('./GoogleCaja');
 
 exports.security = function(app) {
 
@@ -18,21 +15,6 @@ exports.security = function(app) {
 		else {
 			next();
 		}
-	});
-
-	// Caja HTML Sanitizer
-	app.use(function(req, res, next) {
-		if(req.method.toUpperCase() === 'POST') {
-			var keys = Object.keys(req.body);
-			var key;
-			for(var i = 0; i < keys.length; i++) {
-				key = keys[i];
-				if(Object.prototype.toString.call(req.body[key]) === '[object String]') {
-					req.body[key] = caja.escape(req.body[key]);
-				}
-			}
-		}
-		next();
 	});
 
 	// Use Helmet.js's http headers and Expressjs's CSRF protection
