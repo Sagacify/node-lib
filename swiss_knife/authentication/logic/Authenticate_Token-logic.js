@@ -1,6 +1,7 @@
 var Hash = require('../tools/Hash');
 
 exports.process = function(object, primaryKey, state, callback) {
+
 	var primaryValue = object[primaryKey];
 	var searchDict = {};
 	searchDict[primaryKey] = primaryValue;
@@ -42,4 +43,5 @@ exports.process = function(object, primaryKey, state, callback) {
 			callback({ msg: 'NO_USER_WITH_THIS_ATTR_VALUE', error: null });
 		}
 	});
+
 };

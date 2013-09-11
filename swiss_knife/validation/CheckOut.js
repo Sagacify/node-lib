@@ -1,96 +1,125 @@
-var Validator = require('validator').Validator;
-Validator.prototype.error = function (msg) {
-    this._errors.push(msg);
-    return this;
-};
-Validator.prototype.getErrors = function () {
-    return this._errors;
-};
-var v = new Validator();
-var validate = v.check;
-var sanitize = v.sanitize;
+var Handle = require('../responses/HttpResponseHandlers.js');
 
-function applyValidation (value, condition) {
-	return validate[condition](value);
-}
+var BearerAuth = require('../authentication/logic/Bearer_auth.js');
+var bearerAuth = BearerAuth.process;
 
-function applySanitization (value, transform) {
-	return sanitize[transform](value) || value;
-}
+var Caja = require('./GoogleCaja.js');
+
+var validatorInstance = require('./Validator.js');
+var check = validatorInstance.check;
+
+var sanitizerInstance = require('./Sanitizer.js');
+var sanitize = sanitizerInstance.sanitize;
 
 function applyAllConditions(value, conditions) {
-	var isValid;
+	var condition;
 	for(var i = 0, len = conditions.length; i < len; i++) {
-		if(condition in validate) {
-			isValid = isValid && applyValidation(value, condition);
-		}
-		else if(condition in sanitize) {
-			value = applySanitization(value, condition);
+		condition = conditions[i];
+		if(!validatorInstance.check(value)[condition]()) {
+			return false;
 		}
 	}
-	return isValid ? value : isValid;
+	return true;
 }
 
 function handleQueryArgs (req, key) {
 	return req.query[key] || undefined;
 }
 
-function handleParameters () {
-	return req.parameters[key] || undefined;
+function handleBodyArgs (req, key) {
+	return req.body[key] || undefined;
 }
 
-function handleRequest (callback, args, req, res, next) {
+function handleRequest (callback, args, caja, req, res, next) {
 	var keys = Object.keys(args);
 	var additionalArgs = [];
+	var conditions;
 	var argument;
-	var keySplit;
+	var splitkey;
+	var escaped;
 	var value;
+	var prop;
 	var key;
 	for(var i = 0, len = keys.length; i < len; i++) {
 		key = keys[i];
 		splitkey = key.split('.');
 		if(splitkey.length !== 2) {
-			console.log('Malformed argument : ' + key);
+			return Handle.missingQueryElement(res);
 		}
 		else if(splitkey[0] === 'query') {
-			argument = handleQueryArgs(req, key);
+			prop = splitkey[1];
+			argument = handleQueryArgs(req, prop);
+			if(argument === undefined) {
+				return Handle.missingQueryElement(res);
+			}
 		}
-		else if(splitkey[0] === 'parameters') {
-			argument = handleParameters(req, key);
+		else if(splitkey[0] === 'body') {
+			prop = splitkey[1];
+			argument = handleBodyArgs(req, prop);
+			if(argument === undefined) {
+				return Handle.missingParams(res);
+			}
 		}
-		value = applyAllConditions(key);
-		if((argument != null) || (value === false)) {
-			res.send({ success: false });
+		conditions = args[key];
+		value = applyAllConditions(argument, conditions);
+		console.log(argument + ' -> ' + value);
+		if(value === false) {
+			return Handle.validationFail(res);
+		}
+		else  {
+			escaped = (caja === false) ? value : Caja.escape(value);
+			additionalArgs.push(value);
 		}
 	}
 	var argsToArray = Array.apply(null, arguments);
 	callback.apply(this, additionalArgs.concat(argsToArray));
 }
 
-module.methods = function (app) {
+function handleAuthentication (auth) {
+	if(auth === false) {
+		return true;
+	}
+	else if(auth.toLowerCase() === 'bearer') {
+		return passport.authenticate('bearer', { session: false });
+	}
+}
 
-	exports.get = function (uri, args, callback) {
-		app.get(uri, passport.authenticate('bearer', { session: false }), function (req, res, next) {
-			handleRequest(callback, args, req, res, next);
+module.exports = function (app) {
+
+	var _get = function (uri, args, auth, caja, callback) {
+		app.get(uri, function (req, res, next) {
+			return auth ? bearerAuth : next();
+		}, function (req, res, next) {
+			handleRequest(callback, args, caja, req, res, next);
 		});
 	};
+	app.Get = _get;
 
-	exports.post = function (uri, args) {
-		app.post(uri, passport.authenticate('bearer', { session: false }), function (req, res, next) {
-			handleRequest(callback, args, req, res, next);
+	var _post = function (uri, args, auth, caja, callback) {
+		app.post(uri, function (req, res, next) {
+			return auth ? bearerAuth : next();
+		}, function (req, res, next) {
+			handleRequest(callback, args, caja, req, res, next);
 		});
 	};
+	app.Post = _post;
 
-	exports.delete = function (uri, args) {
-		app.delete(uri, passport.authenticate('bearer', { session: false }), function (req, res, next) {
-			handleRequest(callback, args, req, res, next);
+	var _delete = function (uri, args, auth, caja, callback) {
+		app.delete(uri, function (req, res, next) {
+			return auth ? bearerAuth : next();
+		}, function (req, res, next) {
+			handleRequest(callback, args, caja, req, res, next);
 		});
 	};
+	app.Delete = _delete;
 
-	exports.put = function (uri, args) {
-		app.put(uri, passport.authenticate('bearer', { session: false }), function (req, res, next) {
-			handleRequest(callback, args, req, res, next);
+	var _put = function (uri, args, auth, caja, callback) {
+		app.put(uri, function (req, res, next) {
+			return auth ? bearerAuth : next();
+		}, function (req, res, next) {
+			handleRequest(callback, args, caja, req, res, next);
 		});
 	};
+	app.Put = _put;
 
 };

@@ -12,7 +12,7 @@ exports.errorHandler = function(app) {
 
 	EventEmitter.on('FrostyBug', function(args) {
 		if(args && (args.length > 0)) {
-			var bug = model('FRBug')({
+			var bug = model('Bug')({
 				message: args.msg
 			}).upsertBug({
 				message: args.msg
