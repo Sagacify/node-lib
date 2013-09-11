@@ -17,7 +17,7 @@ instance.error = function (msg) {
 	}).upsertBug({
 		message: msg
 	});
-    return this;
+    return false;
 };
 
 instance.getErrors = function () {

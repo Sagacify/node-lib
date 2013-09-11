@@ -12,24 +12,14 @@ var sanitizerInstance = require('./Sanitizer.js');
 var sanitize = sanitizerInstance.sanitize;
 
 function applyAllConditions(value, conditions) {
-	var construct = check(value);
-	var i = conditions.length;
-	var isValid = true;
 	var condition;
-	var res;
-	while(i--) {
+	for(var i = 0, len = conditions.length; i < len; i++) {
 		condition = conditions[i];
-		console.log(condition.toUpperCase());
-		//res = construct[condition]();
-		check(value)[condition]();
-		check(value).isEmail();
-		console.log(value);
-		console.log('res : ');
-		console.log(res);
-		isValid = !res && isValid ? false : true;
-		console.log('isValid -> ' + isValid);
+		if(!validatorInstance.check(value)[condition]()) {
+			return false;
+		}
 	}
-	return isValid ? value : isValid;
+	return true;
 }
 
 function handleQueryArgs (req, key) {
@@ -45,7 +35,7 @@ function handleRequest (callback, args, caja, req, res, next) {
 	var additionalArgs = [];
 	var conditions;
 	var argument;
-	var keySplit;
+	var splitkey;
 	var escaped;
 	var value;
 	var prop;
@@ -54,7 +44,7 @@ function handleRequest (callback, args, caja, req, res, next) {
 		key = keys[i];
 		splitkey = key.split('.');
 		if(splitkey.length !== 2) {
-			console.log('Malformed argument : ' + key);
+			return Handle.missingQueryElement(res);
 		}
 		else if(splitkey[0] === 'query') {
 			prop = splitkey[1];
@@ -71,19 +61,16 @@ function handleRequest (callback, args, caja, req, res, next) {
 			}
 		}
 		conditions = args[key];
-		//console.log('Val0 -> ' + argument);
 		value = applyAllConditions(argument, conditions);
-		//console.log('Val3 -> ' + value);
+		console.log(argument + ' -> ' + value);
 		if(value === false) {
 			return Handle.validationFail(res);
 		}
 		else  {
 			escaped = (caja === false) ? value : Caja.escape(value);
-			//console.log('Val4 -> ' + escaped);
 			additionalArgs.push(value);
 		}
 	}
-	console.log(additionalArgs);
 	var argsToArray = Array.apply(null, arguments);
 	callback.apply(this, additionalArgs.concat(argsToArray));
 }

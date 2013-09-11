@@ -1,16 +1,18 @@
 var Sanitizer = require('validator').Filter;
 
-Sanitizer.prototype.error = function (msg) {
+var instance = new Sanitizer();
+
+instance.error = function (msg) {
 	model('Bug')({
 		message: msg
 	}).upsertBug({
 		message: msg
 	});
-    return this;
+    return false;
 };
 
-Sanitizer.prototype.getErrors = function () {
+instance.getErrors = function () {
     return this._errors;
 };
 
-exports.class = Sanitizer;
+module.exports = instance;
