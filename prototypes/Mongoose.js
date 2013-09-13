@@ -1,5 +1,5 @@
-require('./mongoose/Mongoose');
-require('./mongoose/Model');
-require('./mongoose/Query');
-require('./mongoose/Document');
-require('./mongoose/Schema');
+require('./mongoose/mongoose');
+require('./mongoose/model');
+require('./mongoose/query');
+require('./mongoose/document');
+require('./mongoose/schema');

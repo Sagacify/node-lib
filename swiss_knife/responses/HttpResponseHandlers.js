@@ -60,9 +60,16 @@ exports.noUsername = function (res) {
 };
 
 // If tokens's format is invalid
-exports.invalidBearer = function (res) {
-	res.send({
+exports.getInvalidBearerError = function () {
+	return {
 		success: false,
 		error: 'The bearer format is invalid.'
-	});
+	};
+}
+
+exports.getError = function (success, msg) {
+	return {
+		success: success,
+		error: msg
+	};
 };

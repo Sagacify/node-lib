@@ -1,6 +1,7 @@
-require('./prototypes/Array');
-require('./prototypes/Date');
-require('./prototypes/String');
-require('./prototypes/Mongoose');
-require('./prototypes/Object');
-require('./prototypes/Express');
+require('./prototypes/array');
+require('./prototypes/date');
+require('./prototypes/string');
+require('./prototypes/mongoose');
+require('./prototypes/object');
+require('./prototypes/express');
+require('./prototypes/redis');
