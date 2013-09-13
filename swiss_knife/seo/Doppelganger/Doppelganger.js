@@ -37,13 +37,7 @@ exports.clone = function(app) {
 				else {
 					function classSelector(className, res) {
 						var hasClass = browser.html('body.done');
-						if(!hasClass) {
-							return classSelector(className, res);
-						}
-						else {
-							//console.log('Total (download + rendering) = ' + (new Date().getTime() - start));
-							return res.send(browser.html());
-						}
+						return !hasClass ? classSelector(className, res) : res.send(browser.html());
 					}
 					//console.log('Status -> ' + status);
 					classSelector('done', res);

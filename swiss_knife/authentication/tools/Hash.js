@@ -8,7 +8,6 @@ exports.hashPassword = function(password, callback) {
 			callback({ msg: error.msg, error: error.error });
 		}
 		else {
-			// FIND WAY TO USE THE PEPPER WITH BCRYPT WHILE NOT STORING IT IN THE DB 
 			bcrypt.hash(password, salt /* + Pepper.getPepper() */, function(err, hash) {
 				if(err) {
 					callback({ msg: 'COULDNT_HASH_STRING', error: err });
@@ -59,4 +58,10 @@ exports.hashToken = function(salt, callback) {
 	var sha512 = crypto.createHash(hashFunc);
 	sha512.update(salt + Pepper.getPepper());
 	return sha512.digest('hex');
+};
+
+exports.hashHmacSha256 = function(salt, text) {
+	var hmacSha256 = crypto.createHmac('sha256', salt);
+	hmacSha256.update(text);
+	return hmacSha256.digest('hex');
 };
