@@ -1,5 +1,5 @@
 //var phantomProxy = require('phantom-proxy');
-var phantom = require('phantom');
+//var phantom = require('phantom');
 var Browser = require('zombie');
 
 exports.clone = function(app) {
