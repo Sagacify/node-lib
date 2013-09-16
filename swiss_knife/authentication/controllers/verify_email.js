@@ -6,7 +6,6 @@ module.exports = function(app) {
 	//app.get('/auth/user/verify_email', function(req, res) { });
 
 	app.post('/auth/user/verify_email', function(req, res) {
-		console.log(req.body);
 		if(!('username' in req.body) || (!req.body.username.length)) {
 			res.send({ msg: Verbose['MISSING_EMAIL'] });
 		}
