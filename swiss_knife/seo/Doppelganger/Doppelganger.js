@@ -1,12 +1,19 @@
-//var phantomProxy = require('phantom-proxy');
-var phantom = require('phantom');
 var Browser = require('zombie');
+
+var browser = new Browser({
+	debug: false,
+	runScripts: true,
+	silent: true,
+	maxWait: 3500
+});
+
+function hasClass (window) {
+	return window.document.querySelector('body.done');
+}
 
 exports.clone = function(app) {
 
-	app.use(function(req, res, next) {
-
-		//console.log('User-Agent -> ' + req.headers['user-agent']);
+	app.use(function (req, res, next) {
 		var userAgent = req.headers['user-agent'];
 		var browserUserAgents = [
 			/mozilla/i,
@@ -19,85 +26,49 @@ exports.clone = function(app) {
 			/playstation\sportable/i,
 			/firefox/i
 		];
-		var isBrowser = browserUserAgents.reduce(function(a, b) {
+		var isBrowser = browserUserAgents.reduce(function (a, b) {
 			return a || b.test(userAgent);
 		}, false);
-		//console.log('Is Browser -> ' + isBrowser + ' and len is ' + browserUserAgents.length);
-		//var phantomUserAgent = /phantomjs/i;
-		//var isPhantom = phantomUserAgent.test(userAgent);
 		var zombieUserAgent = /zombie.js/i;
 		var isZombie = zombieUserAgent.test(userAgent);
-		if(/*!isPhantom*/ !isZombie && !isBrowser) {
-			//console.log('in -> ' + req.url);
-			//var start = new Date().getTime();
-			Browser.visit(config.hostname + req.url, { debug: false, runScripts: true }, function(error, browser, status) {
-				if(error) {
-					console.log(error);
-				}
-				else {
-					function classSelector(className, res) {
-						var hasClass = browser.html('body.done');
-						return !hasClass ? classSelector(className, res) : res.send(browser.html());
-					}
-					//console.log('Status -> ' + status);
-					classSelector('done', res);
-				}
-			});
-			/*phantom.create(function (ph) {
-				console.log('+1');
-				return ph.createPage(function (page) {
-					console.log('+2');
-					return page.open(config.hostname + req.url, function (status) {
-						console.log('+3');
-						if(status !== 'success') {
-							console.log('Unable to access network');
-						}
-						else {
-							function selectorPresence(page, className, res, startTime) {
-								if((new Date().getTime() - startTime) > 5000) {
-									res.send(500);
-									return phantom.exit();
-								}
-								else {
-									function evaluate(classname) {
-										return 'function() {'
-											+ 'return (document.getElementsByClassName("' + classname + '").length > 0) ? true : false;'
-										+ '}';
-									}
-									(function phantomEval(className) {
-										return page.evaluate(evaluate(className), function (hasClass) {
-											console.log('HasClass -> ' + hasClass);
-											if(hasClass === true) {
-												//clearInterval(selectorPresenceCheck);
-												page.evaluate(function() {
-													return document.getElementsByTagName('html')[0].innerHTML;
-												}, function(html) {
-													//console.log(html);
-													//console.log(typeof html);
-													res.send(html || 500);
-													//return phantom.exit();
-												});
-											}
-											else {
-												phantomEval(className);
-											}
-											//return phantom.exit();
-										});
-									})(className);
-								}
-							}
-							//var selectorPresenceCheck = setInterval(selectorPresence(page, 'done', res, new Date().getTime()), 300);
-							selectorPresence(page, 'done', res, new Date().getTime());
-						}
-					});
+		if(!isZombie && !isBrowser) {
+			browser.visit(config.hostname + req.url/*, {
+				debug: false,
+				runScripts: true,
+				silent: true
+			}*/).then(function () {
+				var s1 = Date.now(), s2, s3;
+				console.log('----- ( 1 ) -----');
+				var className = 'done';
+				browser.wait(hasClass).then(function() {
+					s2 = Date.now();
+					console.log('----- ( 2 ) -----');
+					console.log('Time @2 -> ' + (s2 - s3));
+					res.send(browser.html());
 				});
-			}, {
-				binary: 'lib/swiss_knife/seo/Doppelganger/phantomjs-1.9.1-macosx/bin/phantomjs'
-			});*/
+				s3 = Date.now();
+				console.log('----- ( 3 ) -----');
+				console.log('Time @3 -> ' + (s3 - s1));
+				// var hasClass = false;
+				// var start = Date.now();
+				// while(!hasClass) {
+				// 	console.log('Has Class' + browser.html('body.' + className));
+				// 	if((start + 8000) > Date.now() || browser.html('body.' + className)) {
+				// 		hasClass = true;
+				// 		break;
+				// 	}
+				// }
+				//res.send(browser.html());
+			}).fail(function (error) {
+				var s4 = Date.now();
+				console.log('----- ( 4 ) -----');
+				console.log('Time @4 -> ' + (s4 - s1));
+				console.log(error);
+				res.send(404);
+			});
 		}
 		else {
-			//console.log('NEXT');
-			next();
+			return next();
 		}
 
 	});

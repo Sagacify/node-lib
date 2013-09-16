@@ -13,13 +13,15 @@ var sanitize = sanitizerInstance.sanitize;
 
 function applyAllConditions(value, conditions) {
 	var condition;
+	var isValid;
 	for(var i = 0, len = conditions.length; i < len; i++) {
 		condition = conditions[i];
 		if(!validatorInstance.check(value)[condition]()) {
-			return false;
+			isValid = false;
+			break;
 		}
 	}
-	return true;
+	return isValid === false ? isValid : value;
 }
 
 function handleQueryArgs (req, key) {
@@ -68,11 +70,16 @@ function handleRequest (callback, args, caja, req, res, next) {
 		}
 		else  {
 			escaped = (caja === false) ? value : Caja.escape(value);
-			additionalArgs.push(value);
+			additionalArgs.push(escaped);
 		}
 	}
-	var argsToArray = Array.apply(null, arguments);
-	callback.apply(this, additionalArgs.concat(argsToArray));
+	//var argsToArray = Array.apply(null, arguments);
+	var argsToArray = [req, res, next];
+	console.log('Arg types : ' + Object.prototype.toString.call(argsToArray))
+	var newArguments = additionalArgs.concat(argsToArray);
+	console.log(newArguments.length);
+	//console.log(additionalArgs.concat(argsToArray));
+	callback.apply(this, newArguments);
 }
 
 function handleAuthentication (auth) {
