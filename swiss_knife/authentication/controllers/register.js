@@ -4,9 +4,9 @@ var Mailer = require('../tools/Mailer');
 
 module.exports = function(app) {
 
-	//app.get('/auth/local/register', function(req, res) { });
+	//app.get('/auth/user/register', function(req, res) { });
 
-	app.post('/auth/local/register', function(req, res) {
+	app.post('/auth/user/register', function(req, res) {
 		if(!('username' in req.body) || (!req.body.username.length)) {
 			res.send({ msg: Verbose['MISSING_EMAIL'] });
 		}

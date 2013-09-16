@@ -3,9 +3,9 @@ var Verbose = require('../../../../config/verbose_errors.json');
 
 module.exports = function(app) {
 
-	//app.get('/auth/local/reset_password', function(req, res) { });
+	//app.get('/auth/user/reset_password', function(req, res) { });
 
-	app.post('/auth/local/reset_password', function(req, res) {
+	app.post('/auth/user/reset_password', function(req, res) {
 		if(!('username' in req.body) || (!req.body.username.length)) {
 			res.send({ msg: Verbose['MISSING_EMAIL'] });
 		}
