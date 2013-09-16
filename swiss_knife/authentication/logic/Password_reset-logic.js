@@ -23,7 +23,7 @@ exports.process = function(object, primaryKey, state, callback) {
 						break;
 					}
 				}
-				if((matchIndex === -1) || (tokens[matchIndex].expiration < (new Date().getTime()))) {
+				if((matchIndex === -1) || (tokens[matchIndex].expiration < Date.now())) {
 					callback({ msg: 'INVALID_ATTR_COMBINATION', error: null });
 				}
 				else {
@@ -40,7 +40,7 @@ exports.process = function(object, primaryKey, state, callback) {
 									var tokenHash = Hash.hashToken(token);
 									result.tokens.push({
 										token: tokenHash,
-										expiration: new Date().getTime() + config.expiration
+										expiration: Date.now() + config.expiration
 									});
 									result.password = passwordHash;
 									result.state = !state;

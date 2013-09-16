@@ -1,10 +1,16 @@
 var Hash = require('../tools/Hash');
+var hashToken = Hash.hashToken;
+var compareHash = Hash.compareHash;
+var generateToken = Hash.generateToken;
 
-exports.process = function(object, primaryKey, state, callback) {
+var UserModel = model('User');
+
+exports.process = function (object, primaryKey, state, callback) {
+
 	var primaryValue = object[primaryKey];
 	var searchDict = {};
 	searchDict[primaryKey] = primaryValue;
-	model('User').find(searchDict, function(error, results) {
+	UserModel.find(searchDict, function (error, results) {
 		if(error) {
 			callback({ msg: 'ERROR_WHILE_SEARCHING_DB', error: error });
 		}
@@ -14,7 +20,7 @@ exports.process = function(object, primaryKey, state, callback) {
 				callback({ msg: 'USER_IN_WRONG_AUTHORIZATION_STATE', error: null });
 			}
 			else {
-				Hash.compareHash(object.password, result.password, function(err, match) {
+				compareHash(object.password, result.password, function (err, match) {
 					if(err) {
 						callback({ msg: err.msg, error: err.error });
 					}
@@ -22,25 +28,25 @@ exports.process = function(object, primaryKey, state, callback) {
 						callback({ msg: 'INVALID_ATTR_COMBINATION', error: null });
 					}
 					else {
-						Hash.generateToken(function(err, token) {
+						generateToken(function (err, token) {
 							if(err) {
 								callback({ msg: err.msg, error: err.error });
 							}
 							else {
 								for(var i = 0; i < result.tokens.length; i++) {
-									if(result.tokens[i].expiration < (new Date().getTime())) {
+									if(result.tokens[i].expiration < Date.now()) {
 										result.tokens.splice(i, 0);
 									}
 								}
-								var tokenHash = Hash.hashToken(token);
+								var tokenHash = hashToken(token);
 								if(result.tokens.length > config.maxDevices){
 									result.tokens.splice(config.maxDevices, result.tokens.length);
 								}
 								result.tokens.push({
 									token: tokenHash,
-									expiration: new Date().getTime() + config.expiration
+									expiration: Date.now() + config.expiration
 								});
-								result.save(function(e, user) {
+								result.save(function (e, user) {
 									if(e) {
 										callback({ msg: 'COULDNT_SAVE_USER_MODIFICATIONS', error: e });
 									}
@@ -61,4 +67,5 @@ exports.process = function(object, primaryKey, state, callback) {
 			callback({ msg: 'NO_USER_WITH_THIS_ATTR_VALUE', error: null });
 		}
 	});
+
 };

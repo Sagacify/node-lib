@@ -1,6 +1,6 @@
 var Handle = require('../responses/HttpResponseHandlers.js');
 
-var BearerAuth = require('../authentication/logic/Bearer_auth.js');
+var BearerAuth = require('../authentication/logic/authenticate_bearer.js');
 var bearerAuth = BearerAuth.process;
 
 var Caja = require('./GoogleCaja.js');
@@ -64,7 +64,7 @@ function handleRequest (callback, args, caja, req, res, next) {
 		}
 		conditions = args[key];
 		value = applyAllConditions(argument, conditions);
-		console.log(argument + ' -> ' + value);
+		console.log(argument + ' -> ' + !!value);
 		if(value === false) {
 			return Handle.validationFail(res);
 		}
@@ -73,22 +73,10 @@ function handleRequest (callback, args, caja, req, res, next) {
 			additionalArgs.push(escaped);
 		}
 	}
-	//var argsToArray = Array.apply(null, arguments);
-	var argsToArray = [req, res, next];
-	console.log('Arg types : ' + Object.prototype.toString.call(argsToArray))
+	var argsToArray = Array.apply(null, arguments);
+	//var argsToArray = [req, res, next];
 	var newArguments = additionalArgs.concat(argsToArray);
-	console.log(newArguments.length);
-	//console.log(additionalArgs.concat(argsToArray));
 	callback.apply(this, newArguments);
-}
-
-function handleAuthentication (auth) {
-	if(auth === false) {
-		return true;
-	}
-	else if(auth.toLowerCase() === 'bearer') {
-		return passport.authenticate('bearer', { session: false });
-	}
 }
 
 module.exports = function (app) {

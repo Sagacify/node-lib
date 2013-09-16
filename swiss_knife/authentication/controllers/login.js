@@ -1,31 +1,32 @@
-var LogicLib = require('../logic/Login-logic');
+var LogicLib = require('../logic/login-logic');
 var Verbose = require('../../../../config/verbose_errors.json');
 
-module.exports = function(app) {
+var state = config.state.validated;
 
-	//app.get('/auth/user/login', function(req, res) { });
+module.exports = function (app) {
 
-	app.post('/auth/user/login', function(req, res) {
-		if(!('username' in req.body) || (!req.body.username.length)) {
-			res.send({ msg: Verbose['MISSING_EMAIL'] });
-		}
-		else if(!('password' in req.body) || (!req.body.password.length)) {
-			res.send({ msg: Verbose['MISSING_PASSWORD'] });
-		}
-		else {
-			var object = {
-				username: req.body.username.toLowerCase(),
-				password: req.body.password
-			};
-			LogicLib.process(object, 'username', config.state.validated, function(error, token, user) {
-				if(error) {
-					console.log(error.error);
-					res.send({ msg: Verbose[error.msg] });
-				}
-				else {
-					res.send(null, { token: token, user: user });
-				}
-			});
-		}
+	app.Post('/auth/user/login', {
+		'body.username' : ['notNull', 'notEmpty'],
+		'body.password'	: ['notNull', 'notEmpty']
+	}, false, true, function (username, password, req, res) {
+		var object = {
+			username: username,
+			password: password
+		};
+		LogicLib.process(object, 'username', state, function (error, token, user) {
+			if(error) {
+				console.log(error.error);
+				res.send({
+					msg: Verbose[error.msg]
+				});
+			}
+			else {
+				res.send({
+					token: token,
+					user: user
+				});
+			}
+		});
 	});
+
 };
