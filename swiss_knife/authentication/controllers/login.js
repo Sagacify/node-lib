@@ -1,4 +1,4 @@
-var LogicLib = require('../logic/login-logic');
+var LogicLib = require('../logic/login-basic');
 var Verbose = require('../../../../config/verbose_errors.json');
 
 var state = config.state.validated;

@@ -1,4 +1,4 @@
-var LogicLib = require('../logic/register-logic');
+var LogicLib = require('../logic/register-basic');
 var Verbose = require('../../../../config/verbose_errors.json');
 var Mailer = require('../tools/Mailer');
 

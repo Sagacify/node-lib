@@ -1,8 +1,5 @@
 var Handle = require('../responses/HttpResponseHandlers.js');
 
-var BearerAuth = require('../authentication/logic/authenticate_bearer.js');
-var bearerAuth = BearerAuth.process;
-
 var Caja = require('./GoogleCaja.js');
 
 var validatorInstance = require('./Validator.js');
@@ -80,6 +77,10 @@ function handleRequest (callback, args, caja, req, res, next) {
 }
 
 module.exports = function (app) {
+
+	var BearerAuth = require('../authentication/logic/authenticate_bearer.js');
+
+	app.use(BearerAuth.process);
 
 	var _get = function (uri, args, auth, caja, callback) {
 		app.get(uri, function (req, res, next) {
