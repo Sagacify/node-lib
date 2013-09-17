@@ -4,7 +4,7 @@ var Mailer = require('../tools/Mailer');
 
 module.exports = function (app) {
 
-	app.Post('/auth/user/register', {
+	app.SGpost('/auth/user/register', {
 		'body.email'	: ['notNull', 'notEmpty', 'isEmail'],
 		'body.username' : ['notNull', 'notEmpty'],
 		'body.password'	: ['notNull', 'notEmpty']

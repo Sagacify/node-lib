@@ -12,6 +12,7 @@ exports.process = function (req, res, next) {
 
 	var authorization = req.get('Authorization');
 	if((authorization == null) || !authorization.length) {
+		console.log('+6');
 		res.send({ msg: Verbose['NO_USER_WITH_THIS_ATTR_VALUE'] });
 	}
 	else if(!authorization.indexOf('bearer ')) {
@@ -33,22 +34,27 @@ exports.process = function (req, res, next) {
 					}
 					else if(user) {
 						req.user = user;
+						console.log('+1');
 						next();
 					}
 					else {
+						console.log('+2');
 						res.send({ msg: Verbose['NO_USER_WITH_THIS_ATTR_VALUE'] });
 					}
 				});
 			}
 			else {
+				console.log('+3');
 				res.send({ msg: Verbose['NO_USER_WITH_THIS_ATTR_VALUE'] });
 			}
 		}
 		else {
+			console.log('+4');
 			res.send({ msg: Verbose['NO_USER_WITH_THIS_ATTR_VALUE'] });
 		}
 	}
 	else {
+		console.log('+5');
 		res.send({ msg: Verbose['NO_USER_WITH_THIS_ATTR_VALUE'] });
 	}
 

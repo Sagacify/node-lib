@@ -1,6 +1,8 @@
 var Handle = require('../responses/HttpResponseHandlers.js');
 
 var Caja = require('./GoogleCaja.js');
+var authState = config.authDefault;
+var sanitizeState = config.escapeDefault;
 
 var validatorInstance = require('./Validator.js');
 var check = validatorInstance.check;
@@ -90,43 +92,84 @@ function handleRequest (callback, args, caja, req, res, next) {
 module.exports = function (app) {
 
 	var BearerAuth = require('../authentication/logic/authenticate_bearer.js');
+	var bearerAuth = BearerAuth.process;
+	//app.use(BearerAuth.process);
 
-	app.use(BearerAuth.process);
-
-	var _get = function (uri, args, auth, caja, callback) {
+	var _get = function (uri, args, options, callback) {
+		var auth;
+		var caja;
+		if(arguments.length !== 4) {
+			auth = authState;
+			caja = sanitizeState;
+		}
+		else if(arguments.length === 4) {
+			auth = !('auth'  in options) || (authState !== options.auth) ? options.auth : authState;
+			caja = !('sanitize'  in options) || (sanitizeState !== options.sanitize) ? options.sanitize : sanitizeState;
+		}
 		app.get(uri, function (req, res, next) {
-			return auth ? bearerAuth : next();
+			return auth ? bearerAuth(req, res, next) : next();
 		}, function (req, res, next) {
 			handleRequest(callback, args, caja, req, res, next);
 		});
 	};
-	app.Get = _get;
+	app.SGget = _get;
 
-	var _post = function (uri, args, auth, caja, callback) {
+	var _post = function (uri, args, options, callback) {
+		var auth;
+		var caja;
+		if(arguments.length !== 4) {
+			auth = authState;
+			caja = sanitizeState;
+		}
+		else if(arguments.length === 4) {
+			auth = !('auth'  in options) || (authState !== options.auth) ? options.auth : authState;
+			caja = !('sanitize'  in options) || (sanitizeState !== options.sanitize) ? options.sanitize : sanitizeState;
+		}
 		app.post(uri, function (req, res, next) {
-			return auth ? bearerAuth : next();
+			return auth ? bearerAuth(req, res, next) : next();
 		}, function (req, res, next) {
 			handleRequest(callback, args, caja, req, res, next);
 		});
 	};
-	app.Post = _post;
+	app.SGpost = _post;
 
-	var _delete = function (uri, args, auth, caja, callback) {
+	var _delete = function (uri, args, options, callback) {
+		var auth;
+		var caja;
+		if(arguments.length !== 4) {
+			auth = authState;
+			caja = sanitizeState;
+		}
+		else if(arguments.length === 4) {
+			auth = !('auth'  in options) || (authState !== options.auth) ? authState : options.auth;
+			caja = !('sanitize'  in options) || (sanitizeState !== options.sanitize) ? options.sanitize : sanitizeState;
+		}
 		app.delete(uri, function (req, res, next) {
-			return auth ? bearerAuth : next();
+			return auth ? bearerAuth(req, res, next) : next();
 		}, function (req, res, next) {
 			handleRequest(callback, args, caja, req, res, next);
 		});
 	};
-	app.Delete = _delete;
+	app.SGdelete = _delete;
 
-	var _put = function (uri, args, auth, caja, callback) {
+	var _put = function (uri, args, options, callback) {
+		var auth;
+		var caja;
+		if(arguments.length !== 4) {
+			auth = authState;
+			caja = sanitizeState;
+		}
+		else if(arguments.length === 4) {
+			auth = !('auth'  in options) || (authState !== options.auth) ? authState : options.auth;
+			caja = !('sanitize'  in options) || (sanitizeState !== options.sanitize) ? options.sanitize : sanitizeState;
+		}
 		app.put(uri, function (req, res, next) {
-			return auth ? bearerAuth : next();
+			console.log('__PUT__');
+			return auth ? bearerAuth(req, res, next) : next();
 		}, function (req, res, next) {
 			handleRequest(callback, args, caja, req, res, next);
 		});
 	};
-	app.Put = _put;
+	app.SGput = _put;
 
 };

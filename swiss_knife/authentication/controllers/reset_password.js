@@ -3,13 +3,13 @@ var Verbose = require('../../../../config/verbose_errors.json');
 
 module.exports = function (app) {
 
-	app.Post('/auth/user/reset_password', {
+	app.SGpost('/auth/user/reset_password', {
 		'body.email'	: ['notNull', 'notEmpty', 'isEmail'],
 		'body.username' : ['notNull', 'notEmpty'],
 		'body.password'	: ['notNull', 'notEmpty']
 	}, false, true, function (username, password, req, res) {
-
-	})
+		res.send(200);
+	});
 
 	app.post('/auth/user/reset_password', function(req, res) {
 		if(!('username' in req.body) || (!req.body.username.length)) {

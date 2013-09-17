@@ -6,7 +6,7 @@ var state = config.state.validated;
 
 module.exports = function (app) {
 
-	app.Post('/auth/user/forgot_password', {
+	app.SGpost('/auth/user/forgot_password', {
 		'body.email': ['notNull', 'notEmpty', 'isEmail']
 	}, false, true, function (email, req, res) {
 		var object = {

@@ -5,7 +5,7 @@ var state = config.state.validated;
 
 module.exports = function (app) {
 
-	app.Post('/auth/user/change_password', {
+	app.SGpost('/auth/user/change_password', {
 		'body.password'		: ['notNull', 'notEmpty'],
 		'body.new_password' : ['notNull', 'notEmpty']
 	}, true, true, function (password, new_password, req, res) {

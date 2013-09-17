@@ -5,7 +5,7 @@ var state = config.state.validated;
 
 module.exports = function (app) {
 
-	app.Post('/auth/user/login', {
+	app.SGpost('/auth/user/login', {
 		'body.username' : ['notNull', 'notEmpty'],
 		'body.password'	: ['notNull', 'notEmpty']
 	}, false, true, function (username, password, req, res) {

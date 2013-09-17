@@ -5,7 +5,7 @@ var state = config.state.unvalidated;
 
 module.exports = function (app) {
 
-	app.Post('/auth/user/verify_email', {
+	app.SGpost('/auth/user/verify_email', {
 		'body.username' : ['notNull', 'notEmpty'],
 		'body.email'	: ['notNull', 'notEmpty', 'isEmail'],
 		'body.password'	: ['notNull', 'notEmpty'],
