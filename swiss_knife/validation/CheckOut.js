@@ -29,6 +29,10 @@ function handleBodyArgs (req, key) {
 	return req.body[key] || undefined;
 }
 
+function handleParameterElement (req, key) {
+	return req.params[key] || undefined;
+}
+
 function handleRequest (callback, args, caja, req, res, next) {
 	var keys = Object.keys(args);
 	var additionalArgs = [];
@@ -59,6 +63,13 @@ function handleRequest (callback, args, caja, req, res, next) {
 				return Handle.missingParams(res);
 			}
 		}
+		else if(splitkey[0] === 'params') {
+			prop = splitkey[1];
+			argument = handleParameterElement(req, prop);
+			if(argument === undefined) {
+				return Handle.missingParams(res);
+			}
+		}
 		conditions = args[key];
 		value = applyAllConditions(argument, conditions);
 		console.log(argument + ' -> ' + !!value);
@@ -70,8 +81,8 @@ function handleRequest (callback, args, caja, req, res, next) {
 			additionalArgs.push(escaped);
 		}
 	}
-	var argsToArray = Array.apply(null, arguments);
-	//var argsToArray = [req, res, next];
+	//var argsToArray = Array.apply(null, arguments);
+	var argsToArray = [req, res, next]; // find better way to do this
 	var newArguments = additionalArgs.concat(argsToArray);
 	callback.apply(this, newArguments);
 }
