@@ -8,11 +8,8 @@ module.exports = function (app) {
 
 	app.SGpost('/auth/user/forgot_password', {
 		'body.email': ['notNull', 'notEmpty', 'isEmail']
-	}, false, true, function (email, req, res) {
-		var object = {
-			email: email
-		};
-		LogicLib.process(object, 'email', state, function (error, token, user) {
+	}, { auth: false, sanitize: true }, function (email, req, res) {
+		LogicLib.process(email, state, function (error, token, user) {
 			if(error) {
 				console.log(error.error);
 				res.send({ msg: Verbose[error.msg] });

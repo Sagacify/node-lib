@@ -8,12 +8,8 @@ module.exports = function (app) {
 	app.SGpost('/auth/user/login', {
 		'body.username' : ['notNull', 'notEmpty'],
 		'body.password'	: ['notNull', 'notEmpty']
-	}, false, true, function (username, password, req, res) {
-		var object = {
-			username: username,
-			password: password
-		};
-		LogicLib.process(object, 'username', state, function (error, token, user) {
+	}, { auth: false, sanitize: true }, function (username, password, req, res) {
+		LogicLib.process(username, password, state, function (error, token, user) {
 			if(error) {
 				console.log(error.error);
 				res.send({

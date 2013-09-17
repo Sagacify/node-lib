@@ -6,15 +6,11 @@ module.exports = function (app) {
 
 	app.SGpost('/auth/user/register', {
 		'body.email'	: ['notNull', 'notEmpty', 'isEmail'],
+		'body.password'	: ['notNull', 'notEmpty'],
 		'body.username' : ['notNull', 'notEmpty'],
-		'body.password'	: ['notNull', 'notEmpty']
-	}, false, true, function (email, username, password, req, res) {
-		var object = {
-			username: username,
-			password: password,
-			email: email
-		};
-		LogicLib.process(object, 'username', function (error, token, user) {
+		'body.name' : ['notNull', 'notEmpty']
+	}, { auth: false, sanitize: true }, function (email, password, username, name, req, res) {
+		LogicLib.process(email, password, username, name, function (error, token, user) {
 			if(error) {
 				console.log(error.error);
 				res.send({

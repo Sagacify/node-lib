@@ -1,39 +1,81 @@
 var Hash = require('../tools/Hash');
+var hashPassword = Hash.hashPassword;
+var generateToken = Hash.generateToken;
+var hashToken = Hash.hashToken;
+
+var validated = config.state.validated;
+
 var UserModel = model('User');
 
-exports.process = function (userid, email, callback) {
-	UserModel.findById(primaryValue, function (error, results) {
-		if(error) {
-			callback({ msg: 'ERROR_WHILE_SEARCHING_DB', error: error });
+function removeUser(users, i, callback) {
+	if(i === user.length) {
+		callback(null);
+	}
+	else {
+		var user = users[i];
+		if(user.state === validated) {
+			callback({ msg: 'USER_ALREADY_EXISTS', error: null });
 		}
-		else if(!results || !results.length) {
-			Hash.hashPassword(object.password, function (erro, passwordHash) {
-				if(erro) {
-					callback({ msg: erro.msg, error: erro.error });
+		else {
+			user.remove(function (e) {
+				if(e) {
+					callback({ msg: 'COULDNT_REMOVE_USER', error: e });
 				}
 				else {
-					Hash.generateToken(function (err, token) {
-						if(err) {
-							callback({ msg: err.msg, error: err.error });
+					removeUser(users, i + 1, callback);
+				}
+			});
+		}
+	}
+}
+
+exports.process = function (userid, password, username, name, callback) {
+
+	UserModel.find({
+		$or			: [{
+			_id		: userid
+		}, {
+			username: username
+		}]
+	}, function (e, users) {
+		if(e) {
+			callback({ msg: 'ERROR_WHILE_SEARCHING_DB', error: e });
+		}
+		else {
+			removeUser(users, 0, function (e) {
+				if(e) {
+					callback({ msg: e.msg, error: e.error });
+				}
+				else {
+					hashPassword(password, function (e, passwordHash) {
+						if(e) {
+							callback({ msg: e.msg, error: e.error });
 						}
 						else {
-							var tokenHash = Hash.hashToken(token);
-							UserModel({
-								_id		: object.username,
-								password: passwordHash,
-								name	: object.name,
-								email	: object.email,
-								state	: config.state.unvalidated,
-								tokens	: [{
-									token: tokenHash,
-									expiration: Date.now() + config.expiration
-								}]
-							}).save(function (er, savedUser) {
-								if(er) {
-									callback({ msg: 'COULDNT_SAVE_USER_MODIFICATIONS', error: er });
+							generateToken(function (e, token) {
+								if(e) {
+									callback({ msg: e.msg, error: e.error });
 								}
 								else {
-									callback(null, token, savedUser);
+									var tokenHash = hashToken(token);
+									UserModel({
+										_id		: userid,
+										username: username,
+										password: passwordHash,
+										name	: name,
+										state	: state,
+										tokens	: [{
+											token: tokenHash,
+											expiration: Date.now() + config.expiration
+										}]
+									}).save(function (e, savedUser) {
+										if(e) {
+											callback({ msg: 'COULDNT_SAVE_USER_MODIFICATIONS', error: e });
+										}
+										else {
+											callback(null, token, savedUser);
+										}
+									});
 								}
 							});
 						}
@@ -41,25 +83,6 @@ exports.process = function (userid, email, callback) {
 				}
 			});
 		}
-		else {
-			(function removeUser(results, index, callback) {
-				if(index === results.length) {
-					exports.process(object, primaryKey, callback);
-				}
-				else if(results[index].state === config.state.validated) {
-					callback({ msg: 'USER_ALREADY_EXISTS', error: null });
-				}
-				else {
-					results[index].remove(function(error) {
-						if(error) {
-							callback({ msg: 'COULDNT_REMOVE_USER', error: error });
-						}
-						else {
-							removeUser(results, index + 1, callback);
-						}
-					});
-				}
-			})(results, 0, callback);
-		}
 	});
+
 };

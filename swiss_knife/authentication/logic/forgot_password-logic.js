@@ -1,46 +1,38 @@
 var Hash = require('../tools/Hash');
 var UserModel = model('User');
 
-exports.process = function (object, primaryKey, state, callback) {
-	var primaryValue = object[primaryKey];
-	var searchDict = {};
-	searchDict[primaryKey] = primaryValue;
-	UserModel.find(searchDict, function (error, results) {
-		if(error) {
-			callback({ msg: 'ERROR_WHILE_SEARCHING_DB', error: error });
+exports.process = function (userid, state, callback) {
+
+	UserModel.find({
+		_id		: userid,
+		state	: state
+	}, function (e, user) {
+		if(e) {
+			callback({ msg: 'ERROR_WHILE_SEARCHING_DB', error: e });
 		}
-		else if(results && (results.length === 1)) {
-			var result = results[0];
-			if(result.state !== state) {
-				callback({ msg: 'USER_IN_WRONG_AUTHORIZATION_STATE', error: null });
-			}
-			else {
-				Hash.generateToken(function (err, token) {
-					if(err) {
-						callback({ msg: err.msg, error: err.error });
-					}
-					else {
-						var tokenHash = Hash.hashToken(token);
-						result.tokens = [{
-							token: tokenHash,
-							expiration: Date.now() + config.expiration
-						}];
-						result.state = !state;
-						result.save(function (er, user) {
-							if(er) {
-								callback({ msg: 'COULDNT_SAVE_USER_MODIFICATIONS', error: er });
-							}
-							else {
-								user.token = token;
-								callback(null, token, user);
-							}
-						});
-					}
-				});
-			}
-		}
-		else if(results && (results.length > 1)) {
-			callback({ msg: 'MULTI_USERS_HAVE_SAME_ATTR_VALUE', error: null });
+		else if(user) {
+			Hash.generateToken(function (err, token) {
+				if(err) {
+					callback({ msg: err.msg, error: err.e });
+				}
+				else {
+					var tokenHash = Hash.hashToken(token);
+					user.tokens = [{
+						token		: tokenHash,
+						expiration	: Date.now() + config.expiration
+					}];
+					user.state = !state;
+					user.save(function (er, user) {
+						if(er) {
+							callback({ msg: 'COULDNT_SAVE_USER_MODIFICATIONS', error: er });
+						}
+						else {
+							user.token = token;
+							callback(null, token, user);
+						}
+					});
+				}
+			});
 		}
 		else {
 			callback({ msg: 'NO_USER_WITH_THIS_ATTR_VALUE', error: null });

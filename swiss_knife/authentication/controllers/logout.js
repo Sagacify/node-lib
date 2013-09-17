@@ -5,7 +5,7 @@ var state = config.state.validated;
 
 module.exports = function (app) {
 
-	app.SGpost('/auth/user/logout', {}, true, true, function (req, res) {
+	app.SGpost('/auth/user/logout', {}, { auth: true, sanitize: true }, function (req, res) {
 		var userid = req.user.id;
 		LogicLib.process(userid, state, function (error) {
 			if(error) {

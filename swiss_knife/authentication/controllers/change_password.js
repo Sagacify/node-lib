@@ -8,7 +8,7 @@ module.exports = function (app) {
 	app.SGpost('/auth/user/change_password', {
 		'body.password'		: ['notNull', 'notEmpty'],
 		'body.new_password' : ['notNull', 'notEmpty']
-	}, true, true, function (password, new_password, req, res) {
+	}, { auth: true, sanitize: true }, function (password, new_password, req, res) {
 		var userid = req.user._id;
 		LogicLib.process(userid, password, new_password, state, function (error, token) {
 			if(error) {
