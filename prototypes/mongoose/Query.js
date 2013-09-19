@@ -36,7 +36,7 @@ mongoose.Query.prototype.develop = function develop(fields, user, options){
 	return this;
 };
 
-mongoose.Query.prototype.cache = function cache(){
+mongoose.Query.prototype.cache = function cache(key){
 	this.options.cache = {
 
 	};

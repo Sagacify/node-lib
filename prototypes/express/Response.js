@@ -1,6 +1,6 @@
 var express = require('express')
 
-express.response.metaSend = function(object){
+express.response.SGsend = function(object){
 	var code;
 	var error;
 	var response;
@@ -36,6 +36,6 @@ express.response.metaSend = function(object){
 express.response.handle = function(){
 	var me = this;
 	return function(err, response){
-		me.metaSend(err||response);
+		me.SGsend(err||response);
 	};
 };

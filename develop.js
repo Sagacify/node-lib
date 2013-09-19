@@ -100,7 +100,6 @@ exports.populateDevelopSubObjs = function(arrObj, arrDoc, fieldsToPopulate, user
 					});
 				}
 				else if(recursiveSchemaValue && recursiveSchemaValue.ref){
-					var start = new Date().getTime();
 					mongoose.model(recursiveSchemaValue.ref).findById(recursiveObjValue, exports.populateDevelop(grandChildFields, user, subOptions, function(err, subObj){
 						if(!err)
 							exports.setRecursiveField(obj, childField, subObj);
@@ -108,7 +107,6 @@ exports.populateDevelopSubObjs = function(arrObj, arrDoc, fieldsToPopulate, user
 					}, start));
 				}
 				else if(recursiveObjValue && recursiveObjValue.ref && recursiveObjValue.type){
-					var start = new Date().getTime();
 					mongoose.model(recursiveObjValue.ref).findById(recursiveObjValue.type, exports.populateDevelop(grandChildFields, user, subOptions, function(err, subObj){
 						if(!err)
 							exports.setRecursiveField(obj, childField, subObj);
