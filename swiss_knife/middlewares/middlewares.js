@@ -3,7 +3,7 @@ var develop = require('./develop');
 exports.generateFromURI = function(fieldsToPopulate, developOptions, callback){
 	return function(req, res) {
 		exports.handleResultFromURI(req, res, fieldsToPopulate, developOptions, callback);
-	}
+	};
 };
 
 exports.handleResultFromURI = function(req, res, fieldsToPopulate, developOptions, callback){
@@ -12,7 +12,7 @@ exports.handleResultFromURI = function(req, res, fieldsToPopulate, developOption
 			res.sendMeta({success: true});
 		}
 		else{
-			res.sendMeta(new SagaError());
+			res.sendMeta(new SGError());
 		}
 	}
 	var splitRoute = req.route.path.split("/");
@@ -192,7 +192,7 @@ exports.handleResultFromURI = function(req, res, fieldsToPopulate, developOption
 					doc.remove(handleDelete);
 				}
 				else{
-					res.sendMeta(new SagaError());
+					res.sendMeta(new SGError());
 				}
 			});
 		}

@@ -5,7 +5,7 @@ express.response.SGsend = function(object){
 	var error;
 	var response;
 
-	if(object instanceof SagaError){
+	if(object instanceof SGError){
 		code = object.code;
 		error = {
 			type: object.type,
