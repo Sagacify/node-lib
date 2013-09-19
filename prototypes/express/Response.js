@@ -1,4 +1,4 @@
-var express = require('express')
+var express = require('express');
 
 express.response.SGsend = function(object){
 	var code;

@@ -1,10 +1,14 @@
 var AWS = require('aws-sdk');
-var ct = require('./content_type');
+var ct = require('./swiss_knife/mimetypes/content_type');
 var uuid = require('node-uuid');
 
 /* Create AWS environement */
 /* *********************** */
-AWS.config.update({region: config.AWS.region, accessKeyId: config.AWS.accessKeyId, secretAccessKey: config.AWS.secretAccessKey});
+AWS.config.update({
+	region: config.AWS.region,
+	accessKeyId: config.AWS.accessKeyId,
+	secretAccessKey: config.AWS.secretAccessKey
+});
 s3 = new AWS.S3();
 
 /* Create bucket if not existing */

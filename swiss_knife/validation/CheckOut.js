@@ -1,4 +1,4 @@
-var Handle = require('../responses/HttpResponseHandlers.js');
+var Handle = require('../response/HttpResponseHandlers.js');
 
 var Caja = require('./GoogleCaja.js');
 var authState = config.authDefault;

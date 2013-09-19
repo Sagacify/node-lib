@@ -11,7 +11,7 @@ var transport = nodemailer.createTransport('SES', {
 	//ServiceUrl: 'https://email.us-east-1.amazonaws.com' // optional
 });
 
-console.log('SES Configured');
+setupInfo('SES Configured');
 
 exports.sendMessage = function (data, template, callback) {
 	exports.generateMail(data, template, function (e, message) {

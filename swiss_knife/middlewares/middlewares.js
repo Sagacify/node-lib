@@ -1,4 +1,4 @@
-var develop = require('./develop');
+var develop = require('../../develop');
 
 exports.generateFromURI = function(fieldsToPopulate, developOptions, callback){
 	return function(req, res) {

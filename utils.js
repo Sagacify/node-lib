@@ -1,4 +1,4 @@
-var utilsPaths = ["./slug", "./middlewares"];
+var utilsPaths = ["./slug", "./swiss_knife/middlewares/middlewares"];
 
 utilsPaths.forEach(function(path){
 	var elem = require(path);
