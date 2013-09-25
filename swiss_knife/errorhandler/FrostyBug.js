@@ -14,12 +14,7 @@ function emitEvent(event, data) {
 EventEmitter.on('FrostyBug', function(args) {
 	if(_NODE_ENV !== 'production') {
 		var error = args.msg;
-		if(error instanceof Error) {
-			consoleError(error.stack);
-		}
-		else {
-			consoleError(error);
-		}
+		consoleError(error);
 	}
 	if(_NODE_ENV !== 'development') {
 		if(args && (args.length > 0)) {
@@ -32,11 +27,11 @@ EventEmitter.on('FrostyBug', function(args) {
 	}
 });
 
-/*var NativeError = Error;
-Error = function Error (arg) {
-	EventEmitter.emit('FrostyBug', { msg: arguments });
-	return new NativeError();
-};*/
+// var NativeError = Error;
+// Error = function Error (arg) {
+// 	EventEmitter.emit('FrostyBug', { msg: arguments });
+// 	return new NativeError();
+// };
 
 process.on('uncaughtException', function(err) {
 	emitEvent('FrostyBug', { msg: err });

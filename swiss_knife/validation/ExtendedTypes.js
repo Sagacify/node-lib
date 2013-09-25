@@ -117,5 +117,9 @@ exports.mongo_ObjectId_hex = function () {
 };
 
 exports.cajaData = function () {
-	return Caja.escape(this);
+	return Caja.escape(this.str);
+};
+
+exports.lenInferiorTo = function (maxLen) {
+	return this.str.length < maxLen;
 };

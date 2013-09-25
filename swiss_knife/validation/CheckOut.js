@@ -3,17 +3,27 @@ var mpath = require('mpath');
 var authState = config.authDefault;
 var sanitizeState = config.escapeDefault;
 
+var SGError = require('../errorhandler/SagaError');
+
 var validatorInstance = require('./Validator.js');
 var check = validatorInstance.check;
 
 var sanitizerInstance = require('./Sanitizer.js');
 var sanitize = sanitizerInstance.sanitize;
 
+var methodName = 'lenInferiorTo';
+var methodNameLen = methodName.length;
+
 function applyToEle (value, conditions) {
 	var condition;
+	var arg;
 	for(var i = 0, len = conditions.length; i < len; i++) {
 		condition = conditions[i];
-		if(!validatorInstance.check(value)[condition]()) {
+		if(condition.substr(0, methodNameLen) === methodName) {
+			arg = condition.replace(methodName, '');
+			condition = methodName;
+		}
+		if(!validatorInstance.check(value)[condition](arg)) {
 			return false;
 		}
 	}
@@ -56,7 +66,7 @@ function handleRequest (callback, args, caja, req, res, next) {
 		isOptional = (conditions.length >= 1) && /optional/i.test(conditions[0]);
 		isPresent = !hasUndefined(argument);
 		if(!isPresent && !isOptional) {
-			return res.send(401);
+			return res.SGsend(new SGError('Validation', 400, 'Validation failed'));
 		}
 		else {
 			if(isOptional) {
@@ -64,7 +74,7 @@ function handleRequest (callback, args, caja, req, res, next) {
 			}
 			value = !isPresent ? null : applyAllConditions(argument, conditions);
 			if(value === false) {
-				return res.send(401);
+				return res.SGsend(new SGError('Validation', 400, 'Validation failed'));
 			}
 			else  {
 				additionalArgs.push(value);
