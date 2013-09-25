@@ -1,6 +1,6 @@
 var LogicLib = require('../logic/forgot_password-logic');
 var Verbose = require('../../../../config/verbose_errors.json');
-var Mailer = require('../tools/Mailer');
+var Mailer = require('../../mail/Mailer');
 
 var state = config.state.validated;
 

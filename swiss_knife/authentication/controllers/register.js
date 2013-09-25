@@ -1,6 +1,6 @@
 var LogicLib = require('../logic/register-basic');
 var Verbose = require('../../../../config/verbose_errors.json');
-var Mailer = require('../tools/Mailer');
+var Mailer = require('../../mail/Mailer');
 
 module.exports = function (app) {
 

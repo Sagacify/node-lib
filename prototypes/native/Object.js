@@ -70,6 +70,14 @@ Object.prototype.isArray = function(){
 	return Object.prototype.toString.call(this) === '[object Array]';
 };
 
+Object.prototype.isString = function(){
+	return Object.prototype.toString.call(this) === '[object String]';
+};
+
+Object.prototype.isNullOrUndefined = function(){
+	return this == null;
+};
+
 Object.prototype.isFunction = function(){
 	return Object.prototype.toString.call(this) === '[object Function]';
 };
