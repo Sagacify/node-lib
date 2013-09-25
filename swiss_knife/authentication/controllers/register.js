@@ -1,6 +1,7 @@
 var LogicLib = require('../logic/register-basic');
 var Verbose = require('../../../../config/verbose_errors.json');
 var Mailer = require('../../mail/Mailer');
+var SGError = require('../../errorhandler/SagaError');
 
 module.exports = function (app) {
 
@@ -12,14 +13,17 @@ module.exports = function (app) {
 	}, { auth: false, sanitize: true }, function (email, password, username, name, req, res) {
 		LogicLib.process(email, password, username, name, function (error, token, user) {
 			if(error) {
-				console.log(error.error);
-				res.send({
-					msg: Verbose[error.msg]
-				});
+				res.SGsend(new SGError(error.error || Verbose[error.msg]));
 			}
 			else {
-				Mailer.send_VerficationMail(token, user);
-				res.send(200);
+				Mailer.send_VerficationMail(token, user, function (error) {
+					if(error) {
+						res.SGsend(new SGError(error));
+					}
+					else {
+						res.SGsend(200);
+					}
+				});
 			}
 		});
 	});

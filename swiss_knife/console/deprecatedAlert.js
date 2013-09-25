@@ -20,6 +20,8 @@ exports.setupInfo = function (modulename) {
 exports.consoleError = function (error) {
 	var red = colors.red;
 	var reset = colors.reset;
-	console.log(red + message + error + reset);
+	console.log(red);
+	console.log(error);
+	console.log(reset);
 	(_NODE_ENV === 'development') && process.exit(1);
 };

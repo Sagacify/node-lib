@@ -1,6 +1,7 @@
 var LogicLib = require('../logic/forgot_password-logic');
 var Verbose = require('../../../../config/verbose_errors.json');
 var Mailer = require('../../mail/Mailer');
+var SGError = require('../../errorhandler/SagaError');
 
 var state = config.state.validated;
 
@@ -11,12 +12,17 @@ module.exports = function (app) {
 	}, { auth: false, sanitize: true }, function (email, req, res) {
 		LogicLib.process(email, state, function (error, token, user) {
 			if(error) {
-				console.log(error.error);
-				res.send({ msg: Verbose[error.msg] });
+				res.SGsend(new SGError(error.error || Verbose[error.msg]));
 			}
 			else {
-				Mailer.send_PasswordResetMail(token, user);
-				res.send(200);
+				Mailer.send_PasswordResetMail(token, user, function (error) {
+					if(error) {
+						res.SGsend(new SGError(error));
+					}
+					else {
+						res.SGsend(200);
+					}
+				});
 			}
 		});
 	});

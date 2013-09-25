@@ -26,7 +26,7 @@ exports.sendMessage = function (data, template, callback) {
 					callback(e);
 				} else {
 					console.log('Message sent successfully!');
-					callback();
+					callback(null);
 				}
 			});
 		}
@@ -98,20 +98,20 @@ exports.getSubject = function (mailTemplate) {
 	return fs.readFileSync(dirname + '/subject.txt', 'utf8');
 };
 
-exports.send_VerficationMail = function (token, user) {
+exports.send_VerficationMail = function (token, user, callback) {
 	var url = '/auth/validate/validToken/';
 	var validationLink = config.hostname + url + token;
 	exports.sendMessage({
 		to: user,
 		link: validationLink
-	}, 'validation_mail', null);
+	}, 'validation_mail', callback);
 };
 
-exports.send_PasswordResetMail = function (token, user) {
+exports.send_PasswordResetMail = function (token, user, callback) {
 	var url = '/auth/auth/new_password/';
 	var validationLink = config.hostname + url + token;
 	exports.sendMessage({
 		to: user,
 		link: validationLink
-	}, 'reset_password_mail', null);
+	}, 'reset_password_mail', callback);
 };

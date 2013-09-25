@@ -1,6 +1,7 @@
 var express = require('express');
+var SGError = require('../../swiss_knife/errorhandler/SagaError');
 
-express.response.SGsend = function(object){
+express.response.SGsend = function(object) {
 	var code;
 	var error;
 	var response;
