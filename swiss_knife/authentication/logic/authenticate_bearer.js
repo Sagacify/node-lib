@@ -1,6 +1,6 @@
 var Verbose = require('../../../../config/verbose_errors.json');
 
-var Hash = require('../tools/Hash');
+var Hash = require('../../hashing/Hash');
 var hashToken = Hash.hashToken;
 
 var UserModel = model('User');

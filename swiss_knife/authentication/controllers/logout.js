@@ -1,5 +1,6 @@
 var LogicLib = require('../logic/logout-logic');
 var Verbose = require('../../../../config/verbose_errors.json');
+var SGError = require('../../errorhandler/SagaError');
 
 var state = config.state.validated;
 
@@ -9,13 +10,10 @@ module.exports = function (app) {
 		var userid = req.user.id;
 		LogicLib.process(userid, state, function (error) {
 			if(error) {
-				console.log(error.error);
-				res.send({
-					msg: Verbose[error.msg]
-				});
+				res.SGsend(new SGError(error.error || Verbose[error.msg]));
 			}
 			else {
-				res.send(200);
+				res.SGsend(200);
 			}
 		});
 	});

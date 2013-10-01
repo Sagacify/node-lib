@@ -1,4 +1,4 @@
-var Hash = require('../tools/Hash');
+var Hash = require('../../hashing/Hash');
 var hashToken = Hash.hashToken;
 var compareHash = Hash.compareHash;
 var generateToken = Hash.generateToken;

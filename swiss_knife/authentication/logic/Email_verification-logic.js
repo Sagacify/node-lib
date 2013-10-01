@@ -1,4 +1,4 @@
-var Hash = require('../tools/Hash');
+var Hash = require('../../hashing/Hash');
 var UserModel = model('User');
 
 exports.process = function (userid, password, token, state, callback) {

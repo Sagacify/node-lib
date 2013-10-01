@@ -20,6 +20,24 @@ exports.setupInfo = function (modulename) {
 exports.consoleError = function (error) {
 	var red = colors.red;
 	var reset = colors.reset;
-	console.log(red + message + error + reset);
-	(_NODE_ENV === 'development') && process.exit(1);
+	console.log(red);
+	if(error instanceof Error) {
+		console.log(error.stack);
+		console.log(reset);
+		(_NODE_ENV === 'development') && process.exit(1);
+	}
+	else if(error.constructor.name === 'SGError') {
+		console.log('Type : ' + error.type);
+		console.log('Verbose : ' + error.verbose);
+		console.log(error.stack);
+		console.log(reset);
+	}
+	else if('stack' in error) {
+		console.log(error.stack);
+		console.log(reset);
+	}
+	else {
+		console.log(error);
+		console.log(reset);
+	}
 };

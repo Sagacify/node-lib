@@ -1,5 +1,6 @@
 var LogicLib = require('../logic/change_password-logic');
 var Verbose = require('../../../../config/verbose_errors.json');
+var SGError = require('../../errorhandler/SagaError');
 
 var state = config.state.validated;
 
@@ -12,13 +13,10 @@ module.exports = function (app) {
 		var userid = req.user._id;
 		LogicLib.process(userid, password, new_password, state, function (error, token) {
 			if(error) {
-				console.log(error.error);
-				res.send({
-					msg: Verbose[error.msg]
-				});
+				res.SGsend(new SGError(error.error || Verbose[error.msg]));
 			}
 			else {
-				res.send({ token: token });
+				res.SGsend({ token: token });
 			}
 		});
 	});

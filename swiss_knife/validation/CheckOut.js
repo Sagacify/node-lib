@@ -1,8 +1,9 @@
-var Handle = require('../response/HttpResponseHandlers.js');
+var mpath = require('mpath');
 
-var Caja = require('./GoogleCaja.js');
 var authState = config.authDefault;
 var sanitizeState = config.escapeDefault;
+
+var SGError = require('../errorhandler/SagaError');
 
 var validatorInstance = require('./Validator.js');
 var check = validatorInstance.check;
@@ -10,81 +11,78 @@ var check = validatorInstance.check;
 var sanitizerInstance = require('./Sanitizer.js');
 var sanitize = sanitizerInstance.sanitize;
 
-function applyAllConditions(value, conditions) {
+var methodName = 'lenInferiorTo';
+var methodNameLen = methodName.length;
+
+function applyToEle (value, conditions) {
 	var condition;
-	var isValid;
+	var arg;
 	for(var i = 0, len = conditions.length; i < len; i++) {
 		condition = conditions[i];
-		if(!validatorInstance.check(value)[condition]()) {
-			isValid = false;
-			break;
+		if(condition.substr(0, methodNameLen) === methodName) {
+			arg = condition.replace(methodName, '');
+			condition = methodName;
+		}
+		if(!validatorInstance.check(value)[condition](arg)) {
+			return false;
 		}
 	}
-	return isValid === false ? isValid : value;
+	return value;
 }
 
-function handleQueryArgs (req, key) {
-	return req.query[key] || undefined;
+function applyAllConditions (obj, conditions) {
+	return (obj == null) || !obj.isArray() ? applyToEle(obj, conditions) : obj.reduce(function (a, b) {
+		return a && applyToEle(b, conditions);
+	}, true);
 }
 
-function handleBodyArgs (req, key) {
-	return req.body[key] || undefined;
-}
-
-function handleParameterElement (req, key) {
-	return req.params[key] || undefined;
+function hasUndefined (obj) {
+	if(obj == undefined) {
+		return true;
+	}
+	else if(obj.isArray()) {
+		return obj.reduce(function (a, b) {
+			return a && (b != undefined);
+		}, true);
+	}
+	else {
+		return false;
+	}
 }
 
 function handleRequest (callback, args, caja, req, res, next) {
 	var keys = Object.keys(args);
 	var additionalArgs = [];
+	var isOptional;
 	var conditions;
+	var isPresent;
 	var argument;
-	var splitkey;
-	var escaped;
 	var value;
-	var prop;
 	var key;
 	for(var i = 0, len = keys.length; i < len; i++) {
 		key = keys[i];
-		splitkey = key.split('.');
-		if(splitkey.length !== 2) {
-			return Handle.missingQueryElement(res);
+		conditions = args[key].concat(caja ? ['cajaData'] : []);
+		argument = mpath.get(key, req);
+		isOptional = (conditions.length >= 1) && /optional/i.test(conditions[0]);
+		isPresent = !hasUndefined(argument);
+		if(!isPresent && !isOptional) {
+			return res.SGsend(new SGError('Validation', 400, 'Validation failed'));
 		}
-		else if(splitkey[0] === 'query') {
-			prop = splitkey[1];
-			argument = handleQueryArgs(req, prop);
-			if(argument === undefined) {
-				return Handle.missingQueryElement(res);
+		else {
+			if(isOptional) {
+				conditions.splice(0, 1);
 			}
-		}
-		else if(splitkey[0] === 'body') {
-			prop = splitkey[1];
-			argument = handleBodyArgs(req, prop);
-			if(argument === undefined) {
-				return Handle.missingParams(res);
+			value = !isPresent ? null : applyAllConditions(argument, conditions);
+			if(value === false) {
+				return res.SGsend(new SGError('Validation', 400, 'Validation failed'));
 			}
-		}
-		else if(splitkey[0] === 'params') {
-			prop = splitkey[1];
-			argument = handleParameterElement(req, prop);
-			if(argument === undefined) {
-				return Handle.missingParams(res);
+			else  {
+				additionalArgs.push(value);
 			}
-		}
-		conditions = args[key];
-		value = applyAllConditions(argument, conditions);
-		console.log(argument + ' -> ' + !!value);
-		if(value === false) {
-			return Handle.validationFail(res);
-		}
-		else  {
-			escaped = (caja === false) ? value : Caja.escape(value);
-			additionalArgs.push(escaped);
 		}
 	}
-	//var argsToArray = Array.apply(null, arguments);
-	var argsToArray = [req, res, next]; // find better way to do this
+	var argsToArray = Array.apply(null, arguments);
+	argsToArray.splice(0, 3);
 	var newArguments = additionalArgs.concat(argsToArray);
 	callback.apply(this, newArguments);
 }
@@ -93,7 +91,6 @@ module.exports = function (app) {
 
 	var BearerAuth = require('../authentication/logic/authenticate_bearer.js');
 	var bearerAuth = BearerAuth.process;
-	//app.use(BearerAuth.process);
 
 	var _get = function (uri, args, options, callback) {
 		var auth;

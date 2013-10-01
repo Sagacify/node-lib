@@ -1,4 +1,4 @@
-var Hash = require('../tools/Hash');
+var Hash = require('../../hashing/Hash');
 var hashPassword = Hash.hashPassword;
 var generateToken = Hash.generateToken;
 var hashToken = Hash.hashToken;

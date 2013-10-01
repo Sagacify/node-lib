@@ -5,12 +5,15 @@
 require('./bug-model');
 
 var events = require('events');
-var EventEmitter = new events.EventEmitter();
+var EventEmitter = new events.EventEmitter();	
 
-EventEmitter.on('FrostyBug', function(err) {
+function emitEvent(event, data) {
+	EventEmitter.emit(event, data);
+}
+
+EventEmitter.on('FrostyBug', function(args) {
 	if(_NODE_ENV !== 'production') {
-		console.log(err.stack);
-		//console.log(arguments);
+		console.log(args.stack);
 	}
 	if(_NODE_ENV !== 'development') {
 		if(args && (args.length > 0)) {
@@ -44,12 +47,13 @@ EventEmitter.on('FrostyBug', function(err) {
 // };
 
 
-
-
-
+// Error = function Error (arg) {
+// 	EventEmitter.emit('FrostyBug', { msg: arguments });
+// 	return new NativeError();
+// };
 
 process.on('uncaughtException', function(err) {
-	EventEmitter.emit('FrostyBug', err);
+	emitEvent('FrostyBug', { msg: err });
 });
 
-exports.EventEmitter = EventEmitter;
+module.exports = emitEvent;
