@@ -1,51 +1,34 @@
 Object.prototype.clone = function(){
 	var clone = {};
-	var me = this;
-	this.keys().forEach(function(key){
-		if(me[key] && me[key].isObject())
-			clone[key] = me[key].clone();
-		else
-			clone[key] = me[key];
-	});
-	// for(var key in this) {
-	// 	if(typeof(this[key])=="object")
-	// 		clone[key] = this.key.clone();
- //    	else
-	// 		clone[key] = this.key;
- //  	}
+	for(var key in this) {
+		if(typeof(this[key])=="object")
+			clone[key] = this.key.clone();
+    	else
+			clone[key] = this.key;
+  	}
 	return clone;
 };
 
 Object.prototype.merge = function(obj){
-	if(obj && obj.isObject()){
-		var me = this;
-		obj.keys().forEach(function(key){
-			me[key] = obj[key];
-		});
+	for (var key in obj){
+		if(!(key in Object.prototype)){
+			try {
+				// Property in destination object set; update its value.
+				if (obj[key].constructor == Object)
+					this[key] = obj[key].merge(obj[key]);
+				else
+					this[key] = obj[key];
+			} 
+			catch(e) {
+				// Property in destination object not set; create it and set its value.
+				this[key] = obj[key];
+			}
+		}
 	}
-	// for (var key in obj){
-	// 	if(!(key in Object.prototype)){
-	// 		try {
-	// 			// Property in destination object set; update its value.
-	// 			if (obj[key].constructor == Object)
-	// 				this[key] = obj[key].merge(obj[key]);
-	// 			else
-	// 				this[key] = obj[key];
-	// 		} 
-	// 		catch(e) {
-	// 			// Property in destination object not set; create it and set its value.
-	// 			this[key] = obj[key];
-	// 		}
-	// 	}
-	// }
 	return this;
 };
 
-Object.prototype.keys = function(){
-	return Object.keys(this);
-};
-
-Object.prototype._get = function(field){
+Object.prototype.getRecursiveField = function(field){
 	var splitField = field.split('.');
 	var toReturn = this;
 	splitField.forEach(function(fieldPart){
@@ -55,7 +38,7 @@ Object.prototype._get = function(field){
 	return toReturn;
 };
 
-Object.prototype._set = function(field, value){
+Object.prototype.setRecursiveField = function(field, value){
 	var splitField = field.split('.');
 	var objToSet = this;
 	for(var i = 0; i < splitField.length-1; i++){

@@ -1,9 +1,12 @@
 mongoose.Mongoose.prototype.modelNameFromCollectionName = function(collectionName){
-	for(var key in this.models){
-		if(this.models[key].collection.name == collectionName)
-			return this.models[key].modelName;
+	if(!mongoose.modelsByCollection){
+		mongoose.modelsByCollection = {};
+		mongoose.models.keys().forEach(function(modelKey){
+			var model = mongoose.models[modelKey];
+			mongoose.modelsByCollection[model.collection.name] = modelKey;
+		});
 	}
-	return null;
+	return this.modelsByCollection[collectionName];
 };
 
 mongoose.Mongoose.prototype.collectionNameFromModelName = function(modelName){
