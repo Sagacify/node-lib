@@ -92,80 +92,50 @@ module.exports = function (app) {
 	var BearerAuth = require('../authentication/logic/authenticate_bearer.js');
 	var bearerAuth = BearerAuth.process;
 
-	var _get = function (uri, args, options, callback) {
+	function expressMethodWrapper (methodName, uri, args, options, callback) {
 		var auth;
 		var caja;
-		if(arguments.length !== 4) {
+		if(arguments.length !== 5) {
 			auth = authState;
 			caja = sanitizeState;
 		}
-		else if(arguments.length === 4) {
-			auth = !('auth'  in options) || (authState !== options.auth) ? options.auth : authState;
-			caja = !('sanitize'  in options) || (sanitizeState !== options.sanitize) ? options.sanitize : sanitizeState;
+		else if(arguments.length === 5) {
+			auth = !('auth' in options) || (authState === options.auth) ? authState : options.auth;
+			caja = !('sanitize' in options) || (sanitizeState !== options.sanitize) ? options.sanitize : sanitizeState;
 		}
-		app.get(uri, function (req, res, next) {
+		app[methodName](uri, function (req, res, next) {
 			return auth ? bearerAuth(req, res, next) : next();
 		}, function (req, res, next) {
 			handleRequest(callback, args, caja, req, res, next);
 		});
+	}
+
+
+	var _get = function (uri, args, options, callback) {
+		var argsToArray = Array.apply(null, arguments);
+		var newArguments = ['get'].concat(argsToArray);
+		expressMethodWrapper.apply(this, newArguments);
 	};
 	app.SGget = _get;
 
 	var _post = function (uri, args, options, callback) {
-		var auth;
-		var caja;
-		if(arguments.length !== 4) {
-			auth = authState;
-			caja = sanitizeState;
-		}
-		else if(arguments.length === 4) {
-			auth = !('auth'  in options) || (authState !== options.auth) ? options.auth : authState;
-			caja = !('sanitize'  in options) || (sanitizeState !== options.sanitize) ? options.sanitize : sanitizeState;
-		}
-		app.post(uri, function (req, res, next) {
-			return auth ? bearerAuth(req, res, next) : next();
-		}, function (req, res, next) {
-			handleRequest(callback, args, caja, req, res, next);
-		});
+		var argsToArray = Array.apply(null, arguments);
+		var newArguments = ['post'].concat(argsToArray);
+		expressMethodWrapper.apply(this, newArguments);
 	};
 	app.SGpost = _post;
 
 	var _delete = function (uri, args, options, callback) {
-		var auth;
-		var caja;
-		if(arguments.length !== 4) {
-			auth = authState;
-			caja = sanitizeState;
-		}
-		else if(arguments.length === 4) {
-			auth = !('auth'  in options) || (authState !== options.auth) ? authState : options.auth;
-			caja = !('sanitize'  in options) || (sanitizeState !== options.sanitize) ? options.sanitize : sanitizeState;
-		}
-		app.delete(uri, function (req, res, next) {
-			return auth ? bearerAuth(req, res, next) : next();
-		}, function (req, res, next) {
-			handleRequest(callback, args, caja, req, res, next);
-		});
+		var argsToArray = Array.apply(null, arguments);
+		var newArguments = ['delete'].concat(argsToArray);
+		expressMethodWrapper.apply(this, newArguments);
 	};
 	app.SGdelete = _delete;
 
 	var _put = function (uri, args, options, callback) {
-		var auth;
-		var caja;
-		if(arguments.length !== 4) {
-			auth = authState;
-			caja = sanitizeState;
-		}
-		else if(arguments.length === 4) {
-			auth = !('auth'  in options) || (authState !== options.auth) ? authState : options.auth;
-			caja = !('sanitize'  in options) || (sanitizeState !== options.sanitize) ? options.sanitize : sanitizeState;
-		}
-		app.put(uri, function (req, res, next) {
-			console.log('__PUT__');
-			return auth ? bearerAuth(req, res, next) : next();
-		}, function (req, res, next) {
-			handleRequest(callback, args, caja, req, res, next);
-		});
+		var argsToArray = Array.apply(null, arguments);
+		var newArguments = ['put'].concat(argsToArray);
+		expressMethodWrapper.apply(this, newArguments);
 	};
 	app.SGput = _put;
 

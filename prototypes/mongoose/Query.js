@@ -1,4 +1,4 @@
-var develop = require('../../develop')
+var develop = require('../../develop');
 
 mongoose.Query.prototype._exec = mongoose.Query.prototype.exec;
 

@@ -1,18 +1,19 @@
-Object.prototype.clone = function(){
+Object.prototype.clone = function () {
 	var clone = {};
-	var me = this;
-	this.keys().forEach(function(key){
-		if(me[key] && me[key].isObject())
-			clone[key] = me[key].clone();
-		else
-			clone[key] = me[key];
-	});
-	// for(var key in this) {
-	// 	if(typeof(this[key])=="object")
-	// 		clone[key] = this.key.clone();
- //    	else
-	// 		clone[key] = this.key;
- //  	}
+	var keys = Object.keys(this);
+	var i = keys.length;
+	var key;
+	while(i--) {
+		key = keys[i];
+		if(this[key] instanceof Object) {
+			console.log(this[key]);
+			clone[key] = this[key].clone();
+		}
+		else {
+			clone[key] = this[key];
+		}
+		 
+	}
 	return clone;
 };
 
@@ -89,10 +90,6 @@ Object.prototype.isArray = function(){
 
 Object.prototype.isString = function(){
 	return Object.prototype.toString.call(this) === '[object String]';
-};
-
-Object.prototype.isNullOrUndefined = function(){
-	return this == null;
 };
 
 Object.prototype.isFunction = function(){
