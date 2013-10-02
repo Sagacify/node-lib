@@ -5,6 +5,7 @@ express.response.SGsend = function(object) {
 	var code;
 	var error;
 	var response;
+	var length;
 
 	if(object instanceof SGError){
 		code = object.code;
@@ -23,12 +24,14 @@ express.response.SGsend = function(object) {
 	else{
 		code = 200;
 		response = object;
+		length = object instanceof Array?object.length:1;
 	}
 
 	this.send({
 		meta: {
 			code:code,
-			error: error
+			error: error,
+			length: length
 		},
 		response: response
 	});

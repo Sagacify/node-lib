@@ -21,11 +21,11 @@ Array.prototype.containsObject = function(_id){
 	return this.filter(function(item){return item._id == _id;}).length > 0;
 };
 
-Array.prototype.remove = function(item){
-	var index = this.indexOf(item);
-	if(index != -1)
-		this.splice(index, 1);
-};
+// Array.prototype.remove = function(item){
+// 	var index = this.indexOf(item);
+// 	if(index != -1)
+// 		this.splice(index, 1);
+// };
 
 Array.prototype.equals = function(array){
 	for(var i = 0; i < this.length; i++){
@@ -41,7 +41,7 @@ Array.prototype.diff = function(a) {
 
 var async = require('async');
 
-Array.prototype.populateDevelop = function(context, callback){
+Array.prototype.populateDevelop = function(callback){
 	var context = this.context;
 	if(this.length == 0 || !(this[0] instanceof mongoose.Document)){
 		callback(null, this);
@@ -56,8 +56,11 @@ Array.prototype.populateDevelop = function(context, callback){
 
 		var me = this;
 		var populateDevelopDocs = function(){
-			async.each(this.keys(), function(index, callback){
-				me[index].populateDevelop(context, function(err, popDevObj){
+			var indexes = me.keys();
+			indexes.splice(indexes.length-1, 1);
+			async.each(indexes, function(index, callback){
+				me[index].context = context;
+				me[index].populateDevelop(function(err, popDevObj){
 					if(!err){
 						me[index] = popDevObj;
 					}
@@ -77,4 +80,28 @@ Array.prototype.populateDevelop = function(context, callback){
 			populateDevelopDocs();
 		}
 	}
+};
+
+Array.prototype.delete = function(item){
+	if(typeof item == "function"){
+		var callback = item;
+		async.each(this, function(doc, callback){
+			doc.remove(callback);
+		}, function(err){
+			callback(err);
+		});
+	}
+	else{
+		for(var i = this.length-1; i >= 0; i--){
+			if((this[i] && this[i] instanceof mongoose.Types.ObjectId && this[i].equals(item)) || (item && item instanceof mongoose.Types.ObjectId && item.equals(this[i])) || (this[i] == item)){
+				this.splice(i, 1);
+			}
+		}
+	}
+};
+
+Array.prototype.update = function(args){
+	this.forEach(function(doc){
+		doc.update(args);
+	});
 };
