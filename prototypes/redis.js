@@ -39,11 +39,3 @@ redisClient.set = function(keyArgs, value, callback){
 	}
 	this._set(keyForArgs(keyArgs), value, callback);
 };
-
-redisClient.mhgetall = function(keys, callback){
-	var multi = this.multi();
-	keys.forEach(function(key){
-		multi.hgetall(key);
-	});
-	multi.exec(callback);
-};

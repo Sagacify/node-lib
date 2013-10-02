@@ -2,7 +2,7 @@ String.prototype.startsWith = function(str){
 	return this.slice(0, str.length) === str;
 };
 
-String.prototype.endWith = function(str){
+String.prototype.endsWith = function(str){
 	return this.slice(this.length - str.length, this.length) === str;
 };
 

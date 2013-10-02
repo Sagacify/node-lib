@@ -72,7 +72,7 @@ express.request.getFindParams = function(model){
 	return findParams;
 };
 
-exports.getFindQuery = function(model, fieldsToPopulate, additionalParams){
+express.request.getFindQuery = function(model, fieldsToPopulate, additionalParams){
 	var findParams = this.getQueryParamsFromRequest(model);
 
 	if(additionalParams) {

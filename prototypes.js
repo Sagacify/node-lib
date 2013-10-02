@@ -1,6 +1,8 @@
-require('./prototypes/native/Array');
-require('./prototypes/native/Date');
-require('./prototypes/native/String');
+require('./prototypes/native/array');
+require('./prototypes/native/date');
+require('./prototypes/native/string');
+require('./prototypes/native/function')
 require('./prototypes/mongoose');
+//require('./prototypes/native/object');
 require('./prototypes/express');
 require('./prototypes/redis/redis');
