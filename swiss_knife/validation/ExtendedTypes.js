@@ -72,10 +72,6 @@ function isLowerHexadecimal () {
 	return str.match(/^[0-9a-f]+$/);
 }
 
-function isWebBase64 () {
-	return str.match(/^[0-9a-zA-Z\-_]+$/);
-}
-
 function isBase64 (str, isWeb) {
 	return isWeb ? str.match(/^[0-9a-zA-Z\-\_]+$/) : str.match(/^[0-9a-zA-Z\+\/]+$/);
 }
