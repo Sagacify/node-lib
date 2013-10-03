@@ -5,7 +5,7 @@
 require('./bug-model');
 
 var events = require('events');
-var EventEmitter = new events.EventEmitter();	
+var EventEmitter = new events.EventEmitter();
 
 function emitEvent(event, data) {
 	EventEmitter.emit(event, data);
@@ -13,7 +13,7 @@ function emitEvent(event, data) {
 
 EventEmitter.on('FrostyBug', function(args) {
 	if(_NODE_ENV !== 'production') {
-		console.log(args.stack);
+		consoleError(args.stack || args.msg);
 	}
 	if(_NODE_ENV !== 'development') {
 		if(args && (args.length > 0)) {
