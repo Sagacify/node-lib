@@ -1,4 +1,5 @@
 var mpath = require('mpath');
+var requestHandler = require('../../request_handler/request_handler');
 
 var authState = config.authDefault;
 var sanitizeState = config.escapeDefault;
@@ -13,6 +14,8 @@ var sanitize = sanitizerInstance.sanitize;
 
 var methodName = 'lenInferiorTo';
 var methodNameLen = methodName.length;
+
+var apiRecorder = require('../../model_share/api_recorder');
 
 function applyToEle (value, conditions) {
 	var condition;
@@ -62,7 +65,7 @@ function handleRequest (callback, args, caja, req, res, next) {
 	for(var i = 0, len = keys.length; i < len; i++) {
 		key = keys[i];
 		conditions = args[key].concat(caja ? ['cajaData'] : []);
-		argument = mpath.get(key, req);
+		argument = mpath.get(key, req.mixin);
 		isOptional = (conditions.length >= 1) && /optional/i.test(conditions[0]);
 		isPresent = !hasUndefined(argument);
 		if(!isPresent && !isOptional) {
@@ -92,47 +95,58 @@ module.exports = function (app) {
 	var BearerAuth = require('../authentication/logic/authenticate_bearer.js');
 	var bearerAuth = BearerAuth.process;
 
-	function expressMethodWrapper (methodName, uri, args, options, callback) {
-		var auth;
-		var caja;
-		if(arguments.length !== 5) {
-			auth = authState;
-			caja = sanitizeState;
+	function expressMethodWrapper (methodName, uri, options, callback) {
+		if(arguments.length == 3){
+			callback = options;
+			options = {};
 		}
-		else if(arguments.length === 5) {
-			auth = !('auth' in options) || (authState === options.auth) ? authState : options.auth;
-			caja = !('sanitize' in options) || (sanitizeState !== options.sanitize) ? options.sanitize : sanitizeState;
+
+		if(typeof callback != "function"){
+			callback = requestHandler.handle(callback);
 		}
+
+		apiRecorder.addRoute(methodName, uri, {});
+
+		var auth = ('auth' in options)?options.auth:authState;
+		var caja = ('sanitize' in options)?options.sanitize:sanitizeState;
+
 		app[methodName](uri, function (req, res, next) {
 			return auth ? bearerAuth(req, res, next) : next();
 		}, function (req, res, next) {
-			handleRequest(callback, args, caja, req, res, next);
+			var filter = {};
+			req.query.keys().forEach(function(queryKey){
+				if(req.query[queryKey] != "offset" && req.query[queryKey] != "limit" && req.query[queryKey] != "sort")
+					filter[queryKey] = req.query[queryKey];
+			});
+			req.mixin = req.params.clone().merge(req.body).merge({paginate:{offset:req.query.offset, limit:req.query.limit}, sort:req.query.sort, filter:filter});
+
+			handleRequest(callback, options.validation||{}, caja, req, res, next);
 		});
 	}
 
 
-	var _get = function (uri, args, options, callback) {
+	var _get = function (uri, options, callback) {
 		var argsToArray = Array.apply(null, arguments);
 		var newArguments = ['get'].concat(argsToArray);
 		expressMethodWrapper.apply(this, newArguments);
 	};
 	app.SGget = _get;
 
-	var _post = function (uri, args, options, callback) {
+	var _post = function (uri, options, callback) {
 		var argsToArray = Array.apply(null, arguments);
 		var newArguments = ['post'].concat(argsToArray);
 		expressMethodWrapper.apply(this, newArguments);
 	};
 	app.SGpost = _post;
 
-	var _delete = function (uri, args, options, callback) {
+	var _delete = function (uri, options, callback) {
 		var argsToArray = Array.apply(null, arguments);
 		var newArguments = ['delete'].concat(argsToArray);
 		expressMethodWrapper.apply(this, newArguments);
 	};
 	app.SGdelete = _delete;
 
-	var _put = function (uri, args, options, callback) {
+	var _put = function (uri, options, callback) {
 		var argsToArray = Array.apply(null, arguments);
 		var newArguments = ['put'].concat(argsToArray);
 		expressMethodWrapper.apply(this, newArguments);

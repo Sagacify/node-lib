@@ -1,12 +1,6 @@
 mongoose.Mongoose.prototype.modelNameFromCollectionName = function(collectionName){
-	if(!mongoose.modelsByCollection){
-		mongoose.modelsByCollection = {};
-		mongoose.models.keys().forEach(function(modelKey){
-			var model = mongoose.models[modelKey];
-			mongoose.modelsByCollection[model.collection.name] = modelKey;
-		});
-	}
-	return this.modelsByCollection[collectionName];
+	
+	return this.getModelsByCollection()[collectionName];
 };
 
 mongoose.Mongoose.prototype.collectionNameFromModelName = function(modelName){
@@ -15,3 +9,14 @@ mongoose.Mongoose.prototype.collectionNameFromModelName = function(modelName){
 	else
 		return null;
 }
+
+mongoose.getModelsByCollection = function(){
+	if(!mongoose.modelsByCollection){
+		mongoose.modelsByCollection = {};
+		mongoose.models.keys().forEach(function(modelKey){
+			var model = mongoose.models[modelKey];
+			mongoose.modelsByCollection[model.collection.name] = modelKey;
+		});
+	}
+	return mongoose.modelsByCollection;
+};

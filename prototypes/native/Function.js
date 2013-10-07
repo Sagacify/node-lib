@@ -10,13 +10,27 @@ Function.prototype.getParamNames = function(){
 
 Function.prototype.hasCallback = function(){
 	var paramNames = this.getParamNames();
-	return paramNames.contains('callback');
+	return paramNames.last() == 'callback';
 };
 
-Function.prototype._apply = function(thisArg, argsObject){
+Function.prototype._apply = function(thisArg, argsObject, callback){
 	var argsArray = [];
+	var hasCallback = false;
 	this.getParamNames().forEach(function(paramName){
-		argsArray.push(argsObject[paramName]);
+		if(paramName == "callback"){
+			argsArray.push(callback);
+			hasCallback = true;
+		}
+		else{
+			argsArray.push(argsObject[paramName]);
+		}
 	});
-	this.apply(thisArg, argsArray);
+	if(hasCallback || !callback){
+		return this.apply(thisArg, argsArray);
+	}
+	else if(callback){
+		var ret = this.apply(thisArg, argsArray);
+		callback(null, ret);
+		return ret;
+	}
 };

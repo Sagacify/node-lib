@@ -39,42 +39,12 @@ Array.prototype.diff = function(a) {
     return this.filter(function(i) {return !(a.indexOf(i) > -1);});
 };
 
-var async = require('async');
-
-Array.prototype.populateDevelop = function(context, callback){
-	var context = this.context;
+Array.prototype.populateDevelop = function(callback){
 	if(this.length == 0 || !(this[0] instanceof mongoose.Document)){
 		callback(null, this);
 	}
 	else{
 		var model = this[0].getModel();
-		var fieldsToPopulate = model.populateOptions(context.scope).fields;
-		var fieldsToPopulateString = "";
-		fieldsToPopulate.forEach(function(fieldToPopulate){
-			fieldsToPopulateString += fieldToPopulate + " ";
-		});
-
-		var me = this;
-		var populateDevelopDocs = function(){
-			async.each(this.keys(), function(index, callback){
-				me[index].populateDevelop(context, function(err, popDevObj){
-					if(!err){
-						me[index] = popDevObj;
-					}
-					callback(err);
-				});
-			}, function(err){
-				callback(err, me);
-			});
-		};
-
-		if(fieldsToPopulateString){
-			model.populate(this, fieldsToPopulateString, function(err, popDocs){
-				populateDevelopDocs();
-			});
-		}
-		else{
-			populateDevelopDocs();
-		}
+		model.populateDevelop.apply(this, [callback]);
 	}
 };
