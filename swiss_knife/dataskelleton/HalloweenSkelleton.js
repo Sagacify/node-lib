@@ -9,7 +9,10 @@ function isNullOrUndefined (obj) {
 }
 
 function hasLinkToModel (obj, path) {
-	return obj.type && (obj.ref in models) ? [obj.ref] + ':' + path : false;
+	return obj.type && (obj.ref in models) ? {
+		model : [obj.ref],
+		path : path
+	} : false;
 }
 
 function inspectObject (obj, path) {
@@ -37,7 +40,7 @@ function inspectArray (arr, path) {
 	var node;
 	for(var i = 0, len = arr.length; i < len; i++) {
 		value = arr[i];
-		sublink = getFieldSubLinks(value, path.length ? path + '.' + i : i) || [];
+		sublink = getFieldSubLinks(value, path.length ? path : i) || [];
 		links = links.concat(sublink);
 	}
 	return links;
@@ -58,6 +61,21 @@ function getFieldSubLinks (obj, path) {
 	}
 }
 
+function mergeLinksOfModel (arr) {
+	var result = {};
+	var obj;
+	//console.log(arr);
+	for(var i = 0, len = arr.length; i < len; i++) {
+		obj = arr[i];
+		if(!result[obj.model]) {
+			result[obj.model] = [];
+		}
+		//console.log(obj);
+		result[obj.model].push(obj.path);
+	}
+	return result;
+}
+
 exports.getSkelleton = function () {
 	var modelNames = Object.keys(models);
 	var skelleton = {};
@@ -68,7 +86,7 @@ exports.getSkelleton = function () {
 		modelName = modelNames[i];
 		schema = getSchema(modelName);
 		links = getFieldSubLinks(schema, '');
-		skelleton[modelName] = links.isArray() ? links : [];
+		skelleton[modelName] = links.isArray() ? mergeLinksOfModel(links) : [];
 	}
 	console.log(skelleton);
 };
