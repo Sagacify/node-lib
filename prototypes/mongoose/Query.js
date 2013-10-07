@@ -5,10 +5,51 @@ mongoose.Query.prototype._exec = mongoose.Query.prototype.exec;
 mongoose.Query.prototype.exec = function exec(op, callback){
 	var me = this;
 	if(this.options.populateDevelop){
-		if(this.options.cache){
-			
+		var popDev = function(err, arrDoc){
+			if(arrDoc){
+				arrDoc.context = this.options.populateDevelop.context;
+				arrDoc.populateDevelop(function(err, popDevArrDoc){
+					if(me.options.cache){
+						if(me.options.cache.list){
+							redisClient.setList(me.options.cache.list.collection, me.options.cache.list.name, devCollDoc);
+						}
+						else{
+							redisClient.setDocument(arrDoc.getModel().collection.name, arrDoc.id, me.options.populateDevelop.context.scope, devCollDoc);
+						}
+					}
+					callback(err, popDevArrDoc);
+				});
+			}
+			else{
+				callback(err);
+			}
 		}
-		redisClient.get()
+
+		if(this.options.cache){
+			if(this.options.cache.list){
+				redisClient.getList(this.options.cache.list.collection, this.options.cache.list.name, this.options.populateDevelop.context.scope, function(err, result){
+					if(result){
+						callback(null, result);
+					}
+					else{
+						me._exec(op, popDev);
+					}
+				});  
+			}
+			else{
+				redisClient.getDocument(this.model.collection.name, this._conditions._id, this.options.populateDevelop.context.scope, function(err, result){
+					if(result){
+						callback(null, result);
+					}
+					else{
+						me._exec(op, popDev);
+					}
+				});  
+			}
+		}
+		else{
+			me._exec(op, popDev);
+		}
 	}
 	else if(this.options.cache){
 
@@ -54,6 +95,7 @@ mongoose.Query.prototype.populateDevelop = function populateDevelop(context){
 
 mongoose.Query.prototype.cache = function cache(options){
 	this.options.cache = {
+		list: options.list,
 		key: options.key,
 		ttl: options.ttl||1*hour
 	};

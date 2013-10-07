@@ -1,5 +1,4 @@
 mongoose.Mongoose.prototype.modelNameFromCollectionName = function(collectionName){
-	
 	return this.getModelsByCollection()[collectionName];
 };
 

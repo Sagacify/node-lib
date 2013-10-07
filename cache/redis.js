@@ -47,3 +47,68 @@ redisClient.mhgetall = function(keys, callback){
 	});
 	multi.exec(callback);
 };
+
+redisClient.getDocument = function(collection, key, scope, callback){
+	var key;
+	if(arguments.length == 4){
+		key = collection+":"+key+":"+scope;
+	}
+	if(arguments.length == 3){
+		key = collection+":"+key;
+		callback = scope;
+	}
+	if(arguments.length == 2){
+		key = collection;
+		callback = key;
+	}
+
+	this.hgetall(key, callback);
+};
+
+redisClient.getList = function(collection, name, scope, callback){
+	var key;
+	if(arguments.length == 4){
+		key = collection+":"+name;
+	}
+	if(arguments.length == 3){
+
+	}
+	var me = this;
+	this.get(key, function(err, list){
+		if(list){
+			var scopedKeys = [];
+			for(var key in list){
+				scopedKeys.push(scope?(key+":"+scope):key);
+			}
+			me.mhgetall(scopedKeys, callback);
+		}
+		else{
+			callback(err);
+		}
+	});
+};
+
+redisClient.setDocument = function(collection, key, scope, devDoc, callback){
+	var key;
+	if(arguments.length == 5 && callback || arguments.length == 4){
+		key = collection+":"+key+":"+scope;
+	}
+	if(arguments.length == 4 && callback || arguments.length == 3){
+		key = collection+":"+key;
+		callback = scope;
+	}
+	if(arguments.length == 3 && callback || arguments.length == 2){
+		key = collection;
+		callback = key;
+	}
+	this.hmset(key, devDoc);
+};
+
+redisClient.setList = function(collection, name, callback){
+	var key;
+	if(arguments.length == 3){
+		key = collection+":"+name;
+	}
+
+	// TODO
+};
