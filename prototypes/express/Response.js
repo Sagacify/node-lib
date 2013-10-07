@@ -1,5 +1,5 @@
 var express = require('express');
-var SGError = require('../../swiss_knife/errorhandler/SagaError');
+var SGError = require('../../errorhandler/SagaError');
 
 express.response.SGsend = function(object) {
 	var code;

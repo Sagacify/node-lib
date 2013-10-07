@@ -5,7 +5,7 @@ require('../develop/model');
 */
 
 exports.handle = function(options){
-	options = options||{};
+	options = options || {};
 	return function(req, res){
 		var context = {req:req, user:req.user, scope:options.scope};
 
@@ -181,7 +181,7 @@ exports.handle = function(options){
 					}
 				}
 				//if next route part is a variable but not an id, it is used as a filter on the collection
-				else{
+				else {
 					var filter = {};
 					var key = pathPart.substring(1, urlPart.length);
 					filter[key] = urlPart;

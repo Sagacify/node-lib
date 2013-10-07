@@ -1,5 +1,5 @@
 var async = require('async');
-var HalloweenSkelleton = require('../../swiss_knife/dataskelleton/HalloweenSkelleton');
+var HalloweenSkelleton = require('../../dataskelleton/HalloweenSkelleton');
 
 mongoose.Schema.prototype.getFormattedSchema = function(options, callback){
 	//this.paths[key].validators[0][0]
@@ -84,7 +84,6 @@ var model;
 while(i--) {
 	model = models[i];
 	mongoose.models[model].schema.getSkelleton = Skelleton[model];
-	console.log(mongoose.models[model].schema.getSkelleton);
 }
 
 mongoose.models.keys().forEach(function(model){
