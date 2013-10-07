@@ -8,74 +8,85 @@ function isNullOrUndefined (obj) {
 	return obj == null;
 }
 
-function hasLinkToModel (obj) {
-	return ('ref' in obj) && ('type' in obj) && (obj.ref in models) ? [obj.ref]: false;
+function hasLinkToModel (obj, path) {
+	return obj.type && (obj.ref in models) ? {
+		model : [obj.ref],
+		path : path
+	} : false;
 }
 
-function inspectObject (obj) {
+function inspectObject (obj, path) {
 	var keys = Object.keys(obj);
 	var links = [];
 	var sublink;
 	var value;
 	var node;
 	var key;
-	for(var i = 0; i < keys.length; i++) {
+	for(var i = 0, len = keys.length; i < len; i++) {
 		key = keys[i];
 		if(obj.hasOwnProperty(key)) {
 			value = obj[key];
-			sublink = getFieldSubLinks(value) || [];
-			if(sublink.length) {
-				console.log(key);
-			}
+			sublink = getFieldSubLinks(value, path.length ? path + '.' + key : key) || [];
 			links = links.concat(sublink);
 		}
 	}
 	return links;
 }
 
-function inspectArray (arr) {
+function inspectArray (arr, path) {
 	var links = [];
 	var sublink;
 	var value;
 	var node;
-	for(var i = 0; i < arr.length; i++) {
+	for(var i = 0, len = arr.length; i < len; i++) {
 		value = arr[i];
-		sublink = getFieldSubLinks(value) || [];
-		if(sublink.length) {
-			console.log(i);
-		}
+		sublink = getFieldSubLinks(value, path.length ? path : i) || [];
 		links = links.concat(sublink);
 	}
 	return links;
 }
 
-function getFieldSubLinks (obj) {
+function getFieldSubLinks (obj, path) {
 	if(isNullOrUndefined(obj)) {
 		return false;
 	}
 	else if(obj.isObject()) {
-		console.log('-------------');
-		return hasLinkToModel(obj) || inspectObject(obj);
+		return hasLinkToModel(obj, path) || inspectObject(obj, path);
 	}
 	else if(obj.isArray()) {
-		return inspectArray(obj);
+		return inspectArray(obj, path);
 	}
 	else {
 		return false;
 	}
 }
 
+function mergeLinksOfModel (arr) {
+	var result = {};
+	var obj;
+	//console.log(arr);
+	for(var i = 0, len = arr.length; i < len; i++) {
+		obj = arr[i];
+		if(!result[obj.model]) {
+			result[obj.model] = [];
+		}
+		//console.log(obj);
+		result[obj.model].push(obj.path);
+	}
+	return result;
+}
+
 exports.getSkelleton = function () {
 	var modelNames = Object.keys(models);
 	var skelleton = {};
 	var modelName;
-	var links;
 	var schema;
+	var links;
 	for(var i = 0; i < modelNames.length; i++) {
 		modelName = modelNames[i];
 		schema = getSchema(modelName);
-		links = getFieldSubLinks(schema);
-		skelleton[modelName] = links.isArray() ? links : [];
+		links = getFieldSubLinks(schema, '');
+		skelleton[modelName] = links.isArray() ? mergeLinksOfModel(links) : [];
 	}
 	console.log(skelleton);
 };
