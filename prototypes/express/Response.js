@@ -26,15 +26,21 @@ express.response.SGsend = function(object) {
 		response = object;
 		length = object instanceof Array?object.length:1;
 	}
-
-	this.send({
-		meta: {
-			code:code,
-			error: error,
-			length: length
-		},
-		response: response
-	});
+	
+	if(code == 200){
+		this.send(response);
+	}
+	else{
+		this.send(code, error);
+	}
+	// this.send({
+	// 	meta: {
+	// 		code:code,
+	// 		error: error,
+	// 		length: length
+	// 	},
+	// 	response: response
+	// });
 };
 
 express.response.handle = function(){

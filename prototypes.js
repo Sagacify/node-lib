@@ -5,4 +5,3 @@ require('./prototypes/native/function')
 require('./prototypes/mongoose');
 //require('./prototypes/native/object');
 require('./prototypes/express');
-require('./prototypes/redis/redis');

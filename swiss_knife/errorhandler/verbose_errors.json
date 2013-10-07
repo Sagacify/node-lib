@@ -1,4 +1,3 @@
 {
-	"ERROR_WHILE_SEARCHING_DB": [500, "Oops, something went wrong. Please try again."],
-	"USER_IN_WRONG_AUTHORIZATION_STATE": [500, "It seems you have not been following the correct account validation process. Could you please try again?"]
+	"ERROR_TYPE": [600, "Oops, something went wrong. Please try again."]
 }

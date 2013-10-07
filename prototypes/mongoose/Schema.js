@@ -1,7 +1,10 @@
 var async = require('async');
 
-mongoose.Schema.prototype.getFormattedSchema = function(callback){
+mongoose.Schema.prototype.getFormattedSchema = function(options, callback){
 	//this.paths[key].validators[0][0]
+	if(arguments.length == 1 && typeof options == "function")
+		callback = options;
+
 	var me = this;
 	var getFormattedSchemaElement = function(schemaElement, callback){
 		if(schemaElement.tree){
@@ -36,7 +39,7 @@ mongoose.Schema.prototype.getFormattedSchema = function(callback){
 			});
 		}
 		else if(schemaElement.ref){
-			callback(null, {type:schemaElement.ref}); 
+			callback(null, {type:schemaElement.ref});
 		}
 		else if(schemaElement.name){
 			callback(null, {type:schemaElement.name});
@@ -68,7 +71,7 @@ mongoose.Schema.prototype.getFormattedSchema = function(callback){
 	}
 
 	if(this.formattedSchema)
-		callback(null, formattedSchema);
+		callback(null, this.formattedSchema);
 	else
 		getFormattedSchemaElement(this, callback);
 };
