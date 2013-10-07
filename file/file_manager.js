@@ -1,5 +1,5 @@
 var AWS = require('aws-sdk');
-var ct = require('./mimetypes/content_type');
+var ct = require('../mimetypes/content_type');
 var uuid = require('node-uuid');
 
 /* Create AWS environement */

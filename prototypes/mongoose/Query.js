@@ -1,5 +1,3 @@
-var develop = require('../../develop');
-
 mongoose.Query.prototype._exec = mongoose.Query.prototype.exec;
 
 mongoose.Query.prototype.exec = function exec(op, callback){
