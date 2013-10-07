@@ -1,4 +1,5 @@
 var async = require('async');
+var HalloweenSkelleton = require('../../swiss_knife/dataskelleton/HalloweenSkelleton');
 
 mongoose.Schema.prototype.getFormattedSchema = function(callback){
 	//this.paths[key].validators[0][0]
@@ -73,6 +74,15 @@ mongoose.Schema.prototype.getFormattedSchema = function(callback){
 		getFormattedSchemaElement(this, callback);
 };
 
+var Skelleton = HalloweenSkelleton.getSkelleton();
+var models = Object.keys(mongoose.models);
+var i = models.length;
+var model;
+while(i--) {
+	model = models[i];
+	mongoose.models[model].schema.getSkelleton = Skelleton[model];
+	console.log(mongoose.models[model].schema.getSkelleton);
+}
 
 mongoose.models.keys().forEach(function(model){
 	mongoose.models[model].schema.getFormattedSchema(function(err, fs){});

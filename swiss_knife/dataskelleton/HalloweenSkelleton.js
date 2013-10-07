@@ -64,13 +64,11 @@ function getFieldSubLinks (obj, path) {
 function mergeLinksOfModel (arr) {
 	var result = {};
 	var obj;
-	//console.log(arr);
 	for(var i = 0, len = arr.length; i < len; i++) {
 		obj = arr[i];
 		if(!result[obj.model]) {
 			result[obj.model] = [];
 		}
-		//console.log(obj);
 		result[obj.model].push(obj.path);
 	}
 	return result;
