@@ -1,1 +1,1 @@
-require('develop');
+require('./model');

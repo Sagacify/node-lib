@@ -27,13 +27,20 @@ exports.handle = function(options){
 		var collectionName = splitPath.popFirst();
 		splitUrl.popFirst();
 		var model = mongoose.model(mongoose.modelNameFromCollectionName(collectionName));
-		model.context = context;
+		Object.defineProperty(model, "context", {
+			writable: true,
+			value: context
+		});
 
 		var callback = function(err, collDoc){
 			if(!err){
 				if(collDoc && typeof collDoc.populateDevelop == "function"){
-					if(!collDoc.context)
-						collDoc.context = context;
+					if(!collDoc.context){
+						Object.defineProperty(collDoc, "context", {
+							writable: true,
+							value: context
+						});
+					}
 					collDoc.populateDevelop(function(err, devCollDoc){
 						//cache if in options
 						if(cache){
@@ -66,14 +73,20 @@ exports.handle = function(options){
 				}
 				//create directly in collection
 				else if(req.method == "POST"){
-					model.create(req.body.doc, callback);
+					model.create(req.body, callback);
+				}
+				else{
+					callback(new SGError());
 				}
 			}
 			else{
 				var collDoc = model;
 				var popCollDoc = function(){
 					if(collDoc){
-						collDoc.context = context;
+						Object.defineProperty(collDoc, "context", {
+							writable: true,
+							value: context
+						});
 					}
 					//stop routing
 					if(splitPath.length == 0 || !collDoc || (collDoc instanceof Array && collDoc.length == 0)){
@@ -194,7 +207,7 @@ exports.handle = function(options){
 							popCollDoc();
 						}
 						else if(collDoc.name == "model"){
-							if(splitPath.length == 0){
+							if(req.method == "GET" && splitPath.length == 0 && cache){
 								collDoc.findById(urlPart).populateDevelop(context).cache(cache).exec(callback);
 							}
 							else{
