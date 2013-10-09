@@ -27,6 +27,8 @@ express.response.SGsend = function(object) {
 		length = object instanceof Array?object.length:1;
 	}
 	
+	console.log('RESPONSE');
+	console.log(response);
 	if(code == 200){
 		this.send(response);
 	}
