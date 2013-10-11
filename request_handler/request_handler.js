@@ -82,7 +82,7 @@ exports.handle = function(options){
 			else{
 				var collDoc = model;
 				var popCollDoc = function(){
-					if(collDoc){
+					if(collDoc && collDoc instanceof Object){
 						Object.defineProperty(collDoc, "context", {
 							writable: true,
 							value: context
@@ -158,15 +158,22 @@ exports.handle = function(options){
 							}
 							//follow route by getting next doc or coll
 							else{
-								caller.get.apply(collDoc, [urlPart, function(err, cd){
-									if(!err){
-										collDoc = cd;
-										popCollDoc();
-									}
-									else{
-										callback(err);
-									}
-								}]);
+								//normal dictionary
+								if(!caller.get){
+									collDoc = caller[urlPart];
+									popCollDoc();
+								}
+								else{
+									caller.get.apply(collDoc, [urlPart, function(err, cd){
+										if(!err){
+											collDoc = cd;
+											popCollDoc();
+										}
+										else{
+											callback(err);
+										}
+									}]);
+								}
 							}
 						}
 						
