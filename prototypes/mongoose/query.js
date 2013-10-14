@@ -5,7 +5,7 @@ mongoose.Query.prototype.exec = function exec(op, callback){
 	if(this.options.populateDevelop){
 		var popDev = function(err, arrDoc){
 			if(arrDoc){
-				arrDoc.context = this.options.populateDevelop.context;
+				arrDoc.context = me.options.populateDevelop.context;
 				arrDoc.populateDevelop(function(err, popDevArrDoc){
 					if(me.options.cache){
 						if(me.options.cache.list){
@@ -15,11 +15,11 @@ mongoose.Query.prototype.exec = function exec(op, callback){
 							redisClient.setDocument(arrDoc.getModel().collection.name, arrDoc.id, me.options.populateDevelop.context.scope, devCollDoc);
 						}
 					}
-					callback(err, popDevArrDoc);
+					op(err, popDevArrDoc);
 				});
 			}
 			else{
-				callback(err);
+				op(err);
 			}
 		}
 
@@ -30,7 +30,7 @@ mongoose.Query.prototype.exec = function exec(op, callback){
 						callback(null, result);
 					}
 					else{
-						me._exec(op, popDev);
+						me._exec(popDev, callback);
 					}
 				});  
 			}
@@ -40,13 +40,13 @@ mongoose.Query.prototype.exec = function exec(op, callback){
 						callback(null, result);
 					}
 					else{
-						me._exec(op, popDev);
+						me._exec(popDev, callback);
 					}
 				});  
 			}
 		}
 		else{
-			me._exec(op, popDev);
+			me._exec(popDev, callback);
 		}
 	}
 	else if(this.options.cache){
@@ -92,11 +92,13 @@ mongoose.Query.prototype.populateDevelop = function populateDevelop(context){
 };
 
 mongoose.Query.prototype.cache = function cache(options){
-	this.options.cache = {
-		list: options.list,
-		key: options.key,
-		ttl: options.ttl||1*hour
-	};
+	if(options){
+		this.options.cache = {
+			list: options.list,
+			key: options.key,
+			ttl: options.ttl||1*hour
+		};
+	}
 	return this;
 };
 

@@ -16,7 +16,7 @@ mongoose.Model.populateDevelop = function(callback){
 		var me = this;
 		var populateDevelopDocs = function(){
 			var indexes = me.keys();
-			indexes.splice(indexes.length-1, 1);
+			//indexes.splice(indexes.length-1, 1);
 			async.each(indexes, function(index, callback){
 				me[index].context = context;
 				me[index].populateDevelop(function(err, popDevObj){

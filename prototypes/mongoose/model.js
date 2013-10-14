@@ -76,30 +76,49 @@ mongoose.Model.prototype.do = function(action, params, callback){
 
 mongoose.Model.prototype._set = mongoose.Model.prototype.set;
 
-mongoose.Model.prototype.set = function set(path, val, type, options){
-	console.log(path)
+mongoose.Model.prototype.set = function set(path, val, type, options, callback){
 	if(path && path.isObject()){
 		var me = this;
-		path.keys().forEach(function(key){
-			me.set(key, path[key]);
+		if(!callback && typeof val == "function")
+			callback = val;
+		async.each(path.keys(), function(key, callback){
+			me.set(key, path[key], null, null, callback);
+		}, function(err){
+			if(callback)
+				callback(err);
 		});
 	}
 	else{
 		var setterName = "set"+path.capitalize();
 		if(typeof this[setterName] == "function" && set.caller != this[setterName]){
-			this[setterName](val);
+			if(this[setterName].hasCallback() && callback){
+				this[setterName](val, callback);	
+			}
+			else{
+				this[setterName](val);
+				if(callback)
+					callback();
+			}
 		}
 		else{
 			this._set.apply(this, arguments);
+			if(callback)
+				callback();
 		}
 	}
 },
 
 mongoose.Model.prototype.sgUpdate = function(args, callback){
-	this.set(args);
 	var me = this;
-	this.save(function(err){
-		callback(err, me);
+	this.set(args, function(err){
+		if(!err){
+			me.save(function(err){
+				callback(err, me);
+			});
+		}
+		else{
+			callback(err);
+		}
 	});
 };
 
