@@ -2,7 +2,9 @@ var apiRecorder = require('./api_recorder');
 
 module.exports = function (app) {
 
-	app.SGget('/api/app_models', function(req, res){
+	app.SGget('/api/app_models', {
+		auth: false
+	}, function(req, res){
 		var routes = apiRecorder.routes;
 		var schemas = {};
 		mongoose.models.keys().forEach(function(model){
