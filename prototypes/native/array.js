@@ -1,5 +1,15 @@
 Array.prototype.contains = function(item){
-	return !!~this.indexOf(item);
+	if(this[0] instanceof Object){
+		var _id = item instanceof Object?item._id:item;
+		for(var i = 0; i < this.length; i++){
+			if(this[i]._id && this[i]._id.equals(item))
+				return true;
+		}
+		return false;
+	}
+	else{
+		return !!~this.indexOf(item);
+	}
 };
 
 Array.prototype.merge = function(array){

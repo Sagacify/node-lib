@@ -28,6 +28,7 @@ exports.handle = function(options){
 		console.log(collectionName);
 		splitUrl.popFirst();
 		var model = mongoose.model(mongoose.modelNameFromCollectionName(collectionName));
+
 		Object.defineProperty(model, "context", {
 			writable: true,
 			value: context
@@ -98,7 +99,7 @@ exports.handle = function(options){
 						//update doc or collection
 						else if(req.method == "PUT"){
 							var caller = collDoc instanceof Array?collDoc.model:collDoc;
-							caller.sgUpdate.apply(collDoc, [req.mixin, callback]);
+							caller.sgUpdate.apply(collDoc, [req.body, callback]);
 						}
 						//remove doc or collection
 						else if(req.method == "DELETE"){
@@ -130,11 +131,17 @@ exports.handle = function(options){
 							else if(req.method == "POST" && splitUrl.length == 0 && collDoc instanceof mongoose.Document && collDoc[urlPart] instanceof Array){
 								//creation of a doc in a documentArray: the data is simply pushed in the array, then document containing the array is saved
 								if(collDoc[urlPart] instanceof mongoose.Types.DocumentArray){
-									collDoc[urlPart].push(req.body.doc);
-									collDoc.save(callback);
+									collDoc[urlPart].add(req.body._id||req.body, function(err){
+										if(!err){
+											collDoc.save(callback);
+										}
+										else{
+											callback(err);
+										}
+									});
 								}
 								//creation of a doc in a referenceArray: the doc is first created in the collection, then its id is pushed in the array
-								else if(collDoc.getModel().schema.tree[urlPart][0].ref){
+								else if(collDoc.getModel().schema.tree[urlPart][0].ref && !req.body._item){
 									var model = mongoose.model(collDoc.getModel().schema.tree[urlPart][0].ref);
 									var doc = new model(req.body.doc);
 									doc.save(function(err){
