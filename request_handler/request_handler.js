@@ -25,6 +25,7 @@ exports.handle = function(options){
 			splitUrl.pop();
 
 		var collectionName = splitPath.popFirst();
+		console.log(collectionName);
 		splitUrl.popFirst();
 		var model = mongoose.model(mongoose.modelNameFromCollectionName(collectionName));
 		Object.defineProperty(model, "context", {

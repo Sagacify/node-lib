@@ -8,7 +8,7 @@ var validated = config.state.validated;
 var UserModel = model('User');
 
 function removeUser(users, i, callback) {
-	if(i === user.length) {
+	if(i === users.length) {
 		callback(null);
 	}
 	else {
@@ -29,15 +29,16 @@ function removeUser(users, i, callback) {
 	}
 }
 
-exports.process = function (userid, password, username, name, callback) {
+exports.process = function (userid, password, username, name, state, callback) {
 
 	UserModel.find({
 		$or			: [{
 			_id		: userid
-		}, {
+			}, {
 			username: username
-		}]
+			}]
 	}, function (e, users) {
+		console.log(users);
 		if(e) {
 			callback({ msg: 'ERROR_WHILE_SEARCHING_DB', error: e });
 		}

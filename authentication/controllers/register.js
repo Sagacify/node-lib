@@ -5,12 +5,12 @@ var SGError = require('../../errorhandler/SagaError');
 
 module.exports = function (app) {
 
-	app.SGpost('/auth/user/register', {
-		'body.email'	: ['notNull', 'notEmpty', 'isEmail'],
-		'body.password'	: ['notNull', 'notEmpty'],
-		'body.username' : ['notNull', 'notEmpty'],
-		'body.name' : ['notNull', 'notEmpty']
-	}, { auth: false, sanitize: true }, function (email, password, username, name, req, res) {
+	app.SGpost('/auth/user/register', {validation : {
+		'email'	: ['notNull', 'notEmpty', 'isEmail'],
+		'password'	: ['notNull', 'notEmpty'],
+		'username' : ['notNull', 'notEmpty'],
+		'name' : ['notNull', 'notEmpty']
+	}, auth: false, sanitize: true }, function (email, password, username, name, req, res) {
 		LogicLib.process(email, password, username, name, function (error, token, user) {
 			if(error) {
 				res.SGsend(new SGError(error.error || Verbose[error.msg]));

@@ -69,6 +69,7 @@ function handleRequest (callback, args, caja, req, res, next) {
 		isOptional = (conditions.length >= 1) && /optional/i.test(conditions[0]);
 		isPresent = !hasUndefined(argument);
 		if(!isPresent && !isOptional) {
+			console.log(key);
 			return res.SGsend(new SGError('Validation', 400, 'Validation failed'));
 		}
 		else {
