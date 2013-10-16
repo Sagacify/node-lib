@@ -100,6 +100,9 @@ mongoose.Model.prototype.set = function set(path, val, type, options, callback){
 					callback();
 			}
 		}
+		else if(this.getModel().schema.tree._get(path)._id){
+			this.setSemiEmbedded(path, val, callback);
+		}
 		else{
 			this._set.apply(this, arguments);
 			if(callback)
@@ -107,6 +110,30 @@ mongoose.Model.prototype.set = function set(path, val, type, options, callback){
 		}
 	}
 },
+
+mongoose.Model.prototype.setSemiEmbedded = function(path, val, callback){
+	var me = this;
+	var set = function(doc){
+		me.getModel().schema.tree._get(path).keys().forEach(function(key){
+			me.set(path+"."+key, doc[key]);
+		});
+	}
+
+	if(val instanceof Object){
+		set(val);
+		if(callback)
+			callback(null);
+	}
+	else{
+		model(this.getModel().schema.tree._get(path)._id.ref).findById(val, function(err, doc){
+			if(doc){
+				set(doc);
+			}
+			if(callback)
+				callback(err);
+		});
+	}
+};
 
 mongoose.Model.prototype.sgUpdate = function(args, callback){
 	var me = this;
