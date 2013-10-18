@@ -21,3 +21,7 @@ String.prototype.inject = function(occurences){
 	});
 	return strToReturn;
 };
+
+String.prototype.equals = function(item){
+	return this == item;
+};
