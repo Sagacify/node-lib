@@ -4,6 +4,7 @@ var generateToken = Hash.generateToken;
 var hashToken = Hash.hashToken;
 
 var validated = config.state.validated;
+var unvalidated = config.state.unvalidated;
 
 var UserModel = model('User');
 
@@ -29,7 +30,7 @@ function removeUser(users, i, callback) {
 	}
 }
 
-exports.process = function (userid, password, username, name, state, callback) {
+exports.process = function (userid, password, username, name, callback) {
 
 	UserModel.find({
 		$or			: [{
@@ -38,7 +39,6 @@ exports.process = function (userid, password, username, name, state, callback) {
 			username: username
 			}]
 	}, function (e, users) {
-		console.log(users);
 		if(e) {
 			callback({ msg: 'ERROR_WHILE_SEARCHING_DB', error: e });
 		}
@@ -59,17 +59,30 @@ exports.process = function (userid, password, username, name, state, callback) {
 								}
 								else {
 									var tokenHash = hashToken(token);
-									UserModel({
+									console.log({
 										_id		: userid,
 										username: username,
 										password: passwordHash,
 										name	: name,
-										state	: state,
+										state	: unvalidated,
 										tokens	: [{
 											token: tokenHash,
 											expiration: Date.now() + config.expiration
 										}]
-									}).save(function (e, savedUser) {
+									});
+									var myUser = new UserModel({
+										_id		: userid,
+										username: username,
+										password: passwordHash,
+										name	: name,
+										state	: unvalidated,
+										tokens	: [{
+											token: tokenHash,
+											expiration: Date.now() + config.expiration
+										}]
+									});
+									console.log(myUser);
+									myUser.save(function (e, savedUser) {
 										if(e) {
 											callback({ msg: 'COULDNT_SAVE_USER_MODIFICATIONS', error: e });
 										}

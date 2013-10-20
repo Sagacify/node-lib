@@ -25,7 +25,6 @@ exports.handle = function(options){
 			splitUrl.pop();
 
 		var collectionName = splitPath.popFirst();
-		console.log(collectionName);
 		splitUrl.popFirst();
 		var model = mongoose.model(mongoose.modelNameFromCollectionName(collectionName));
 
@@ -75,7 +74,8 @@ exports.handle = function(options){
 				}
 				//create directly in collection
 				else if(req.method == "POST"){
-					model.create(req.body, callback);
+					var doc = new model(req.body);
+					doc.save(callback);
 				}
 				else{
 					callback(new SGError());

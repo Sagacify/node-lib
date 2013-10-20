@@ -37,7 +37,7 @@ exports.sendMessage = function (data, template, callback) {
 exports.generateMail = function (data, mailTemplate, callback){
 	exports.generateHTML(mailTemplate, data, function (e, html, text){
 		if(e) {
-			callback(err);
+			callback(e);
 		}
 		else {
 			var attachments = exports.getAttachments(mailTemplate);
@@ -64,7 +64,7 @@ exports.getAttachments = function (mailTemplate) {
 	attachmentsFiles.forEach(function (attachement) {
 		attachments.push({
 			filePath: attachmentsFilesPath + '/' + attachement,
-			cid: anAttachment
+			cid: attachement
 		});
 	});
 	return attachments;
