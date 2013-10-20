@@ -11,7 +11,7 @@ mongoose.Types.DocumentArray.prototype.add = function(value, options, callback){
 			this.push(value);
 		}
 		if(callback)
-			callback(null, value);
+			callback(null, this.last());
 	}
 };
 

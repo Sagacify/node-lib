@@ -15,14 +15,14 @@ CheckoutModel.prototype.post = function(callback){
 CheckoutModel.prototype.put = function(callback){
 	var me = this;
 	this.get(function(err, docs){
-		me.model.sgUpdate.apply(docs, [me.context.req.body, callback]);
+		me.model.schema.sgUpdate.apply(docs, [me.context.req.body, callback]);
 	});
 };
 
 CheckoutModel.prototype.delete = function(callback){
 	var me = this;
 	this.get(function(err, docs){
-		me.model.sgRemove.apply(docs, [callback]);
+		me.model.schema.sgRemove.apply(docs, [callback]);
 	});
 };
 

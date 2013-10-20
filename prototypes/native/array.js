@@ -45,6 +45,14 @@ Array.prototype.equals = function(array){
 	return true;
 };
 
+Array.prototype.indexes = function(){
+	var indexes = [];
+	for(var i = 0; i < this.length; i++){
+		indexes.push(i);
+	}
+	return indexes;
+};
+
 Array.prototype.diff = function(a) {
     return this.filter(function(i) {return !(a.indexOf(i) > -1);});
 };
@@ -54,7 +62,10 @@ Array.prototype.populateDevelop = function(callback){
 		callback(null, this);
 	}
 	else{
-		var model = this[0].getModel();
-		model.populateDevelop.apply(this, [callback]);
+		Object.defineProperty(this, "schema", {
+			writable: true,
+			value: this[0].schema
+		});
+		this[0].schema.populateDevelop.apply(this, [callback]);
 	}
 };

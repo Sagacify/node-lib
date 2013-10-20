@@ -2,6 +2,7 @@ function CheckoutDocument(context, route){
 	this.context = context;
 	this.route = route;
 	this.state = route.states.last();
+	this.parentState = this.state.parentState();
 	this.doc = this.state.obj;
 };
 
@@ -14,12 +15,27 @@ CheckoutDocument.prototype.post = function(callback){
 };
 
 CheckoutDocument.prototype.put = function(callback){
-	console.log("doc put")
 	this.doc.sgUpdate.apply(this.doc, [this.context.req.body, callback]);
 };
 
 CheckoutDocument.prototype.delete = function(callback){
-	this.doc.sgRemove(callback);
+	var me = this;
+	if(this.doc instanceof mongoose.Model){
+		this.doc.sgRemove(callback);
+	}
+	else if(this.parentState.state.obj instanceof mongoose.Types.DocumentArray){
+		this.doc.remove(function(err){
+			if(!err){
+				me.parentState.state.parentState().state.obj.save(callback);
+			}
+			else{
+				callback(err);
+			}
+		});
+	}
+	else{
+		callback(new SGError());
+	}
 };
 
 module.exports = CheckoutDocument;

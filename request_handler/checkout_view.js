@@ -26,7 +26,7 @@ CheckoutView.prototype.put = function(callback){
 			}
 			else{
 				if(collDoc[0] instanceof mongoose.Document){
-					collDoc[0].getModel().sgUpdate.apply(collDoc, [me.context.req.body, callback]);
+					collDoc[0].schema.sgUpdate.apply(collDoc, [me.context.req.body, callback]);
 				}
 				else{
 					callback(null);
@@ -51,7 +51,7 @@ CheckoutView.prototype.delete = function(callback){
 			}
 			else{
 				if(collDoc[0] instanceof mongoose.Document){
-					collDoc[0].getModel().sgRemove.apply(collDoc, [callback]);
+					collDoc[0].schema.sgRemove.apply(collDoc, [callback]);
 				}
 				else{
 					callback(null);

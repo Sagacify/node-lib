@@ -1,4 +1,4 @@
-require('../develop/model');
+require('../develop/develop');
 var async = require('async');
 var RouteState = require('./route_state');
 
