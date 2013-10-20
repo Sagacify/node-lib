@@ -140,7 +140,7 @@ exports.handle = function(options){
 									});
 								}
 								//creation of a doc in a referenceArray: the doc is first created in the collection, then its id is pushed in the array
-								else if(collDoc.getModel().schema.tree[urlPart][0].ref && !req.body._item){
+								else if(collDoc.getModel().schema.tree[urlPart][0].ref && !req.body.item){
 									var model = mongoose.model(collDoc.getModel().schema.tree[urlPart][0].ref);
 									var doc = new model(req.body.doc);
 									doc.save(function(err){

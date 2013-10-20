@@ -17,6 +17,8 @@ var methodNameLen = methodName.length;
 
 var apiRecorder = require('../model_share/api_recorder');
 
+var routeHandler = require('../request_handler/route_handler');
+
 function applyToEle (value, conditions) {
 	var condition;
 	var arg;
@@ -102,7 +104,8 @@ module.exports = function (app) {
 		}
 
 		if(typeof callback != "function"){
-			callback = requestHandler.handle(callback);
+			//callback = requestHandler.handle(callback);
+			callback = new routeHandler(callback).handle();
 		}
 
 		apiRecorder.addRoute(methodName, uri, {});

@@ -50,18 +50,28 @@ mongoose.Model.do = function(action, params, callback){
 
 mongoose.Model.prototype._get = mongoose.Model.prototype.get;
 
-mongoose.Model.prototype.get = function(path, options){
-	if(typeof options == "function"){
-		var callback = options;
+mongoose.Model.prototype.get = function(path, options, callback){
+	if(typeof options == "function" || callback){
+		var callback = callback||options;
 		if(path in this.getModel().schema.tree){
 			callback(null, this._get(path));
 		}
 		else{
-			if(this[path].getParamNames()[0] === "callback"){
-				this[path](callback);
+			if(this[path].hasCallback()){
+				if(options.params){
+					this[path]._apply(this, options.params, callback);
+				}
+				else{
+					this[path](callback);
+				}
 			}
 			else{
-				callback(null, this[path]());	
+				if(options.params){
+					callback(null, this[path]._apply(this, options.params));
+				}
+				else{
+					callback(null, this[path]());
+				}
 			}
 		}
 	}	
@@ -70,8 +80,21 @@ mongoose.Model.prototype.get = function(path, options){
 	}
 };
 
-mongoose.Model.prototype.do = function(action, params, callback){
-	this[action]._apply(this, params, callback);
+mongoose.Model.prototype.do = function(action, params, callback){	
+	if(typeof this[action] == "function" && this[action].name){
+		if(this[action].name.startsWith("action")){
+			this[action]._apply(this, params, callback);
+		}
+		else if(this[action].name.startsWith("view")){
+			this[action+"_add"]._apply(this, params, callback);
+		}
+		else{
+			callback(new SGError());
+		}
+	}
+	else{
+		callback(new SGError());
+	}
 };
 
 mongoose.Model.prototype._set = mongoose.Model.prototype.set;
@@ -100,7 +123,7 @@ mongoose.Model.prototype.set = function set(path, val, type, options, callback){
 					callback();
 			}
 		}
-		else if(this.getModel().schema.tree._get(path)._id){
+		else if(this.getModel().schema.tree._get(path) && this.getModel().schema.tree._get(path)._id){
 			this.setSemiEmbedded(path, val, callback);
 		}
 		else{
@@ -110,6 +133,39 @@ mongoose.Model.prototype.set = function set(path, val, type, options, callback){
 		}
 	}
 },
+
+mongoose.Model.prototype.isSemiEmbedded = function(path){
+	var schema = this.getModel().schema.tree._get(path);
+	return schema&&schema._id&&schema._id.ref;
+};
+
+mongoose.Model.prototype.isSemiEmbeddedArray = function(path){
+	var schema = this.getModel().schema.tree._get(path+'.0');
+	return schema&&schema._id&&schema._id.ref;
+};
+
+mongoose.Model.prototype.isRef = function(path){
+	var schema = this.getModel().schema.tree._get(path);
+	return schema&&schema.ref;
+};
+
+mongoose.Model.prototype.isRefArray = function(path){
+	var schema = this.getModel().schema.tree._get(path)[0];
+	return schema&&schema.ref;
+};
+
+mongoose.Model.prototype.getRef = function(path){
+	var schema = this.getModel().schema.tree._get(path)[0];
+	return schema.ref;
+};
+
+mongoose.Model.prototype.getModel = function(){
+	return mongoose.models[this.getModelName()];
+};
+
+mongoose.Model.prototype.getModelName = function(){
+	return mongoose.modelNameFromCollectionName(this.collection.name);
+};
 
 mongoose.Model.prototype.setSemiEmbedded = function(path, val, callback){
 	var me = this;
@@ -135,6 +191,41 @@ mongoose.Model.prototype.setSemiEmbedded = function(path, val, callback){
 	}
 };
 
+mongoose.Model.prototype.add = function(path, val, callback){
+	if(this.isSemiEmbeddedArray(path)){
+		this.get(path).addSemiEmbedded(val, callback);
+	}
+	else if(this.isRefArray(path)){
+		this.addInRefArray(path, val, callback);
+	}
+	else{
+		this.get(path).push(val);
+		if(callback)
+			callback(null, val);
+	}
+};
+
+mongoose.Model.prototype.addInRefArray = function(path, val, callback){
+	if(val && val._id){
+		this.get(path).push(val._id);
+		callback(null, val);
+	}
+	else if(val && val.isObject()){
+		var me = this;
+		model(this.getModel().schema.tree._get(path)[0].ref).create(val, function(err, doc){
+			if(doc){
+				me.get(path).push(doc._id);
+			}
+			if(callback)
+				callback(err, doc);
+		});
+	}
+	else{
+		this.get(path).push(val);
+		callback(null, val);
+	}
+};
+
 mongoose.Model.prototype.sgUpdate = function(args, callback){
 	var me = this;
 	this.set(args, function(err){
@@ -149,10 +240,10 @@ mongoose.Model.prototype.sgUpdate = function(args, callback){
 	});
 };
 
-mongoose.Model.sgUpdate = function(callback){
+mongoose.Model.sgUpdate = function(args, callback){
 	var me = this;
 	async.each(this, function(doc, callback){
-		doc.sgUpdate(callback);
+		doc.sgUpdate(args, callback);
 	}, function(err){
 		callback(err, me);
 	});

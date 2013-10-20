@@ -180,14 +180,6 @@ mongoose.Model.overdevelop = function(popDevObject, callback){
 	callback(null, popDevObject);
 };
 
-mongoose.Model.prototype.getModel = function(){
-	return mongoose.models[this.getModelName()];
-};
-
-mongoose.Model.prototype.getModelName = function(){
-	return mongoose.modelNameFromCollectionName(this.collection.name);
-};
-
 mongoose.Model.projectionFields = function(scope){
 	return this.developOptions(scope).fields;
 };
