@@ -40,7 +40,7 @@ mongoose.Schema.prototype.getFormattedSchema = function(options, callback){
 			});
 		}
 		else if(schemaElement.ref){
-			callback(null, {type:schemaElement.ref});
+			callback(null, {type:schemaElement.type, ref:schemaElement.ref});
 		}
 		else if(schemaElement.name){
 			callback(null, {type:schemaElement.name});
@@ -76,6 +76,25 @@ mongoose.Schema.prototype.getFormattedSchema = function(options, callback){
 	else
 		getFormattedSchemaElement(this, callback);
 };
+
+// mongoose.Schema.prototype.formattedSchemaElement = function(path){
+// 	var itemSchema = this.tree._get(path);
+// 	if(!itemSchema){
+// 		return null;
+// 	}
+// 	else if(itemSchema instanceof mongoose.Types.DocumentArray){
+
+// 	}
+// 	else if(itemSchema.isArray()){
+// 		return [this.pathType(path+".0")];
+// 	}
+// 	else if(itemSchema.isObject()){
+
+// 	}
+// 	else {
+// 		return {type:itemSchema};
+// 	}
+// };
 
 var Skelleton = HalloweenSkelleton.getSkelleton();
 var models = Object.keys(mongoose.models);

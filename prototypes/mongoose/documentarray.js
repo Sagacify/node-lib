@@ -7,11 +7,11 @@ mongoose.Types.DocumentArray.prototype.add = function(value, options, callback){
 		this.addSemiEmbedded.apply(this, arguments);
 	}
 	else{
-		if(!options || options.duplicate || !me.contains(val._id)){
+		if(!options || options.duplicate || !me.contains(value._id)){
 			this.push(value);
 		}
 		if(callback)
-			callback(null);
+			callback(null, value);
 	}
 };
 
@@ -33,7 +33,7 @@ mongoose.Types.DocumentArray.prototype.addSemiEmbedded = function(value, options
 	if(value instanceof Object){
 		add(value);
 		if(callback)
-			callback(null);
+			callback(null, value);
 	}
 	else{
 		model(this._schema.schema.tree._id.ref).findById(value, function(err, doc){
@@ -41,7 +41,7 @@ mongoose.Types.DocumentArray.prototype.addSemiEmbedded = function(value, options
 				add(doc);
 			}
 			if(callback)
-				callback(err);
+				callback(err, doc);
 		});
 	}
 };
