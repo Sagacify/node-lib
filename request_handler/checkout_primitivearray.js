@@ -8,7 +8,7 @@ function CheckoutPrimitiveArray(context, route){
 
 CheckoutPrimitiveArray.prototype.get = function(callback){
 	var me = this;
-	if(this.parentState.state.obj.isRefArray(this.parentState.path)){
+	if(this.parentState.state.type()=="Document" && this.parentState.state.obj.isRefArray(this.parentState.path)){
 		this.parentState.state.obj.populate(this.parentState.path, function(err){
 			if(!err){
 				callback(null, me.parentState.state.obj.get(me.parentState.path));
@@ -46,7 +46,7 @@ CheckoutPrimitiveArray.prototype.put = function(callback){
 	var me = this;
 	if(this.parentState.state.obj.isRefArray(this.parentState.path)){
 		this.get(function(err, docs){
-			model(me.parentState.state.obj.getRef(me.parentState.path)).sgUpdate.apply(docs, [me.context.req.body._item||me.context.req.body, callback]);
+			model(me.parentState.state.obj.getRef(me.parentState.path)).schema.sgUpdate.apply(docs, [me.context.req.body._item||me.context.req.body, callback]);
 		});
 	}
 	else{
@@ -58,7 +58,7 @@ CheckoutPrimitiveArray.prototype.delete = function(callback){
 	var me = this;
 	if(this.parentState.state.obj.isRefArray(this.parentState.path)){
 		this.get(function(err, docs){
-			model(me.parentState.state.obj.getRef()).sgRemove.apply(docs, [callback]);
+			model(me.parentState.state.obj.getRef()).schema.sgRemove.apply(docs, [callback]);
 		});
 	}
 	else{

@@ -8,7 +8,7 @@ exports.hashPassword = function(password, callback) {
 			callback({ msg: error.msg, error: error.error });
 		}
 		else {
-			bcrypt.hash(password, salt /* + Pepper.getPepper() */, function(err, hash) {
+			bcrypt.hash(password, salt, function(err, hash) {
 				if(err) {
 					callback({ msg: 'COULDNT_HASH_STRING', error: err });
 				}

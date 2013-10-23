@@ -145,7 +145,7 @@ RouteState.prototype.populateObject = function(callback){
 	if(!parentState || !(parentState.state.obj instanceof mongoose.Document)){
 		return callback(null);
 	}
-	if(this.index == this.route.length-1 || parentState.state.type() != "Document" && !parentState.state.obj.isRef(parentState.path) && !parentState.state.obj.isRefArray(parentState.path) ||
+	if(this.index == this.route.length-1 || parentState.state.type() != "Document" || !parentState.state.obj.isRef(parentState.path) || !parentState.state.obj.isRefArray(parentState.path) ||
 		//this.context.req.method == "POST" && this.index == this.route.length-1 && parentState.state.type() == "Document" && parentState.state.caller.get(parentState.path) instanceof Array ||
 		//this.context.req.method == "POST" && this.index == this.route.length-1 && typeof parentState.state.caller[parentState.path] == "function" ||
 		this.context.req.method == "DELETE" && this.index == this.route.length-2 && parentState.state.obj instanceof Array && this.route.splitUrl[this.index+1] != this.route.splitPath[this.index+1]){
@@ -167,18 +167,23 @@ RouteState.prototype.populateObject = function(callback){
 //if collection as array -> the caller is the model attached to it
 RouteState.prototype.attachCaller = function(){
 	var caller;
-	if(!(this.obj instanceof Array) || !this.obj instanceof mongoose.Types.DocumentArray){
+	if(this.obj && this.obj.name == "model"){
+		caller = this.obj.schema;
+	}
+	else if(!(this.obj instanceof Array) || this.obj instanceof mongoose.Types.DocumentArray){
 		caller = this.obj;
 	}
 	else{
 		var parentState = this.parentState();
 		if(parentState){
 			if(parentState.state.obj instanceof mongoose.Document){
-				caller = model(parentState.state.obj.getModel().schema.tree._get(parentState.path)[0].ref);
+				caller = model(parentState.state.obj.getModel().schema.tree._get(parentState.path)[0].ref).schema;
 			}
-			if(parentState.state.caller.name == "model"){
-				var collectionName = parentState.state.caller[parentState.path].name.split('_')[1];
-				caller = model(mongoose.modelNameFromCollectionName(collectionName));
+			if(parentState.state.caller instanceof mongoose.Schema){
+				var collectionName = parentState.state.caller.statics[parentState.path].name.split('_')[1];
+				var modelName = mongoose.modelNameFromCollectionName(collectionName);
+				if(modelName)
+					caller = model(modelName).schema;
 			}
 		}
 	}

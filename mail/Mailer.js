@@ -44,7 +44,7 @@ exports.generateMail = function (data, mailTemplate, callback){
 			var subject = exports.getSubject(mailTemplate);
 			var message = {
 				from: fromEmail,
-				to: data.to.username,
+				to: data.to,
 				subject: subject,
 				generateTextFromHTML: true
 				//attachments:attachments
@@ -98,20 +98,20 @@ exports.getSubject = function (mailTemplate) {
 	return fs.readFileSync(dirname + '/subject.txt', 'utf8');
 };
 
-exports.send_VerficationMail = function (token, user, callback) {
+exports.send_VerficationMail = function (email, token, callback) {
 	var url = '/auth/validate/validToken/';
 	var validationLink = config.hostname + url + token;
 	exports.sendMessage({
-		to: user,
+		to: email,
 		link: validationLink
 	}, 'validation_mail', callback);
 };
 
-exports.send_PasswordResetMail = function (token, user, callback) {
+exports.send_PasswordResetMail = function (email, token, callback) {
 	var url = '/auth/auth/new_password/';
 	var validationLink = config.hostname + url + token;
 	exports.sendMessage({
-		to: user,
+		to: email,
 		link: validationLink
 	}, 'reset_password_mail', callback);
 };
