@@ -9,6 +9,7 @@ CheckoutModel.prototype.get = function(callback){
 };
 
 CheckoutModel.prototype.post = function(callback){
+	console.log(this.context.req.body);
 	this.model.create(this.context.req.body, callback);
 };
 
