@@ -53,8 +53,12 @@ RouteHandler.prototype.buildContext = function(req){
 RouteHandler.prototype.buildRoute = function(callback){
 	var splitPath = this.context.req.route.path.split('/');
 	splitPath.popFirst();
+	if(!splitPath.last())
+		splitPath.pop();
 	var splitUrl = this.context.req.url.split('?')[0].split('/');
 	splitUrl.popFirst();
+	if(!splitUrl.last())
+		splitUrl.pop();
 	this.route = {splitPath:splitPath, splitUrl:splitUrl, states:[], length:splitPath.length};
 	var me = this;
 	async.eachSeries(splitPath.keys(), function(index, callback){
