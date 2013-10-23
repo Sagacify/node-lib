@@ -224,7 +224,7 @@ mongoose.Document.ensureUpdateConsistency = function(){
 								docs.forEach(function(doc){
 									var semiEmbeddedPath = path.substring(0, path.length-4);
 									var semiEmbeddedDoc;
-									if(doc.isSemiEmbedded(semiEmbeddedPath){
+									if(doc.isSemiEmbedded(semiEmbeddedPath)){
 										semiEmbeddedDoc = doc.get(semiEmbeddedPath);
 									}
 									else if(doc.isSemiEmbeddedArray(semiEmbeddedPath)){

@@ -290,7 +290,7 @@ mongoose.Model.prototype.ensureRemoveConsistency = function(){
 						docs.forEach(function(doc){
 							if(path.endsWith('._id')){
 								var semiEmbeddedPath = path.substring(0, path.length-4);
-								if(doc.isSemiEmbedded(semiEmbeddedPath){
+								if(doc.isSemiEmbedded(semiEmbeddedPath)){
 									doc.set(semiEmbeddedPath, null);
 									doc.save();
 								}
