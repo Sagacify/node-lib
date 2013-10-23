@@ -60,6 +60,10 @@ mongoose.Document.prototype.develop = function(callback){
 
 	var formattedSchema = this.schema.formattedSchema;
 
+	if(!formattedSchema){
+		return callback(null, developedDoc);
+	}
+
 	var developOptions = this.schema.developOptions();
 	var fields = developOptions.fields;
 	var fsKeys = formattedSchema.keys();
