@@ -14,5 +14,7 @@ module.exports = {
 	validate_Token			:	require('./validate_Token'),
 	compare_Token			:	require('./compare_Token'),
 	remove_Token			:	require('./remove_Token'),
-	flip_State				:	require('./flip_State')
+	flip_State				:	require('./flip_State'),
+	replace_Token			:	require('./replace_Token'),
+	add_Token				:	require('./add_Token')
 };

@@ -7,7 +7,8 @@ var unvalidated = config.state.unvalidated;
 var validated = config.state.validated;
 
 var logic = require('../auth-logic/logic-lib');
-var find_User				=	logic.find_User,
+var add_Token				=	logic.add_Token,
+	find_User				=	logic.find_User,
 	save_User				=	logic.save_User,
 	send_Email				=	logic.send_Email,
 	hash_Token				=	logic.hash_Token,
@@ -15,6 +16,7 @@ var find_User				=	logic.find_User,
 	create_User				=	logic.create_User,
 	create_Token			=	logic.create_Token,
 	remove_Token			=	logic.remove_Token,
+	replace_Token			=	logic.replace_Token,
 	compare_Token			=	logic.compare_Token,
 	hash_Password			=	logic.hash_Password,
 	validate_State			=	logic.validate_State,
@@ -35,6 +37,7 @@ var Auth = {
 			create_User,
 			create_Token,
 			hash_Token,
+			add_Token,
 			hash_Password,
 			save_User,
 			send_Email
@@ -48,6 +51,7 @@ var Auth = {
 			compare_Password,
 			create_Token,
 			hash_Token,
+			add_Token,
 			remove_ExpiredTokens,
 			remove_ExcessTokens,
 			save_User
@@ -91,6 +95,7 @@ var Auth = {
 			compare_Password,
 			create_Token,
 			hash_Token,
+			replace_Token,
 			flip_State,
 			save_User,
 		], callback);
@@ -102,8 +107,25 @@ var Auth = {
 			validate_State,
 			create_Token,
 			hash_Token,
+			replace_Token,
+			flip_State,
 			save_User,
 			send_Email
+		], callback);
+	},
+	ResetPassword: function (input, callback) {
+		waterfall([
+			init_Mixin('ResetPassword', input, null, unvalidated),
+			find_User,
+			validate_State,
+			hash_Token,
+			compare_Token,
+			hash_Password,
+			create_Token,
+			hash_Token,
+			replace_Token,
+			flip_State,
+			save_User
 		], callback);
 	}
 };

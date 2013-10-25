@@ -82,6 +82,16 @@ Mixin.prototype = {
 		.input_NotEmpty()
 		.expecting('unique', 'Array', 2)
 		.expecting('email', 'String')
+		.expecting('typeof_email', 'String')
+		.expecting('required_state', 'Boolean');
+		callback(this.error, this.mixin);
+	},
+	ResetPassword: function (callback) {
+		this
+		.input_NotEmpty()
+		.expecting('unique', 'Array', 2)
+		.expecting('password', 'String')
+		.expecting('token', 'String')
 		.expecting('required_state', 'Boolean');
 		callback(this.error, this.mixin);
 	}
