@@ -65,7 +65,7 @@ mongoose.Document.prototype.develop = function(callback){
 	var fsKeys = formattedSchema.keys();
 
 	//delete non wanted fields
-	var fieldsToDelete = !fields||fields.length==0?[]:developedDoc.keys().diff(fields);
+	var fieldsToDelete = !fields || (fields.length === 0) ? [] : developedDoc.keys().diff(fields);
 	fieldsToDelete.forEach(function(fieldToDelete){
 		delete developedDoc[fieldToDelete];
 	});

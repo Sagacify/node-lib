@@ -94,7 +94,7 @@ function handleRequest (callback, args, caja, req, res, next) {
 
 module.exports = function (app) {
 
-	var BearerAuth = require('../authentication/logic/authenticate_bearer.js');
+	var BearerAuth = require('../../app/auth-middlewares/authenticate_token.js');
 	var bearerAuth = BearerAuth.process;
 
 	function expressMethodWrapper (methodName, uri, options, callback) {
@@ -117,7 +117,7 @@ module.exports = function (app) {
 			return auth ? bearerAuth(req, res, next) : next();
 		}, function (req, res, next) {
 			var filter = {};
-			req.query.keys().forEach(function(queryKey){
+			req.query.keys().forEach(function (queryKey){
 				if(req.query[queryKey] != "offset" && req.query[queryKey] != "limit" && req.query[queryKey] != "sort")
 					filter[queryKey] = req.query[queryKey];
 			});

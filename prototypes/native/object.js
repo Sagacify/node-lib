@@ -66,6 +66,10 @@ obj_proto.deleteRecursiveField = function(field){
 	return this;
 };
 
+obj_proto.getType = function() {
+	return Object.prototype.toString.call(this);
+};
+
 obj_proto.isObject = function(){
 	return Object.prototype.toString.call(this) === '[object Object]';
 };

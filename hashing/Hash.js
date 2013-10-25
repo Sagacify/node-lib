@@ -53,7 +53,7 @@ exports.generateToken = function(callback) {
 	});
 };
 
-exports.hashToken = function(salt, callback) {
+exports.hashToken = function(salt) {
 	var hashFunc = (config.tokensize === '256') ? 'sha256' : 'sha512';
 	var sha512 = crypto.createHash(hashFunc);
 	sha512.update(salt + Pepper.getPepper());

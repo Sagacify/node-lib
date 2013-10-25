@@ -37,7 +37,7 @@ exports.sendMessage = function (data, template, callback) {
 exports.generateMail = function (data, mailTemplate, callback){
 	exports.generateHTML(mailTemplate, data, function (e, html, text){
 		if(e) {
-			callback(err);
+			callback(e);
 		}
 		else {
 			var attachments = exports.getAttachments(mailTemplate);
@@ -61,9 +61,9 @@ exports.getAttachments = function (mailTemplate) {
 	var dirname = exports.getDirname(mailTemplate);
 	var attachmentsFilesPath = dirname + '/attachments';
 	var attachmentsFiles = fs.readdirSync(attachmentsFilesPath);
-	attachmentsFiles.forEach(function (attachement) {
+	attachmentsFiles.forEach(function (anAttachment) {
 		attachments.push({
-			filePath: attachmentsFilesPath + '/' + attachement,
+			filePath: attachmentsFilesPath + '/' + anAttachment,
 			cid: anAttachment
 		});
 	});
@@ -71,11 +71,11 @@ exports.getAttachments = function (mailTemplate) {
 };
 
 exports.getDirname = function (mailTemplate) {
-	return './views/emails/templates/' + mailTemplate;
+	return __dirname + '/../../views/emails/templates/' + mailTemplate;
 };
 
 exports.generateHTML = function (mailTemplate, data, callback) {
-	var dirname = './views/emails/templates';
+	var dirname = __dirname + '/../../views/emails/templates';
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
 			callback(e);
@@ -83,10 +83,10 @@ exports.generateHTML = function (mailTemplate, data, callback) {
 		else {
 			template(mailTemplate, data, function (e, html, text) {
 				if(e) {
-					callback(null, html, text);
+					callback(e);
 				}
 				else {
-					callback(e);
+					callback(null, html, text);
 				}
 			});
 		}
