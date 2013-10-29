@@ -120,7 +120,14 @@ module.exports = function (app) {
 				if(req.query[queryKey] != "offset" && req.query[queryKey] != "limit" && req.query[queryKey] != "sort")
 					filter[queryKey] = req.query[queryKey];
 			});
-			req.mixin = req.params.clone().merge(req.body).merge({paginate:{offset:req.query.offset, limit:req.query.limit}, sort:req.query.sort, filter:filter});
+			req.mixin = req.params.clone().merge(req.body).merge({
+				paginate : {
+					offset : req.query.offset,
+					limit : req.query.limit
+				},
+				sort : req.query.sort,
+				filter:filter
+			});
 
 			handleRequest(callback, options.validation||{}, caja, req, res, next);
 		});
