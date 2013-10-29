@@ -73,6 +73,7 @@ exports.handle = function(options){
 				}
 				//create directly in collection
 				else if(req.method == "POST"){
+					//Pour ne pas override Create?
 					model.create(req.body, callback);
 				}
 				else{
