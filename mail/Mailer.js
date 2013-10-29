@@ -13,8 +13,8 @@ var transport = nodemailer.createTransport('SES', {
 
 setupInfo('SES Configured');
 
-exports.sendMessage = function (data, template, callback) {
-	exports.generateMail(data, template, function (e, message) {
+function sendMessage (data, template, callback) {
+	generateMail(data, template, function (e, message) {
 		if(e) {
 			callback(e);
 		}
@@ -31,17 +31,17 @@ exports.sendMessage = function (data, template, callback) {
 			});
 		}
 	});
-};
+}
 
 
-exports.generateMail = function (data, mailTemplate, callback){
-	exports.generateHTML(mailTemplate, data, function (e, html, text){
+function generateMail (data, mailTemplate, callback){
+	generateHTML(mailTemplate, data, function (e, html, text){
 		if(e) {
 			callback(err);
 		}
 		else {
-			var attachments = exports.getAttachments(mailTemplate);
-			var subject = exports.getSubject(mailTemplate);
+			var attachments = getAttachments(mailTemplate);
+			var subject = getSubject(mailTemplate);
 			var message = {
 				from: fromEmail,
 				to: data.to,
@@ -54,11 +54,11 @@ exports.generateMail = function (data, mailTemplate, callback){
 			callback(null, message);
 		}
 	});
-};
+}
 
-exports.getAttachments = function (mailTemplate) {
+function getAttachments (mailTemplate) {
 	var attachments = [];
-	var dirname = exports.getDirname(mailTemplate);
+	var dirname = getDirname(mailTemplate);
 	var attachmentsFilesPath = dirname + '/attachments';
 	var attachmentsFiles = fs.readdirSync(attachmentsFilesPath);
 	attachmentsFiles.forEach(function (attachement) {
@@ -68,13 +68,13 @@ exports.getAttachments = function (mailTemplate) {
 		});
 	});
 	return attachments;
-};
+}
 
-exports.getDirname = function (mailTemplate) {
+function getDirname (mailTemplate) {
 	return './views/emails/templates/' + mailTemplate;
-};
+}
 
-exports.generateHTML = function (mailTemplate, data, callback) {
+function generateHTML (mailTemplate, data, callback) {
 	var dirname = './views/emails/templates';
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
@@ -91,17 +91,17 @@ exports.generateHTML = function (mailTemplate, data, callback) {
 			});
 		}
 	});
-};
+}
 
-exports.getSubject = function (mailTemplate) {
-	var dirname = exports.getDirname(mailTemplate);
+function getSubject (mailTemplate) {
+	var dirname = getDirname(mailTemplate);
 	return fs.readFileSync(dirname + '/subject.txt', 'utf8');
-};
+}
 
 exports.send_VerficationMail = function (email, token, callback) {
 	var url = '/auth/validate/validToken/';
 	var validationLink = config.hostname + url + token;
-	exports.sendMessage({
+	sendMessage({
 		to: email,
 		link: validationLink
 	}, 'validation_mail', callback);
@@ -110,7 +110,7 @@ exports.send_VerficationMail = function (email, token, callback) {
 exports.send_PasswordResetMail = function (email, token, callback) {
 	var url = '/auth/auth/new_password/';
 	var validationLink = config.hostname + url + token;
-	exports.sendMessage({
+	sendMessage({
 		to: email,
 		link: validationLink
 	}, 'reset_password_mail', callback);
