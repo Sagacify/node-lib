@@ -8,7 +8,7 @@ exports.hashPassword = function(password, callback) {
 			callback({ msg: error.msg, error: error.error });
 		}
 		else {
-			bcrypt.hash(password, salt /* + Pepper.getPepper() */, function(err, hash) {
+			bcrypt.hash(password, salt, function(err, hash) {
 				if(err) {
 					callback({ msg: 'COULDNT_HASH_STRING', error: err });
 				}
@@ -53,7 +53,7 @@ exports.generateToken = function(callback) {
 	});
 };
 
-exports.hashToken = function(salt, callback) {
+exports.hashToken = function(salt) {
 	var hashFunc = (config.tokensize === '256') ? 'sha256' : 'sha512';
 	var sha512 = crypto.createHash(hashFunc);
 	sha512.update(salt + Pepper.getPepper());

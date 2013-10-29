@@ -17,6 +17,8 @@ var methodNameLen = methodName.length;
 
 var apiRecorder = require('../model_share/api_recorder');
 
+var routeHandler = require('../request_handler/route_handler');
+
 function applyToEle (value, conditions) {
 	var condition;
 	var arg;
@@ -92,8 +94,7 @@ function handleRequest (callback, args, caja, req, res, next) {
 
 module.exports = function (app) {
 
-	var BearerAuth = require('../authentication/logic/authenticate_bearer.js');
-	var bearerAuth = BearerAuth.process;
+	var BearerAuth = require('../../app/auth-middlewares/authenticate_token.js');
 
 	function expressMethodWrapper (methodName, uri, options, callback) {
 		if(arguments.length == 3){
@@ -102,7 +103,8 @@ module.exports = function (app) {
 		}
 
 		if(typeof callback != "function"){
-			callback = requestHandler.handle(callback);
+			//callback = requestHandler.handle(callback);
+			callback = new routeHandler(callback).handle();
 		}
 
 		apiRecorder.addRoute(methodName, uri, {});
@@ -111,10 +113,10 @@ module.exports = function (app) {
 		var caja = ('sanitize' in options)?options.sanitize:sanitizeState;
 
 		app[methodName](uri, function (req, res, next) {
-			return auth ? bearerAuth(req, res, next) : next();
+			return auth ? BearerAuth(req, res, next) : next();
 		}, function (req, res, next) {
 			var filter = {};
-			req.query.keys().forEach(function(queryKey){
+			req.query.keys().forEach(function (queryKey){
 				if(req.query[queryKey] != "offset" && req.query[queryKey] != "limit" && req.query[queryKey] != "sort")
 					filter[queryKey] = req.query[queryKey];
 			});

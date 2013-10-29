@@ -1,1 +1,3 @@
-require('./model');
+//require('./model');
+require('./document');
+require('./schema');

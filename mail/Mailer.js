@@ -37,14 +37,14 @@ exports.sendMessage = function (data, template, callback) {
 exports.generateMail = function (data, mailTemplate, callback){
 	exports.generateHTML(mailTemplate, data, function (e, html, text){
 		if(e) {
-			callback(err);
+			callback(e);
 		}
 		else {
 			var attachments = exports.getAttachments(mailTemplate);
 			var subject = exports.getSubject(mailTemplate);
 			var message = {
 				from: fromEmail,
-				to: data.to.username,
+				to: data.to,
 				subject: subject,
 				generateTextFromHTML: true
 				//attachments:attachments
@@ -61,9 +61,9 @@ exports.getAttachments = function (mailTemplate) {
 	var dirname = exports.getDirname(mailTemplate);
 	var attachmentsFilesPath = dirname + '/attachments';
 	var attachmentsFiles = fs.readdirSync(attachmentsFilesPath);
-	attachmentsFiles.forEach(function (attachement) {
+	attachmentsFiles.forEach(function (anAttachment) {
 		attachments.push({
-			filePath: attachmentsFilesPath + '/' + attachement,
+			filePath: attachmentsFilesPath + '/' + anAttachment,
 			cid: anAttachment
 		});
 	});
@@ -71,11 +71,11 @@ exports.getAttachments = function (mailTemplate) {
 };
 
 exports.getDirname = function (mailTemplate) {
-	return './views/emails/templates/' + mailTemplate;
+	return __dirname + '/../../views/emails/templates/' + mailTemplate;
 };
 
 exports.generateHTML = function (mailTemplate, data, callback) {
-	var dirname = './views/emails/templates';
+	var dirname = __dirname + '/../../views/emails/templates';
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
 			callback(e);
@@ -83,10 +83,10 @@ exports.generateHTML = function (mailTemplate, data, callback) {
 		else {
 			template(mailTemplate, data, function (e, html, text) {
 				if(e) {
-					callback(null, html, text);
+					callback(e);
 				}
 				else {
-					callback(e);
+					callback(null, html, text);
 				}
 			});
 		}
@@ -98,20 +98,20 @@ exports.getSubject = function (mailTemplate) {
 	return fs.readFileSync(dirname + '/subject.txt', 'utf8');
 };
 
-exports.send_VerficationMail = function (token, user, callback) {
+exports.send_VerficationMail = function (email, token, callback) {
 	var url = '/auth/validate/validToken/';
 	var validationLink = config.hostname + url + token;
 	exports.sendMessage({
-		to: user,
+		to: email,
 		link: validationLink
 	}, 'validation_mail', callback);
 };
 
-exports.send_PasswordResetMail = function (token, user, callback) {
+exports.send_PasswordResetMail = function (email, token, callback) {
 	var url = '/auth/auth/new_password/';
 	var validationLink = config.hostname + url + token;
 	exports.sendMessage({
-		to: user,
+		to: email,
 		link: validationLink
 	}, 'reset_password_mail', callback);
 };

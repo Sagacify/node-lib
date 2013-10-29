@@ -17,7 +17,10 @@ Function.prototype._apply = function(thisArg, argsObject, callback){
 	var argsArray = [];
 	var hasCallback = false;
 	this.getParamNames().forEach(function(paramName){
-		if(paramName == "callback"){
+		if(paramName == "args"){
+			argsArray.push(argsObject);
+		}
+		else if(paramName == "callback"){
 			argsArray.push(callback);
 			hasCallback = true;
 		}
