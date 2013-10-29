@@ -7,7 +7,7 @@ module.exports = function (mixin, callback) {
 		if(e) {
 			callback('COULDNT_FIND_USER');
 		}
-		else if(!users || !users.length) {
+		else if(!mixin.is_registering && (!users || !users.length)) {
 			callback('INVALID_ATTR_COMBINATION');
 		}
 		else if(users.length > 1) {
@@ -16,6 +16,7 @@ module.exports = function (mixin, callback) {
 			callback(null, mixin);
 		}
 		else {
+			mixin.users = [];
 			mixin.user = users[0];
 			callback(null, mixin);
 		}

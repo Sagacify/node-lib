@@ -197,6 +197,7 @@ mongoose.Document.prototype.sgUpdate = function(args, callback){
 	var me = this;
 	this.set(args, function(err){
 		if(!err){
+			me.ensureUpdateConsistency();
 			me.save(function(err){
 				callback(err, me);
 			});
@@ -207,4 +208,46 @@ mongoose.Document.prototype.sgUpdate = function(args, callback){
 	});
 };
 
-mongoose.Document.prototype.sgRemove = mongoose.Model.prototype.remove;
+mongoose.Document.ensureUpdateConsistency = function(){
+	var me = this;
+	if(this.getModelName){
+		var myModelName = this.getModelName();
+		mongoose.models.keys().forEach(function(modelName){
+			var skelleton = mongoose.models[modelName].schema.skelleton;
+			if(skelleton[myModelName]){
+				skelleton[myModelName].forEach(function(path){
+					if(path.endsWith('._id')){
+						var findArgs = {};
+						findArgs[path] = me._id;
+						model(modelName).find(findArgs, function(err, docs){
+							if(docs){
+								docs.forEach(function(doc){
+									var semiEmbeddedPath = path.substring(0, path.length-4);
+									var semiEmbeddedDoc;
+									if(doc.isSemiEmbedded(semiEmbeddedPath)){
+										semiEmbeddedDoc = doc.get(semiEmbeddedPath);
+									}
+									else if(doc.isSemiEmbeddedArray(semiEmbeddedPath)){
+										semiEmbeddedDoc = doc.get(semiEmbeddedPath).remove(me._id);
+									}
+									if(semiEmbeddedDoc){
+										var changed = false;
+										me.keys().forEach(function(key){
+											if(me[key] != semiEmbeddedDoc[key]){
+												semiEmbeddedDoc[key] = me[key];
+												changed = true;
+											}
+											if(changed){
+												doc.save();
+											}
+										});
+									}
+								});
+							}
+						});
+					}
+				});
+			}
+		});
+	}
+}

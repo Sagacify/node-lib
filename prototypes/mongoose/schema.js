@@ -102,13 +102,12 @@ var i = models.length;
 var model;
 while(i--) {
 	model = models[i];
-	mongoose.models[model].schema.getSkelleton = Skelleton[model];
+	mongoose.models[model].schema.skelleton = Skelleton[model];
 }
 
 mongoose.models.keys().forEach(function(model){
 	mongoose.models[model].schema.getFormattedSchema(function(err, fs){});
 });
-
 
 
 mongoose.Schema.prototype.get = function(path, callback){

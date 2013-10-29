@@ -159,13 +159,13 @@ var async = require('async');
 // 	return schema.ref;
 // };
 
-// mongoose.Model.prototype.getModel = function(){
-// 	return mongoose.models[this.getModelName()];
-// };
+mongoose.Model.prototype.getModel = function(){
+	return mongoose.models[this.getModelName()];
+};
 
-// mongoose.Model.prototype.getModelName = function(){
-// 	return mongoose.modelNameFromCollectionName(this.collection.name);
-// };
+mongoose.Model.prototype.getModelName = function(){
+	return mongoose.modelNameFromCollectionName(this.collection.name);
+};
 
 // mongoose.Model.prototype.setSemiEmbedded = function(path, val, callback){
 // 	var me = this;
@@ -268,6 +268,55 @@ var async = require('async');
 // 		}
 // 	}
 // };
+
+mongoose.Model.prototype._remove = mongoose.Model.prototype.remove;
+
+mongoose.Model.prototype.remove = function(){
+	this.ensureRemoveConsistency();
+	//return this._remove.apply(this, arguments);
+};
+
+mongoose.Model.prototype.ensureRemoveConsistency = function(){
+	var me = this;
+	var myModelName = this.getModelName();
+	mongoose.models.keys().forEach(function(modelName){
+		var skelleton = mongoose.models[modelName].schema.skelleton;
+		if(skelleton[myModelName]){
+			skelleton[myModelName].forEach(function(path){
+				var findArgs = {};
+				findArgs[path] = me._id;
+				model(modelName).find(findArgs, function(err, docs){
+					if(docs){
+						docs.forEach(function(doc){
+							if(path.endsWith('._id')){
+								var semiEmbeddedPath = path.substring(0, path.length-4);
+								if(doc.isSemiEmbedded(semiEmbeddedPath)){
+									doc.set(semiEmbeddedPath, null);
+									doc.save();
+								}
+								else if(doc.isSemiEmbeddedArray(semiEmbeddedPath)){
+									doc.get(semiEmbeddedPath).remove(me._id);
+									doc.save();
+								}
+							}
+							else if(doc.isRef(path)){
+								doc.set(path, null);
+								doc.save();
+							}
+							else if(doc.isRefArray(path)){
+								doc.get(path).remove(me._id);
+								doc.save();
+							}
+						});
+					}
+				});
+			});
+			model(modelName).find()
+		}
+	});
+};
+
+mongoose.Model.prototype.sgRemove = mongoose.Model.prototype.remove;
 
 mongoose.Model.process = function(filter, sort, paginate, callback){
 	if(this instanceof Array){
