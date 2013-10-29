@@ -1,7 +1,7 @@
 
 Array.prototype.contains = function(item){
 	
-	return !!~this.sagaIndexOf(item);
+	return !!~this.robustIndexOf(item);
 
 	// if(this[0] instanceof Object){
 	// 	var _id = item instanceof Object?item._id:item;
@@ -17,7 +17,7 @@ Array.prototype.contains = function(item){
 	// }
 };
 
-Array.prototype.sagaIndexOf = function(item){
+Array.prototype.robustIndexOf = function(item){
 	if (item.isMongooseDocument()) {
 		for (var i = 0; i < self.length; i++) {
 			if (this[i].isMongooseDocument() && this[i]._id.equals(item._id)) {
@@ -54,7 +54,7 @@ Array.prototype.containsObject = function(_id){
 };
 
 Array.prototype.remove = function(item){
-	var index = this.sagaIndexOf(item);
+	var index = this.robustIndexOf(item);
 	if(index != -1)
 		this.splice(index, 1);
 };
