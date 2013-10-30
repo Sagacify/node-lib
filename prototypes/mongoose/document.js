@@ -25,31 +25,43 @@ mongoose.Document.prototype.created_at = function() {
 
 mongoose.Document.prototype._get = mongoose.Document.prototype.get;
 
+// mongoose.Document.prototype.get = function(path, options, callback){
+// 	if(typeof options == "function" || callback){
+// 		var callback = callback||options;
+// 		if(this.schema.tree._get(path)){
+// 			callback(null, this._get(path));
+// 		}
+// 		else{
+// 			if(this[path].hasCallback()){
+// 				if(options.params){
+// 					this[path]._apply(this, options.params, callback);
+// 				}
+// 				else{
+// 					this[path](callback);
+// 				}
+// 			}
+// 			else{
+// 				if(options.params){
+// 					callback(null, this[path]._apply(this, options.params));
+// 				}
+// 				else{
+// 					callback(null, this[path]());
+// 				}
+// 			}
+// 		}
+// 	}	
+// 	else{
+// 		return this._get(path, options);
+// 	}
+// };
+
 mongoose.Document.prototype.get = function(path, options, callback){
-	if(typeof options == "function" || callback){
-		var callback = callback||options;
-		if(path in this.schema.tree){
-			callback(null, this._get(path));
-		}
-		else{
-			if(this[path].hasCallback()){
-				if(options.params){
-					this[path]._apply(this, options.params, callback);
-				}
-				else{
-					this[path](callback);
-				}
-			}
-			else{
-				if(options.params){
-					callback(null, this[path]._apply(this, options.params));
-				}
-				else{
-					callback(null, this[path]());
-				}
-			}
-		}
-	}	
+	var getterName = "get"+path.capitalize();
+	if(typeof this[getterName] == "function"){
+		var callback = typeof options == "function"?options:callback;
+		options = options||{};
+		this[getterName]._apply(this, options.params, callback);
+	}
 	else{
 		return this._get(path, options);
 	}

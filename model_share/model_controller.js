@@ -14,7 +14,7 @@ module.exports = function (app) {
 			}
 		});
 		var structure = {routes: routes, schemas:schemas};
-		res.SGsend(structure);
+		res.SGsend(schemas);
 	});
 
 };
