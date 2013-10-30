@@ -26,7 +26,7 @@ var add_Token				=	logic.add_Token,
 	remove_ExcessTokens		=	logic.remove_ExcessTokens,
 	remove_ExpiredTokens	=	logic.remove_ExpiredTokens;
 
-console.log(remove_Duplicates);
+//console.log(remove_Duplicates);
 
 var Auth = {
 	Register: function (input, callback) {

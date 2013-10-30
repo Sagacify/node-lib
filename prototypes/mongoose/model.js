@@ -269,11 +269,22 @@ mongoose.Model.prototype.getModelName = function(){
 // 	}
 // };
 
+mongoose.Model.prototype._save = mongoose.Model.prototype.save;
+
+mongoose.Model.prototype.save = function save(fn){
+	if(this.modifiedPaths().length==0){
+		fn(null);
+	}
+	else{
+		return this._save.apply(this, arguments);
+	}
+};
+
 mongoose.Model.prototype._remove = mongoose.Model.prototype.remove;
 
 mongoose.Model.prototype.remove = function(){
 	this.ensureRemoveConsistency();
-	//return this._remove.apply(this, arguments);
+	return this._remove.apply(this, arguments);
 };
 
 mongoose.Model.prototype.ensureRemoveConsistency = function(){

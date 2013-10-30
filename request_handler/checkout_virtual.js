@@ -1,20 +1,36 @@
-function CheckoutView(context, route){
+function CheckoutVirtual(context, route){
 	this.context = context;
 	this.route = route;
 	this.state = route.states.last();
 	this.parentState = this.state.parentState();
-	this.view = this.state.obj;
+	this.virtual = this.state.obj;
 };
 
-CheckoutView.prototype.get = function(callback){
+CheckoutVirtual.prototype.get = function(callback){
 	this.parentState.state.caller.get.apply(this.parentState.state.obj, [this.parentState.path, {params:this.context.req.mixin.filter}, callback]);
 };
 
-CheckoutView.prototype.post = function(callback){
-	this.parentState.state.caller.do.apply(this.parentState.state.obj, [this.parentState.path+"_add", this.context.req.body, callback]);
+CheckoutVirtual.prototype.post = function(callback){
+	var me = this;
+	if(this.parentState.state.type() == "Document"){
+		this.parentState.state.obj.add(this.parentState.path, this.context.req.body._item||this.context.req.body, function(err, added){
+			if(!err){
+				me.parentState.state.obj.save(function(err){
+					console.log(err)
+					callback(err, me.parentState.state.obj);
+				});
+			}
+			else{
+				callback(err);
+			}
+		});
+	}
+	else{
+		callback(new SGError());
+	}
 };
 
-CheckoutView.prototype.put = function(callback){
+CheckoutVirtual.prototype.put = function(callback){
 	var me = this;
 	this.get(function(err, collDoc){
 		if(collDoc instanceof mongoose.Document){
@@ -39,7 +55,7 @@ CheckoutView.prototype.put = function(callback){
 	});
 };
 
-CheckoutView.prototype.delete = function(callback){
+CheckoutVirtual.prototype.delete = function(callback){
 	var me = this;
 	this.get(function(err, collDoc){
 		if(collDoc instanceof mongoose.Document){
@@ -64,4 +80,4 @@ CheckoutView.prototype.delete = function(callback){
 	});
 };
 
-module.exports = CheckoutView;
+module.exports = CheckoutVirtual;

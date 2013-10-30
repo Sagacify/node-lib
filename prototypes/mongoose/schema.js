@@ -98,17 +98,31 @@ mongoose.Schema.prototype.getFormattedSchema = function(options, callback){
 
 mongoose.Schema.prepareSchemas = function(){
 	var Skelleton = HalloweenSkelleton.getSkelleton();
-	var models = Object.keys(mongoose.models);
-	var i = models.length;
-	var model;
-	while(i--) {
-		model = models[i];
-		mongoose.models[model].schema.skelleton = Skelleton[model];
-	}
 
 	mongoose.models.keys().forEach(function(model){
+		mongoose.models[model].schema.skelleton = Skelleton[model];
 		mongoose.models[model].schema.getFormattedSchema(function(err, fs){});
+		mongoose.models[model].schema.setDefaultVirtualsActions();
 	});
+};
+
+mongoose.Schema.prototype.hasVirtual = function(name){
+	return this.documentVirtuals[name]||this.collectionVirtuals[name];
+};
+
+mongoose.Schema.prototype.hasAction = function(name){
+	return this.documentActions[name]||this.collectionActions[name];
+};
+
+mongoose.Schema.prototype.setDefaultVirtualsActions = function(){
+	if(!this.documentVirtuals)
+		this.documentVirtuals = {};
+	if(!this.documentActions)
+		this.documentActions = {};
+	if(!this.collectionVirtuals)
+		this.collectionVirtuals = {};
+	if(!this.collectionVirtuals)
+		this.collectionVirtuals = {};
 };
 
 mongoose.Schema.prototype.setVirtuals = function(sgVirtuals){
@@ -143,7 +157,7 @@ mongoose.Schema.prototype.do = function(action, params, callback){
 	if(this instanceof mongoose.Schema){
 		this.statics[action]._apply(this, params, callback);
 	}
-	else if(this instanceof Array && this.schema.statics[action]){
+	else if(this instanceof Array && this.schema.collectionActions[action]){
 		this.schema.statics[action]._apply(this, params, callback);
 	}
 	else if(this instanceof Array && this.length > 0 && typeof this[0][action] == "function"){
@@ -182,10 +196,6 @@ mongoose.Schema.prototype.sgRemove = function(item){
 		});
 	}
 	else{
-		for(var i = this.length-1; i >= 0; i--){
-			if((this[i] && this[i] instanceof mongoose.Types.ObjectId && this[i].equals(item)) || (item && item instanceof mongoose.Types.ObjectId && item.equals(this[i])) || (this[i] == item)){
-				this.splice(i, 1);
-			}
-		}
+		this.sgRemove(item);
 	}
 };

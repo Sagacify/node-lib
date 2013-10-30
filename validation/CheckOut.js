@@ -93,7 +93,6 @@ function handleRequest (callback, args, caja, req, res, next) {
 }
 
 module.exports = function (app) {
-
 	var BearerAuth = require('../../app/auth-middlewares/authenticate_token.js');
 
 	function expressMethodWrapper (methodName, uri, options, callback) {

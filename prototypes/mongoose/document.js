@@ -67,17 +67,26 @@ mongoose.Document.prototype.get = function(path, options, callback){
 	}
 };
 
+// mongoose.Document.prototype.do = function(action, params, callback){	
+// 	if(typeof this[action] == "function" && this[action].name){
+// 		if(this[action].name.startsWith("action")){
+// 			this[action]._apply(this, params, callback);
+// 		}
+// 		else if(this[action].name.startsWith("view")){
+// 			this[action+"_add"]._apply(this, params, callback);
+// 		}
+// 		else{
+// 			callback(new SGError());
+// 		}
+// 	}
+// 	else{
+// 		callback(new SGError());
+// 	}
+// };
+
 mongoose.Document.prototype.do = function(action, params, callback){	
-	if(typeof this[action] == "function" && this[action].name){
-		if(this[action].name.startsWith("action")){
-			this[action]._apply(this, params, callback);
-		}
-		else if(this[action].name.startsWith("view")){
-			this[action+"_add"]._apply(this, params, callback);
-		}
-		else{
-			callback(new SGError());
-		}
+	if(typeof this[action] == "function" && this.schema.documentActions[action]){
+		this[action]._apply(this, params, callback);
 	}
 	else{
 		callback(new SGError());
@@ -171,7 +180,16 @@ mongoose.Document.prototype.setSemiEmbedded = function(path, val, callback){
 };
 
 mongoose.Document.prototype.add = function(path, val, callback){
-	if(this.isSemiEmbeddedArray(path)){
+	if(typeof this[path+"_add"] == "function"){
+		if(this[path+"_add"].hasCallback()){
+			this[path+"_add"](val, callback);
+		}
+		else{
+			this[path+"_add"](val);
+			callback(null);
+		}
+	}
+	else if(this.isSemiEmbeddedArray(path)){
 		this.get(path).addSemiEmbedded(val, callback);
 	}
 	else if(this.isRefArray(path)){
@@ -181,6 +199,22 @@ mongoose.Document.prototype.add = function(path, val, callback){
 		this.get(path).push(val);
 		if(callback)
 			callback(null, this.get(path).last());
+	}
+};
+
+mongoose.Document.prototype.removeFromArray = function(path, val, callback){
+	if(typeof this[path+"_remove"] == "function"){
+		this[path+"_remove"](val, callback);
+	}
+	else if(val instanceof mongoose.Document){
+		val.remove();
+		if(callback)
+			callback(null);
+	}
+	else{
+		this.get(path).sgRemove(val);
+		if(callback)
+			callback(null);
 	}
 };
 
@@ -220,7 +254,7 @@ mongoose.Document.prototype.sgUpdate = function(args, callback){
 	});
 };
 
-mongoose.Document.ensureUpdateConsistency = function(){
+mongoose.Document.prototype.ensureUpdateConsistency = function(){
 	var me = this;
 	if(this.getModelName){
 		var myModelName = this.getModelName();
