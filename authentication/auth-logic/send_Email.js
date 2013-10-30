@@ -3,8 +3,8 @@ var send_VerficationMail = Mailer.send_VerficationMail;
 var send_PasswordResetMail = Mailer.send_PasswordResetMail;
 
 module.exports = function (mixin, callback) {
-	if(typeof_email === 'verification_email') {
-		Mailer.send_VerficationMail(mixin.email, function (e) {
+	if(mixin.typeof_email === 'verification_email') {
+		Mailer.send_VerficationMail(mixin.email, mixin.token, function (e) {
 			if(e) {
 				callback('COULDNT_SEND_EMAIL');
 			}
@@ -13,8 +13,8 @@ module.exports = function (mixin, callback) {
 			}
 		});
 	}
-	else if(typeof_email === 'password_reset_email') {
-		Mailer.send_PasswordResetMail(mixin.email, function (e) {
+	else if(mixin.typeof_email === 'password_reset_email') {
+		Mailer.send_PasswordResetMail(mixin.email, mixin.token, function (e) {
 			if(e) {
 				callback('COULDNT_SEND_EMAIL');
 			}

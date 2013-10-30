@@ -3,7 +3,7 @@ var Mixin = function Mixin (input) {
 	this.error = null;
 	this.mixin = {};
 	this.input_NotEmpty = function () {
-		if(!this.input || !Object.isObject(input) || !Object.keys(input).length) {
+		if(!this.input || !this.input.isObject() || !Object.keys(this.input).length) {
 			this.error = 'EMPTY_INPUT';
 		}
 		return this;
@@ -11,10 +11,10 @@ var Mixin = function Mixin (input) {
 	this.expecting = function (property, type, len) {
 		if(!this.error) {
 			var value = this.input[property];
-			if(!((value != null) && (typeof value == type))) {
-				this.error = 'INVALID_TYPE';
+			if(!((value != null) && (value.getType() === '[object ' + type + ']'))) {
+				this.error = 'INVALID_TYPE_FOR_' + property;
 			}
-			else if(len && (value.length === len)) {
+			else if(len && (value.length !== len)) {
 				this.error = 'INVALID_LENGTH';
 			}
 			else {
@@ -32,7 +32,9 @@ Mixin.prototype = {
 		.expecting('unique', 'Array', 2)
 		.expecting('email', 'String')
 		.expecting('password', 'String')
-		.expecting('user_attr', 'String')
+		.expecting('user_attr', 'Object')
+		.expecting('typeof_email', 'String')
+		.expecting('is_registering', 'Boolean')
 		.expecting('required_state', 'Boolean');
 		callback(this.error, this.mixin);
 	},
@@ -48,7 +50,7 @@ Mixin.prototype = {
 		this
 		.input_NotEmpty()
 		.expecting('unique', 'Array', 1)
-		.expecting('authorization', 'Object')
+		.expecting('authorization', 'String')
 		.expecting('required_state', 'Boolean');
 		callback(this.error, this.mixin);
 	},
@@ -80,13 +82,26 @@ Mixin.prototype = {
 		.input_NotEmpty()
 		.expecting('unique', 'Array', 2)
 		.expecting('email', 'String')
+		.expecting('typeof_email', 'String')
+		.expecting('required_state', 'Boolean');
+		callback(this.error, this.mixin);
+	},
+	ResetPassword: function (callback) {
+		this
+		.input_NotEmpty()
+		.expecting('unique', 'Array', 2)
+		.expecting('password', 'String')
+		.expecting('token', 'String')
 		.expecting('required_state', 'Boolean');
 		callback(this.error, this.mixin);
 	}
 };
 
-module.exports = function (event_name, input, state, typeof_email) {
+module.exports = function (event_name, input, typeof_email, state, is_registering) {
 	input.required_state = state;
 	input.typeof_email = typeof_email;
-	return new Mixin(input)[event_name];
+	input.is_registering = is_registering || false;
+	return function (callback) {
+		new Mixin(input)[event_name](callback);
+	};
 };

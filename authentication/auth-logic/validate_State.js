@@ -1,4 +1,4 @@
-module.export = function (mixin, callback) {
+module.exports = function (mixin, callback) {
 	if(mixin.user.state !== mixin.required_state) {
 		callback('INVALID_STATE');
 	}
