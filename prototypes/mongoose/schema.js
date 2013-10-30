@@ -96,21 +96,35 @@ mongoose.Schema.prototype.getFormattedSchema = function(options, callback){
 // 	}
 // };
 
-var Skelleton = HalloweenSkelleton.getSkelleton();
-var models = Object.keys(mongoose.models);
-var i = models.length;
-var model;
-while(i--) {
-	model = models[i];
-	mongoose.models[model].schema.skelleton = Skelleton[model];
-}
+mongoose.Schema.prepareSchemas = function(){
+	var Skelleton = HalloweenSkelleton.getSkelleton();
+	var models = Object.keys(mongoose.models);
+	var i = models.length;
+	var model;
+	while(i--) {
+		model = models[i];
+		mongoose.models[model].schema.skelleton = Skelleton[model];
+	}
 
-mongoose.models.keys().forEach(function(model){
-	mongoose.models[model].schema.getFormattedSchema(function(err, fs){});
-});
+	mongoose.models.keys().forEach(function(model){
+		mongoose.models[model].schema.getFormattedSchema(function(err, fs){});
+	});
+};
 
+mongoose.Schema.prototype.setVirtuals = function(sgVirtuals){
+	this.sgVirtuals = sgVirtuals;
+};
+
+mongoose.Schema.prototype.setActions = function(sgActions){
+	this.sgActions = sgActions;
+};
+
+mongoose.Schema.prototype._get = mongoose.Schema.prototype.get;
 
 mongoose.Schema.prototype.get = function(path, callback){
+	if(!callback){
+		return this._get(path);
+	}
 	var schema = this.schema?this.schema:this;
 	if(typeof schema.statics[path] == "function"){
 		if(schema.statics[path].getParamNames()[0] === "callback"){

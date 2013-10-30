@@ -21,7 +21,10 @@ exports.consoleError = function (error) {
 	var red = colors.red;
 	var reset = colors.reset;
 	console.log(red);
-	if(error instanceof Error) {
+	if(!error) {
+		console.log(error);
+	}
+	else if(error instanceof Error) {
 		console.log(error.stack || error);
 	}
 	else if(error.constructor.name === 'SGError') {

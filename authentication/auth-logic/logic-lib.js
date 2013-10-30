@@ -1,4 +1,4 @@
-module.export = {
+module.exports = {
 	find_User				:	require('./find_User'),
 	remove_Duplicates		:	require('./remove_Duplicates'),
 	hash_Password			:	require('./hash_Password'),
@@ -13,5 +13,8 @@ module.export = {
 	remove_ExcessTokens		:	require('./remove_ExcessTokens'),
 	validate_Token			:	require('./validate_Token'),
 	compare_Token			:	require('./compare_Token'),
-	remove_Token			:	require('./remove_Token')
+	remove_Token			:	require('./remove_Token'),
+	flip_State				:	require('./flip_State'),
+	replace_Token			:	require('./replace_Token'),
+	add_Token				:	require('./add_Token')
 };

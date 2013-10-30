@@ -1,14 +1,14 @@
 var Hash = require('../../hashing/Hash');
-var hashToken = Hash.hashToken;
 
-module.export = function (mixin, callback) {
+module.exports = function (mixin, callback) {
 	var hashed_token = mixin.hashed_token;
 	var i = mixin.user.tokens.length;
+	var now = Date.now();
 	var match = false;
 	var token;
 	while(i--) {
 		token = mixin.user.tokens[i];
-		if((hashed_token === hashToken(token.token)) && (token.expiration > Date.now())) {
+		if((hashed_token === token.token) && (token.expiration > now)) {
 			match = i;
 			break;
 		}

@@ -1,40 +1,121 @@
-/**
-* DrunkUser.js is a fuzzing based testing tool.
-* The fuzzer loops through REST API urls and sends seni-random strings.
-* At the end a report is produced based on server crash errors and statuses.
-*/
+var special_Strings = [
+	'',
+	'.',
+	'_',
+	'-',
+	'+',
+	'˙',
+	'"',
+	'<',
+	'>',
+	';',
+	'&',
+	'@',
+	'\\',
+	'\n',
+	'\r',
+	'\'',
+	'\n\r',
+	'%00',
+	'null',
+	'ﬂ∂∏ı',
+	'void',
+	'void "a"',
+	'void 1',
+	new String()
+];
 
-var fs = require('fs');
-var request = require('request');
-var yamlConfig = require('yaml-config');
+var special_Numbers = [
+	0,
+	-1,
+	1,
+	Infinity,
+	Number.NaN,
+	Number.NEGATIVE_INFINITY,
+	Number.POSITIVE_INFINITY,
+	Number.MAX_VALUE,
+	Number.MAX_VALUE + Number.MAX_VALUE,
+	Number.MIN_VALUE - Number.MIN_VALUE,
+	Number.MIN_VALUE + Number.MAX_VALUE,
+	Number.MAX_VALUE - Number.MIN_VALUE
+];
 
-var _NODE_ENV = process.env.NODE_ENV || 'development';
-var config = yamlConfig.readConfig('../../../config/config.yaml', _NODE_ENV);
+var special_Booleans = [
+	true,
+	false,
+	new Boolean()
+];
 
-function drunkTalk() {
-	return new Buffer(0xFFFD).toString();
+function primitive_undefined () {
+	return;
 }
 
-(function() {
-	request.get({ url: config.hostname + '/me/identity'}, function(req, res, data) {
-		var body = JSON.parse(data);
-		if('me' in body) {
-			var identity = body.me;
-			DrunkUser(config.hostname, identity, 0);
-		}
-	}).on('error', function(error) {
-		console.log(error);
-	});
-})();
+var special_Primitives = [
+	null,
+	undefined,
+	primitive_undefined(),
+	void 1
+];
 
-function DrunkUser(hostname, pathList, i) {
-	if((i + 1) === identity.length) {
-		return console.log('DrunkUser\'s fuzzing tests are done!');
+var special_Objects = [
+	{},
+	new Object(),
+	new Object(null),
+	new Object(undefined)
+];
+
+var special_Arrays = [
+	[],
+	new Array()
+];
+
+function get_filled_Objects () {
+	var filled_Objects = [];
+	var object;
+	for(var i = 0; i < special_Strings; i++) {
+		object = {};
+		object[special_Strings[i]] = true;
+		filled_Objects[i].push(object);
 	}
-	request.post({ url: hostname + pathList[0], body: drunkTalk() }, function(req, res, data) {
-		var body = JSON.parse(data);
-		DrunkUser(hostname, pathList, i + 1);
-	}).on('error', function(error) {
-		console.log(error);
-	});
+	return filled_Objects;
 }
+
+function get_filled_Array () {
+	var filled_Array = [];
+	var array;
+	for(var i = 0; i < special_Numbers; i++) {
+		array = [];
+		array[special_Numbers[i]] = true;
+		filled_Array[i].push(object);
+	}
+	return filled_Array;
+}
+
+var results = {
+	'Array': special_Arrays.concat(get_filled_Array()),
+	'String': special_Strings,
+	'Number': special_Numbers,
+	'Object': special_Objects.concat(get_filled_Objects()),
+	'Boolean': special_Booleans,
+	'Primitives': special_Primitives
+};
+
+var json_types = Object.keys(results);
+
+function gen_all_special_Values () {
+	var all_values = [];
+	var keys = Object.keys(results);
+	var len = keys.length;
+	var i;
+	while(len--) {
+		i = keys[len];
+		all_values = all_values.concat(results[i]);
+	}
+	return all_values;
+}
+
+results.all_special_values = gen_all_special_Values();
+results.too_long_string = new Buffer(0xFFFD).toString();
+results.json_types = json_types;
+
+module.exports = results;

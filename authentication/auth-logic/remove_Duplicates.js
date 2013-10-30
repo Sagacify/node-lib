@@ -1,7 +1,7 @@
 var async = require('async');
 var each = async.each;
 
-module.export = function (mixin, callback) {
+module.exports = function (mixin, callback) {
 	each(mixin.users, function (user, cb) {
 		if(user.state === mixin.required_state) {
 			cb('USER_ALREADY_EXISTS');
