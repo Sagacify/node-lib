@@ -24,7 +24,7 @@ Function.prototype._apply = function(thisArg, argsObject, callback){
 			argsArray.push(callback);
 			hasCallback = true;
 		}
-		else{
+		else if(argsObject){
 			argsArray.push(argsObject[paramName]);
 		}
 	});

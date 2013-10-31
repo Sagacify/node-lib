@@ -8,7 +8,7 @@ var CheckoutDocumentArray = require('./checkout_documentarray');
 var CheckoutPrimitive = require('./checkout_primitive');
 var CheckoutPrimitiveArray = require('./checkout_primitivearray');
 var CheckoutAction = require('./checkout_action');
-var CheckoutView = require('./checkout_view');
+var CheckoutVirtual = require('./checkout_virtual');
 
 function RouteHandler(options){
 	this.options = options;
@@ -90,8 +90,8 @@ RouteHandler.prototype.checkout = function(callback){
 		case "Action":
 		checkoutClass = CheckoutAction;
 		break;
-		case "View":
-		checkoutClass = CheckoutView;
+		case "Virtual":
+		checkoutClass = CheckoutVirtual;
 		break;
 	};
 

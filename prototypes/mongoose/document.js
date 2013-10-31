@@ -25,47 +25,68 @@ mongoose.Document.prototype.created_at = function() {
 
 mongoose.Document.prototype._get = mongoose.Document.prototype.get;
 
+// mongoose.Document.prototype.get = function(path, options, callback){
+// 	if(typeof options == "function" || callback){
+// 		var callback = callback||options;
+// 		if(this.schema.tree._get(path)){
+// 			callback(null, this._get(path));
+// 		}
+// 		else{
+// 			if(this[path].hasCallback()){
+// 				if(options.params){
+// 					this[path]._apply(this, options.params, callback);
+// 				}
+// 				else{
+// 					this[path](callback);
+// 				}
+// 			}
+// 			else{
+// 				if(options.params){
+// 					callback(null, this[path]._apply(this, options.params));
+// 				}
+// 				else{
+// 					callback(null, this[path]());
+// 				}
+// 			}
+// 		}
+// 	}	
+// 	else{
+// 		return this._get(path, options);
+// 	}
+// };
+
 mongoose.Document.prototype.get = function(path, options, callback){
-	if(typeof options == "function" || callback){
-		var callback = callback||options;
-		if(path in this.schema.tree){
-			callback(null, this._get(path));
-		}
-		else{
-			if(this[path].hasCallback()){
-				if(options.params){
-					this[path]._apply(this, options.params, callback);
-				}
-				else{
-					this[path](callback);
-				}
-			}
-			else{
-				if(options.params){
-					callback(null, this[path]._apply(this, options.params));
-				}
-				else{
-					callback(null, this[path]());
-				}
-			}
-		}
-	}	
+	var getterName = "get"+path.capitalize();
+	if(typeof this[getterName] == "function"){
+		var callback = typeof options == "function"?options:callback;
+		options = options||{};
+		this[getterName]._apply(this, options.params, callback);
+	}
 	else{
 		return this._get(path, options);
 	}
 };
 
+// mongoose.Document.prototype.do = function(action, params, callback){	
+// 	if(typeof this[action] == "function" && this[action].name){
+// 		if(this[action].name.startsWith("action")){
+// 			this[action]._apply(this, params, callback);
+// 		}
+// 		else if(this[action].name.startsWith("view")){
+// 			this[action+"_add"]._apply(this, params, callback);
+// 		}
+// 		else{
+// 			callback(new SGError());
+// 		}
+// 	}
+// 	else{
+// 		callback(new SGError());
+// 	}
+// };
+
 mongoose.Document.prototype.do = function(action, params, callback){	
-	if(typeof this[action] == "function" && this[action].name){
-		if(this[action].name.startsWith("action")){
-			this[action]._apply(this, params, callback);
-		}
-		else if(this[action].name.startsWith("view")){
-			this[action+"_add"]._apply(this, params, callback);
-		}
-		else{
-			callback(new SGError());
-		}
+	if(typeof this[action] == "function" && this.schema.documentActions[action]){
+		this[action]._apply(this, params, callback);
 	}
 	else{
 		callback(new SGError());
@@ -159,7 +180,16 @@ mongoose.Document.prototype.setSemiEmbedded = function(path, val, callback){
 };
 
 mongoose.Document.prototype.add = function(path, val, callback){
-	if(this.isSemiEmbeddedArray(path)){
+	if(typeof this[path+"_add"] == "function"){
+		if(this[path+"_add"].hasCallback()){
+			this[path+"_add"](val, callback);
+		}
+		else{
+			this[path+"_add"](val);
+			callback(null);
+		}
+	}
+	else if(this.isSemiEmbeddedArray(path)){
 		this.get(path).addSemiEmbedded(val, callback);
 	}
 	else if(this.isRefArray(path)){
@@ -169,6 +199,22 @@ mongoose.Document.prototype.add = function(path, val, callback){
 		this.get(path).push(val);
 		if(callback)
 			callback(null, this.get(path).last());
+	}
+};
+
+mongoose.Document.prototype.removeFromArray = function(path, val, callback){
+	if(typeof this[path+"_remove"] == "function"){
+		this[path+"_remove"](val, callback);
+	}
+	else if(val instanceof mongoose.Document){
+		val.remove();
+		if(callback)
+			callback(null);
+	}
+	else{
+		this.get(path).sgRemove(val);
+		if(callback)
+			callback(null);
 	}
 };
 
@@ -208,7 +254,7 @@ mongoose.Document.prototype.sgUpdate = function(args, callback){
 	});
 };
 
-mongoose.Document.ensureUpdateConsistency = function(){
+mongoose.Document.prototype.ensureUpdateConsistency = function(){
 	var me = this;
 	if(this.getModelName){
 		var myModelName = this.getModelName();
