@@ -74,13 +74,7 @@ exports.handle = function(options){
 				}
 				//create directly in collection
 				else if(req.method == "POST"){
-<<<<<<< HEAD
-					var doc = new model(req.body);
-					doc.save(callback);
-=======
-					//Pour ne pas override Create?
 					model.create(req.body, callback);
->>>>>>> 6e27beb67301bdbbf7d31925a6f72b3cc1b682ce
 				}
 				else{
 					callback(new SGError());

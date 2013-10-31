@@ -121,8 +121,8 @@ mongoose.Schema.prototype.setDefaultVirtualsActions = function(){
 		this.documentActions = {};
 	if(!this.collectionVirtuals)
 		this.collectionVirtuals = {};
-	if(!this.collectionVirtuals)
-		this.collectionVirtuals = {};
+	if(!this.collectionActions)
+		this.collectionActions = {};
 };
 
 mongoose.Schema.prototype.setVirtuals = function(sgVirtuals){

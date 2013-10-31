@@ -63,13 +63,8 @@ function getAttachments (mailTemplate) {
 	var attachmentsFiles = fs.readdirSync(attachmentsFilesPath);
 	attachmentsFiles.forEach(function (anAttachment) {
 		attachments.push({
-<<<<<<< HEAD
-			filePath: attachmentsFilesPath + '/' + attachement,
-			cid: attachement
-=======
 			filePath: attachmentsFilesPath + '/' + anAttachment,
 			cid: anAttachment
->>>>>>> 6e27beb67301bdbbf7d31925a6f72b3cc1b682ce
 		});
 	});
 	return attachments;
