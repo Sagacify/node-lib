@@ -79,7 +79,7 @@ mongoose.Document.prototype.develop = function(callback){
 	var cbFields = [];
 	var cbFunctions = [];
 	fieldsToAdd.forEach(function(fieldToAdd){
-		if(me[fieldToAdd] && me[fieldToAdd] in schema.virtuals){
+		if(me[fieldToAdd] && me[fieldToAdd] in me.schema.virtuals){
 			developedDoc[fieldToAdd] = me[fieldToAdd];
 		}
 		else if(me[fieldToAdd] && me[fieldToAdd].isFunction()){

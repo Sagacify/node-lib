@@ -76,7 +76,7 @@ obj_proto.isMongooseDocument = function(){
 		return false;
 	};
 
-	return '_id' in this;
+	return this instanceof mongoose.Document;
 }
 
 obj_proto.isObject = function(){

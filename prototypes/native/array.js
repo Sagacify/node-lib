@@ -18,6 +18,10 @@ Array.prototype.contains = function(item){
 };
 
 Array.prototype.robustIndexOf = function(item){
+	if (!item) {
+		return -1;
+	};
+
 	if (item.isMongooseDocument()) {
 		for (var i = 0; i < self.length; i++) {
 			if (this[i].isMongooseDocument() && this[i]._id.equals(item._id)) {
@@ -54,6 +58,9 @@ Array.prototype.containsObject = function(_id){
 };
 
 Array.prototype.remove = function(item){
+	if (!item) {
+		return;
+	};
 	var index = this.robustIndexOf(item);
 	if(index != -1)
 		this.splice(index, 1);

@@ -190,6 +190,15 @@ RouteState.prototype.attachCaller = function(){
 	this.caller = caller;
 };
 
+RouteState.prototype.attachContext = function(){
+	if(this.obj && this.obj.isObject()){
+		Object.defineProperty(this.obj, "context", {
+			writable: true,
+			value: this.context
+		});
+	}
+};
+
 RouteState.prototype.build = function(callback){
 	var me = this;
 	this.getObject(function(err, obj){
@@ -202,6 +211,7 @@ RouteState.prototype.build = function(callback){
 				}
 				//console.log(me.obj)
 				me.attachCaller();
+				me.attachContext();
 				callback(err);
 			});
 		}

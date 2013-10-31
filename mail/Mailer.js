@@ -35,7 +35,7 @@ function sendMessage (data, template, callback) {
 
 
 function generateMail (data, mailTemplate, callback){
-	generateHTML(mailTemplate, data, function (e, html, text){
+	exports.generateHTML(mailTemplate, data, function (e, html, text){
 		if(e) {
 			callback(e);
 		}
@@ -58,7 +58,7 @@ function generateMail (data, mailTemplate, callback){
 
 function getAttachments (mailTemplate) {
 	var attachments = [];
-	var dirname = getDirname(mailTemplate);
+	var dirname = exports.getDirname(mailTemplate);
 	var attachmentsFilesPath = dirname + '/attachments';
 	var attachmentsFiles = fs.readdirSync(attachmentsFilesPath);
 	attachmentsFiles.forEach(function (anAttachment) {
@@ -75,7 +75,8 @@ exports.getDirname = function (mailTemplate) {
 };
 
 exports.generateHTML = function (mailTemplate, data, callback) {
-	var dirname = __dirname + '/../../views/emails/templates';
+	var dirname = __dirname + '/../../views/emails/templates';//exports.getDirname();
+
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
 			callback(e);
@@ -94,13 +95,16 @@ exports.generateHTML = function (mailTemplate, data, callback) {
 };
 
 function getSubject (mailTemplate) {
-	var dirname = getDirname(mailTemplate);
+	var dirname = exports.getDirname(mailTemplate);
 	return fs.readFileSync(dirname + '/subject.txt', 'utf8');
 }
 
 exports.send_VerficationMail = function (email, token, callback) {
 	var url = '/auth/validate/validToken/';
 	var validationLink = config.hostname + url + token;
+	console.log("------");
+	console.log(email);
+	console.log(token);
 	sendMessage({
 		to: email,
 		link: validationLink

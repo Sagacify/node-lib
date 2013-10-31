@@ -1,3 +1,0 @@
-APIState = function(){
-	
-}
