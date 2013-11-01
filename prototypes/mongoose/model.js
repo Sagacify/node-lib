@@ -342,18 +342,20 @@ mongoose.Model.process = function(filter, sort, paginate, callback){
 			});
 		}
 
-		if(sort){
+		var sortKeys = sort.keys();
+		if(sortKeys.length > 0){
+			var sort_by = sortKeys[0];
 			processedArray = processedArray.sort(function(item1, item2){
-				if(item1[sort] && !item2[sort]){
+				if(item1[sort_by] && !item2[sort_by]){
 					return 1;
 				}
-				else if(!item1[sort] && item2[sort]){
+				else if(!item1[sort_by] && item2[sort_by]){
 					return -1;
 				}
-				else if(typeof item1[sort] == "string" && typeof item2[sort] == "string"){
+				else if(typeof item1[sort_by] == "string" && typeof item2[sort_by] == "string"){
 					return item1.localCompare(item2);
 				}
-				else if(typeof item1[sort] == "number" && typeof item2[sort] == "number"){
+				else if(typeof item1[sort_by] == "number" && typeof item2[sort_by] == "number"){
 					return item2-item1;
 				}
 				else{
@@ -371,7 +373,7 @@ mongoose.Model.process = function(filter, sort, paginate, callback){
 		callback(null, processedArray);
 	}
 	else if(this.name == "model"){
-		this.find(filter).sort(sort).skip(paginate.offset).limit(paginate.limit).exec(callback);
+		this.find(filter).sort(sort).paginate(paginate).exec(callback);
 	}
 	else{
 		callback(new SGError());
