@@ -15,6 +15,7 @@ exports.clone = function(app) {
 
 	app.use(function (req, res, next) {
 		var userAgent = req.headers['user-agent'];
+		//console.log(userAgent);
 		var browserUserAgents = [
 			/mozilla/i,
 			/konqueror/i,

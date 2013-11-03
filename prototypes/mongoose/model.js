@@ -269,11 +269,22 @@ mongoose.Model.prototype.getModelName = function(){
 // 	}
 // };
 
+mongoose.Model.prototype._save = mongoose.Model.prototype.save;
+
+mongoose.Model.prototype.save = function save(fn){
+	if(this.modifiedPaths().length==0){
+		fn(null);
+	}
+	else{
+		return this._save.apply(this, arguments);
+	}
+};
+
 mongoose.Model.prototype._remove = mongoose.Model.prototype.remove;
 
 mongoose.Model.prototype.remove = function(){
 	this.ensureRemoveConsistency();
-	//return this._remove.apply(this, arguments);
+	return this._remove.apply(this, arguments);
 };
 
 mongoose.Model.prototype.ensureRemoveConsistency = function(){
@@ -316,9 +327,43 @@ mongoose.Model.prototype.ensureRemoveConsistency = function(){
 	});
 };
 
-mongoose.Model.prototype.sgRemove = mongoose.Model.prototype.remove;
+mongoose.Model.prototype.willRemove = function(){
 
-mongoose.Model.process = function(filter, sort, paginate, callback){
+};
+
+mongoose.Model.prototype.sgRemove = function(callback){
+	if(!this.will('remove', null, null, callback)){
+		return;
+	}
+
+	var post = this.did('remove', null, null, callback);
+
+	this.remove(post);
+};
+
+mongoose.Model.prototype.didRemove = function(){
+
+};
+
+mongoose.Model.willCreate = function(){
+
+};
+
+mongoose.Model.sgCreate = function(doc, callback){
+	if(!mongoose.Document.prototype.will.apply(this, ['create', null, doc, callback])){
+		return;
+	}
+
+	var post = mongoose.Document.prototype.did.apply(this, ['create', null, doc, callback]);
+
+	this.create(doc, post);
+};
+
+mongoose.Model.didCreate = function(){
+
+};
+
+mongoose.Model.get = function(filter, sort, paginate, callback){
 	if(this instanceof Array){
 		if(filter){
 			var processedArray = this.filter(function(item){
@@ -331,18 +376,20 @@ mongoose.Model.process = function(filter, sort, paginate, callback){
 			});
 		}
 
-		if(sort){
+		var sortKeys = sort.keys();
+		if(sortKeys.length > 0){
+			var sort_by = sortKeys[0];
 			processedArray = processedArray.sort(function(item1, item2){
-				if(item1[sort] && !item2[sort]){
+				if(item1[sort_by] && !item2[sort_by]){
 					return 1;
 				}
-				else if(!item1[sort] && item2[sort]){
+				else if(!item1[sort_by] && item2[sort_by]){
 					return -1;
 				}
-				else if(typeof item1[sort] == "string" && typeof item2[sort] == "string"){
+				else if(typeof item1[sort_by] == "string" && typeof item2[sort_by] == "string"){
 					return item1.localCompare(item2);
 				}
-				else if(typeof item1[sort] == "number" && typeof item2[sort] == "number"){
+				else if(typeof item1[sort_by] == "number" && typeof item2[sort_by] == "number"){
 					return item2-item1;
 				}
 				else{
@@ -360,7 +407,7 @@ mongoose.Model.process = function(filter, sort, paginate, callback){
 		callback(null, processedArray);
 	}
 	else if(this.name == "model"){
-		this.find(filter).sort(sort).skip(paginate.offset).limit(paginate.limit).exec(callback);
+		this.find(filter).sort(sort).paginate(paginate).exec(callback);
 	}
 	else{
 		callback(new SGError());

@@ -93,7 +93,6 @@ function handleRequest (callback, args, caja, req, res, next) {
 }
 
 module.exports = function (app) {
-
 	var BearerAuth = require('../../app/auth-middlewares/authenticate_token.js');
 
 	function expressMethodWrapper (methodName, uri, options, callback) {
@@ -117,16 +116,20 @@ module.exports = function (app) {
 		}, function (req, res, next) {
 			var filter = {};
 			req.query.keys().forEach(function (queryKey){
-				if(req.query[queryKey] != "offset" && req.query[queryKey] != "limit" && req.query[queryKey] != "sort")
+				if(queryKey != "offset" && queryKey != "limit" && queryKey != "sort_by" && queryKey != "sort_how")
 					filter[queryKey] = req.query[queryKey];
 			});
+			var sort = {};
+			if(req.query.sort_by){
+				sort[req.query.sort_by] = req.query.sort_how||'asc';
+			}
 			req.mixin = req.params.clone().merge(req.body).merge({
-				paginate : {
-					offset : req.query.offset,
-					limit : req.query.limit
+				paginate: {
+					offset: req.query.offset,
+					limit: req.query.limit
 				},
-				sort : req.query.sort,
-				filter:filter
+				sort: sort,
+				filter: filter
 			});
 
 			handleRequest(callback, options.validation || {}, caja, req, res, next);

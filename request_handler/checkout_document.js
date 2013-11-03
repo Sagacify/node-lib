@@ -24,7 +24,7 @@ CheckoutDocument.prototype.delete = function(callback){
 		this.doc.sgRemove(callback);
 	}
 	else if(this.parentState.state.obj instanceof mongoose.Types.DocumentArray){
-		this.doc.remove(function(err){
+		this.parentState.state.obj.removeFromArray(this.parentState.path, this.doc, function(err){
 			if(!err){
 				me.parentState.state.parentState().state.obj.save(callback);
 			}
