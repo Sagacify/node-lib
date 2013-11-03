@@ -20,12 +20,10 @@ function sendMessage (data, template, callback) {
 		}
 		else {
 			transport.sendMail(message, function (e) {
-				if(e){
-					console.log('Error occured');
-					console.log(e.message);
+				if(e) {
 					callback(e);
-				} else {
-					console.log('Message sent successfully!');
+				}
+				else {
 					callback(null);
 				}
 			});
@@ -34,8 +32,8 @@ function sendMessage (data, template, callback) {
 }
 
 
-function generateMail (data, mailTemplate, callback){
-	generateHTML(mailTemplate, data, function (e, html, text){
+function generateMail (data, mailTemplate, callback) {
+	generateHTML(mailTemplate, data, function (e, html, text) {
 		if(e) {
 			callback(e);
 		}
@@ -70,11 +68,11 @@ function getAttachments (mailTemplate) {
 	return attachments;
 }
 
-exports.getDirname = function (mailTemplate) {
+function getDirname (mailTemplate) {
 	return __dirname + '/../../views/emails/templates/' + mailTemplate;
-};
+}
 
-exports.generateHTML = function (mailTemplate, data, callback) {
+function generateHTML (mailTemplate, data, callback) {
 	var dirname = __dirname + '/../../views/emails/templates';
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
@@ -91,27 +89,26 @@ exports.generateHTML = function (mailTemplate, data, callback) {
 			});
 		}
 	});
-};
+}
 
 function getSubject (mailTemplate) {
 	var dirname = getDirname(mailTemplate);
 	return fs.readFileSync(dirname + '/subject.txt', 'utf8');
 }
 
-exports.send_VerficationMail = function (email, token, callback) {
-	var url = '/auth/validate/validToken/';
-	var validationLink = config.hostname + url + token;
-	sendMessage({
-		to: email,
-		link: validationLink
-	}, 'validation_mail', callback);
+exports.send_Mail = function (type, email, token, callback) {
+	var types = ['validation', 'reset_password'];
+	if(types.indexOf(type) !== -1) {
+		var base_uri = '/auth';
+		var uri = base_url + '/' + type;
+		var unique_uri = uri + '/' + token;
+		sendMessage({
+			to: email,
+			link: unique_uri
+		}, 'validation_mail', callback);
+	}
+	else {
+		callback('INVALID_EMAIL_TYPE');
+	}
 };
 
-exports.send_PasswordResetMail = function (email, token, callback) {
-	var url = '/auth/auth/new_password/';
-	var validationLink = config.hostname + url + token;
-	sendMessage({
-		to: email,
-		link: validationLink
-	}, 'reset_password_mail', callback);
-};

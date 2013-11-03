@@ -102,7 +102,7 @@ module.exports = function (app) {
 			options = {};
 		}
 
-		if(typeof callback != "function"){
+		if(typeof callback !== "function"){
 			//callback = requestHandler.handle(callback);
 			callback = new routeHandler(callback).handle();
 		}
@@ -129,7 +129,7 @@ module.exports = function (app) {
 				filter:filter
 			});
 
-			handleRequest(callback, options.validation||{}, caja, req, res, next);
+			handleRequest(callback, options.validation || {}, caja, req, res, next);
 		});
 	}
 
