@@ -25,36 +25,6 @@ mongoose.Document.prototype.created_at = function() {
 
 mongoose.Document.prototype._get = mongoose.Document.prototype.get;
 
-// mongoose.Document.prototype.get = function(path, options, callback){
-// 	if(typeof options == "function" || callback){
-// 		var callback = callback||options;
-// 		if(this.schema.tree._get(path)){
-// 			callback(null, this._get(path));
-// 		}
-// 		else{
-// 			if(this[path].hasCallback()){
-// 				if(options.params){
-// 					this[path]._apply(this, options.params, callback);
-// 				}
-// 				else{
-// 					this[path](callback);
-// 				}
-// 			}
-// 			else{
-// 				if(options.params){
-// 					callback(null, this[path]._apply(this, options.params));
-// 				}
-// 				else{
-// 					callback(null, this[path]());
-// 				}
-// 			}
-// 		}
-// 	}	
-// 	else{
-// 		return this._get(path, options);
-// 	}
-// };
-
 mongoose.Document.prototype.get = function(path, options, callback){
 	var getterName = "get"+path.capitalize();
 	if(typeof this[getterName] == "function"){
@@ -66,23 +36,6 @@ mongoose.Document.prototype.get = function(path, options, callback){
 		return this._get(path, options);
 	}
 };
-
-// mongoose.Document.prototype.do = function(action, params, callback){	
-// 	if(typeof this[action] == "function" && this[action].name){
-// 		if(this[action].name.startsWith("action")){
-// 			this[action]._apply(this, params, callback);
-// 		}
-// 		else if(this[action].name.startsWith("view")){
-// 			this[action+"_add"]._apply(this, params, callback);
-// 		}
-// 		else{
-// 			callback(new SGError());
-// 		}
-// 	}
-// 	else{
-// 		callback(new SGError());
-// 	}
-// };
 
 mongoose.Document.prototype.do = function(action, params, callback){	
 	if(typeof this[action] == "function" && this.schema.documentActions[action]){
@@ -179,13 +132,14 @@ mongoose.Document.prototype.setSemiEmbedded = function(path, val, callback){
 	}
 };
 
-mongoose.Document.prototype.add = function(path, val, callback){
-	if(typeof this[path+"_add"] == "function"){
-		if(this[path+"_add"].hasCallback()){
-			this[path+"_add"](val, callback);
+mongoose.Document.prototype.addInArray = function(path, val, callback){
+	var addPath = "addIn"+path.capitalize();
+	if(typeof this[addPath] == "function"){
+		if(this[addPath].hasCallback()){
+			this[addPath](val, callback);
 		}
 		else{
-			this[path+"_add"](val);
+			this[addPath](val);
 			callback(null);
 		}
 	}
@@ -202,20 +156,50 @@ mongoose.Document.prototype.add = function(path, val, callback){
 	}
 };
 
+mongoose.Document.prototype.willRemoveFromArray = function(path, val){
+
+};
+
 mongoose.Document.prototype.removeFromArray = function(path, val, callback){
-	if(typeof this[path+"_remove"] == "function"){
-		this[path+"_remove"](val, callback);
+	// var removePath = "removeFrom"+path.capitalize();
+
+	// var willRemovePath = "will"+removePath.capitalize();
+	// var pre = this.willRemoveFromArray(path, val)||;
+
+	var me = this;
+	var callback = function(err, val){
+		if(!err){
+			me.didRemoveFromArray(path, val);
+			var didRemovePath = "did"+removePath.capitalize();
+			if(typeof me[didRemovePath] == "function"){
+				me[didRemovePath](path, val);
+			}
+		}
+		if(callback)
+			callback.apply(arguments);
+	};
+
+	if(typeof this[removePath] == "function"){
+		if(this[removePath].hasCallback()){
+			this[removePath](val, callback);
+		}
+		else{
+			this[removePath](val);
+			callback(null);
+		}
 	}
 	else if(val instanceof mongoose.Document){
 		val.remove();
-		if(callback)
-			callback(null);
+		callback(null);
 	}
 	else{
 		this.get(path).sgRemove(val);
-		if(callback)
-			callback(null);
+		callback(null);
 	}
+};
+
+mongoose.Document.prototype.didRemoveFromArray = function(path, val){
+
 };
 
 mongoose.Document.prototype.addInRefArray = function(path, val, callback){
@@ -240,11 +224,17 @@ mongoose.Document.prototype.addInRefArray = function(path, val, callback){
 };
 
 mongoose.Document.prototype.sgUpdate = function(args, callback){
+	if(typeof this.willUpdate == "function"){
+		this.willUpdate(args);
+	}
 	var me = this;
 	this.set(args, function(err){
 		if(!err){
 			me.ensureUpdateConsistency();
 			me.save(function(err){
+				if(typeof me.didUpdate == "function"){
+					me.didUpdate(args);
+				}
 				callback(err, me);
 			});
 		}

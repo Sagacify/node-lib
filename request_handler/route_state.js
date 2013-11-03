@@ -82,7 +82,13 @@ RouteState.prototype.getObject = function(callback){
 	}
 	//get model to start
 	if(this.index == nbPartsToSkip){
-		callback(null, mongoose.model(mongoose.modelNameFromCollectionName(this.pathPart())));
+		//get current user
+		if(this.pathPart()=="user"){
+			callback(null, this.context.user);
+		}
+		else{
+			callback(null, mongoose.model(mongoose.modelNameFromCollectionName(this.pathPart())));
+		}
 	}
 	else {
 		//variable part
@@ -145,7 +151,7 @@ RouteState.prototype.getObjectFromFixPath = function(callback){
 RouteState.prototype.populateObject = function(callback){
 	//console.log("populateObject")
 	var parentState = this.parentState();
-	if(!parentState || !(parentState.state.obj instanceof mongoose.Document)){
+	if(this.type()=='Virtual' || this.type()=='Action' || !parentState || !(parentState.state.obj instanceof mongoose.Document)){
 		return callback(null);
 	}
 	if(this.index == this.route.length-1 || parentState.state.type() != "Document" || !parentState.state.obj.isRef(parentState.path) || !parentState.state.obj.isRefArray(parentState.path) ||
