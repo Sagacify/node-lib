@@ -327,9 +327,43 @@ mongoose.Model.prototype.ensureRemoveConsistency = function(){
 	});
 };
 
-mongoose.Model.prototype.sgRemove = mongoose.Model.prototype.remove;
+mongoose.Model.prototype.willRemove = function(){
 
-mongoose.Model.process = function(filter, sort, paginate, callback){
+};
+
+mongoose.Model.prototype.sgRemove = function(callback){
+	if(!this.will('remove', null, null, callback)){
+		return;
+	}
+
+	var post = this.did('remove', null, null, callback);
+
+	this.remove(post);
+};
+
+mongoose.Model.prototype.didRemove = function(){
+
+};
+
+mongoose.Model.willCreate = function(){
+
+};
+
+mongoose.Model.sgCreate = function(doc, callback){
+	if(!mongoose.Document.prototype.will.apply(this, ['create', null, doc, callback])){
+		return;
+	}
+
+	var post = mongoose.Document.prototype.did.apply(this, ['create', null, doc, callback]);
+
+	this.create(doc, post);
+};
+
+mongoose.Model.didCreate = function(){
+
+};
+
+mongoose.Model.get = function(filter, sort, paginate, callback){
 	if(this instanceof Array){
 		if(filter){
 			var processedArray = this.filter(function(item){

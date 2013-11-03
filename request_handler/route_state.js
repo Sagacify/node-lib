@@ -47,7 +47,7 @@ RouteState.prototype.type = function(){
 	if(!this.obj){
 		return null;
 	}
-	else if(this.obj.name == "model"){
+	else if(typeof this.obj == "function" && this.obj.name == "model"){
 		return "Model";
 	}
 	else if(this.obj instanceof mongoose.Document){
@@ -151,7 +151,7 @@ RouteState.prototype.getObjectFromFixPath = function(callback){
 RouteState.prototype.populateObject = function(callback){
 	//console.log("populateObject")
 	var parentState = this.parentState();
-	if(this.type()=='Virtual' || this.type()=='Action' || !parentState || !(parentState.state.obj instanceof mongoose.Document)){
+	if(this.type()=='Virtual' || this.type()=='Action' || this.type()=='DocumentArray' || !parentState || !(parentState.state.obj instanceof mongoose.Document)){
 		return callback(null);
 	}
 	if(this.index == this.route.length-1 || parentState.state.type() != "Document" || !parentState.state.obj.isRef(parentState.path) || !parentState.state.obj.isRefArray(parentState.path) ||
@@ -173,8 +173,9 @@ RouteState.prototype.populateObject = function(callback){
 
 //if collection as array -> the caller is the model attached to it
 RouteState.prototype.attachCaller = function(){
+	//console.log("attachCaller")
 	var caller;
-	if(this.obj && this.obj.name == "model"){
+	if(typeof this.obj == "function" && this.obj.name == "model"){
 		caller = this.obj.schema;
 	}
 	else if(!(this.obj instanceof Array) || this.obj instanceof mongoose.Types.DocumentArray){
