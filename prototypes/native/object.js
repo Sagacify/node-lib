@@ -1,3 +1,4 @@
+var is = require('../../strict_typing/validateType');
 var obj_proto = {};
 
 obj_proto.clone = function () {
@@ -68,6 +69,30 @@ obj_proto.deleteRecursiveField = function(field){
 
 obj_proto.getType = function() {
 	return Object.prototype.toString.call(this);
+};
+
+obj_proto.isObject = function(){
+	return is.Object(this);
+};
+
+obj_proto.isString = function(){
+	return is.String(this);
+};
+
+obj_proto.isNumber = function(){
+	return is.Number(this);
+};
+
+obj_proto.isBoolean = function(){
+	return is.Boolean(this);
+};
+
+obj_proto.isDate = function(){
+	return is.Date(this);
+};
+
+obj_proto.isArray = function(){
+	return is.Array(this);
 };
 
 for(var key in obj_proto){
