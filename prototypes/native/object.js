@@ -70,35 +70,6 @@ obj_proto.getType = function() {
 	return Object.prototype.toString.call(this);
 };
 
-
-obj_proto.isMongooseDocument = function(){
-	if (!this.isObject()) {
-		return false;
-	};
-
-	return '_id' in this;
-}
-
-obj_proto.isObject = function(){
-	return Object.prototype.toString.call(this) === '[object Object]';
-};
-
-obj_proto.isArray = function(){
-	return Object.prototype.toString.call(this) === '[object Array]';
-};
-
-obj_proto.isString = function(){
-	return Object.prototype.toString.call(this) === '[object String]';
-};
-
-obj_proto.isFunction = function(){
-	return Object.prototype.toString.call(this) === '[object Function]';
-};
-
-obj_proto.isVirtualType = function(){
-	return this.constructor.name === "VirtualType";
-};
-
 for(var key in obj_proto){
 	Object.defineProperty(Object.prototype, key, {
 		writable: true,

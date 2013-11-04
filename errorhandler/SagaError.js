@@ -11,10 +11,13 @@ module.exports = function SGError (type, code, verbose) {
 		this.stack = ('stack' in error) ? error.stack : (new Error().stack);
 	}
 	else {
+		var error_type = verbose_errors[this.type];
 		this.type = type || 'generic';
-		this.code = code || (verbose_errors[this.type]?verbose_errors[this.type][0]:600);
-		this.verbose = verbose || (verbose_errors[this.type]?verbose_errors[this.type][1]:"");
+		this.code = code || (error_type ? error_type[0] : 600);
+		this.verbose = verbose || (error_type ? error_type[1] : '');
 		this.stack = new Error().stack;
 	}
-	FrostyBug('FrostyBug', { msg: (type instanceof Error) ? type : this });
+	FrostyBug('FrostyBug', {
+		msg: (type instanceof Error) ? type : this
+	});
 };
