@@ -3,9 +3,6 @@ var waterfall = async.waterfall;
 
 var init_Mixin = require('./auth-mixin');
 
-var unvalidated = config.state.unvalidated;
-var validated = config.state.validated;
-
 var logic = require('../auth-logic/logic-lib');
 var add_Token				=	logic.add_Token,
 	find_User				=	logic.find_User,
@@ -26,9 +23,7 @@ var add_Token				=	logic.add_Token,
 	remove_ExcessTokens		=	logic.remove_ExcessTokens,
 	remove_ExpiredTokens	=	logic.remove_ExpiredTokens;
 
-//console.log(remove_Duplicates);
-
-var Auth = {
+var Auth_LogicController = {
 	Register: function (input, callback) {
 		waterfall([
 			init_Mixin('Register', input, 'verification_email', unvalidated, true),
@@ -130,4 +125,4 @@ var Auth = {
 	}
 };
 
-module.exports = Auth;
+module.exports = Auth_LogicController;

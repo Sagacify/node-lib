@@ -39,7 +39,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		}
 	};
 
-	this.apply_to_Args = function (callback, args, args_config) {
+	this.apply_to_Args = function (args, args_config, callback) {
 		if(is.Object(args) && is.Object(args_config)) {
 			var keys = Object.keys(args);
 			var len = keys.length;
@@ -66,7 +66,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			}
 			var array_ags = Array.apply(null, arguments);
 			var new_args = this.strict_mode ? this.args_buffer : array_ags;
-			return callback.apply(this, new_args);
+			return callback.apply(this, [null].concat(new_args));
 		}
 		else {
 			return callback(this.base_error + '_INVALID_ARGS');
