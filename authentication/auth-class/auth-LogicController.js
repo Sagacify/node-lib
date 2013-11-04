@@ -1,8 +1,6 @@
 var async = require('async');
 var waterfall = async.waterfall;
 
-var init_Mixin = require('./auth-MixinController');
-
 var logic = require('../auth-logic/logic-lib');
 var add_Token				=	logic.add_Token,
 	find_User				=	logic.find_User,
@@ -23,106 +21,221 @@ var add_Token				=	logic.add_Token,
 	remove_ExcessTokens		=	logic.remove_ExcessTokens,
 	remove_ExpiredTokens	=	logic.remove_ExpiredTokens;
 
+// stupid echo function used to keep arguments in scope with closures
+function echo_mixin (input) {
+	return function (callback) {
+		callback(null, input);
+	};
+}
+
 var Auth_LogicController = {
-	Register: function (input, callback) {
-		waterfall([
-			init_Mixin('Register', input, 'verification_email', unvalidated, true),
-			find_User,
-			remove_Duplicates,
-			create_User,
-			create_Token,
-			hash_Token,
-			add_Token,
-			hash_Password,
-			save_User,
-			send_Email
-		], callback);
-	},
-	Login: function (input, callback) {
-		waterfall([
-			init_Mixin('Login', input, null, validated),
-			find_User,
-			validate_State,
-			compare_Password,
-			create_Token,
-			hash_Token,
-			add_Token,
-			remove_ExpiredTokens,
-			remove_ExcessTokens,
-			save_User
-		], callback);
-	},
-	TokenStrategy: function (input, callback) {
-		waterfall([
-			init_Mixin('TokenStrategy', input, null, validated),
-			validate_Token,
-			find_User,
-			validate_State,
-			hash_Token,
-			compare_Token // regenerate a token if it expired ?
-		], callback);
-	},
-	Logout: function (input, callback) {
-		waterfall([
-			init_Mixin('Logout', input, null, null),
-			compare_Token,
-			remove_Token,
-			save_User
-		], callback);
-	},
-	ChangePassword: function (input, callback) {
-		waterfall([
-			init_Mixin('ChangePassword', input, null, null),
-			compare_Password,
-			hash_Password,
-			create_Token,
-			hash_Token,
-			save_User
-		], callback);
-	},
-	VerifyEmail: function (input, callback) {
-		waterfall([
-			init_Mixin('VerifyEmail', input, null, unvalidated),
-			find_User,
-			validate_State,
-			hash_Token,
-			compare_Token,
-			compare_Password,
-			create_Token,
-			hash_Token,
-			replace_Token,
-			flip_State,
-			save_User,
-		], callback);
-	},
-	ForgotPassword: function (input, callback) {
-		waterfall([
-			init_Mixin('ForgotPassword', input, 'password_reset_email', validated),
-			find_User,
-			validate_State,
-			create_Token,
-			hash_Token,
-			replace_Token,
-			flip_State,
-			save_User,
-			send_Email
-		], callback);
-	},
-	ResetPassword: function (input, callback) {
-		waterfall([
-			init_Mixin('ResetPassword', input, null, unvalidated),
-			find_User,
-			validate_State,
-			hash_Token,
-			compare_Token,
-			hash_Password,
-			create_Token,
-			hash_Token,
-			replace_Token,
-			flip_State,
-			save_User
-		], callback);
-	}
+	Register: [
+		// @params
+		{
+			search			:	['Array', { lenEqualTo: [2] }],
+			email			:	['String', 'notNull', 'notEmpty','isEmail'],
+			password		:	['String', 'notNull', 'notEmpty'],
+			user_attr		:	['Object'],
+			expectedState	:	['Number'],
+			resultingState	:	['Number'],
+			action			:	['String', 'notNull', 'notEmpty']
+		},
+		// the method itself
+		function (input, callback) {
+			waterfall([
+				echo_mixin(input),
+				find_User,
+				remove_Duplicates,
+				create_User,
+				create_Token,
+				hash_Token,
+				add_Token,
+				hash_Password,
+				save_User,
+				send_Email
+			], callback);
+		},
+		// @returns
+		{}
+	],
+	Login: [
+		// @params
+		{
+			search			:	['Array', { lenEqualTo: [2] }],
+			password		:	['String', 'notNull', 'notEmpty'],
+			expectedState	:	['Number'],
+			resultingState	:	['Number'],
+			action			:	['String', 'notNull', 'notEmpty']
+		},
+		// the method itself
+		function (input, callback) {
+			waterfall([
+				echo_mixin(input),
+				find_User,
+				validate_State,
+				compare_Password,
+				create_Token,
+				hash_Token,
+				add_Token,
+				remove_ExpiredTokens,
+				remove_ExcessTokens,
+				save_User
+			], callback);
+		},
+		// @returns
+		{}
+	],
+	TokenStrategy: [
+		// @params
+		{
+			search			:	['Array', { lenEqualTo: [1] }],
+			authorization	:	['String', 'notNull', 'notEmpty'],
+			expectedState	:	['Number'],
+			resultingState	:	['Number'],
+			action			:	['String', 'notNull', 'notEmpty']
+		},
+		// the method itself
+		function (input, callback) {
+			waterfall([
+				echo_mixin(input),
+				validate_Token,
+				find_User,
+				validate_State,
+				hash_Token,
+				compare_Token // regenerate a token if it expired ?
+			], callback);
+		},
+		// @returns
+		{}
+	],
+	Logout: [
+		// @params
+		{
+			user			:	['Object'],
+			expectedState	:	['Number'],
+			resultingState	:	['Number'],
+			action			:	['String', 'notNull', 'notEmpty']
+		},
+		// the method itself
+		function (input, callback) {
+			waterfall([
+				echo_mixin(input),
+				compare_Token,
+				remove_Token,
+				save_User
+			], callback);
+		},
+		// @returns
+		{}
+	],
+	ChangePassword: [
+		// @params
+		{
+			user			:	['Object'],
+			password		:	['String'],
+			new_password	:	['String'],
+			expectedState	:	['Number'],
+			resultingState	:	['Number'],
+			action			:	['String', 'notNull', 'notEmpty']
+		},
+		// the method itself
+		function (input, callback) {
+			waterfall([
+				echo_mixin(input),
+				compare_Password,
+				hash_Password,
+				create_Token,
+				hash_Token,
+				save_User
+			], callback);
+		},
+		// @returns
+		{}
+	],
+	VerifyEmail: [
+		// @params
+		{
+			search			:	['Array', { lenEqualTo: [2] }],
+			password		:	['String'],
+			token			:	['String'],
+			expectedState	:	['Number'],
+			resultingState	:	['Number'],
+			action			:	['String', 'notNull', 'notEmpty']
+		},
+		// the method itself
+		function (input, callback) {
+			waterfall([
+				echo_mixin(input),
+				find_User,
+				validate_State,
+				hash_Token,
+				compare_Token,
+				compare_Password,
+				create_Token,
+				hash_Token,
+				replace_Token,
+				flip_State,
+				save_User,
+			], callback);
+		},
+		// @returns
+		{}
+	],
+	ForgotPassword: [
+		// @params
+		{
+			search			:	['Array', { lenEqualTo: [2] }],
+			email			:	['String', 'notNull', 'notEmpty','isEmail'],
+			expectedState	:	['Number'],
+			resultingState	:	['Number'],
+			action			:	['String', 'notNull', 'notEmpty']
+		},
+		// the method itself
+		function (input, callback) {
+			waterfall([
+				echo_mixin(input),
+				find_User,
+				validate_State,
+				create_Token,
+				hash_Token,
+				replace_Token,
+				flip_State,
+				save_User,
+				send_Email
+			], callback);
+		},
+		// @returns
+		{}
+	],
+	ResetPassword: [
+		// @params
+		{
+			search			:	['Array', { lenEqualTo: [2] }],
+			password		:	['String'],
+			token			:	['String'],
+			expectedState	:	['Number'],
+			resultingState	:	['Number'],
+			action			:	['String', 'notNull', 'notEmpty']
+		},
+		// the method itself
+		function (input, callback) {
+			waterfall([
+				echo_mixin(input),
+				find_User,
+				validate_State,
+				hash_Token,
+				compare_Token,
+				hash_Password,
+				create_Token,
+				hash_Token,
+				replace_Token,
+				flip_State,
+				save_User
+			], callback);
+		},
+		// @returns
+		{}
+	]
 };
 
 module.exports = Auth_LogicController;

@@ -39,5 +39,5 @@ exports.consoleError = function (error) {
 		console.log(error);
 	}
 	console.log(reset);
-	(_NODE_ENV === 'development') && process.exit(1);
+	//(_NODE_ENV === 'development') && process.exit(1);
 };

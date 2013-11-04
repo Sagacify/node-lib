@@ -18,6 +18,10 @@ exports.Function = function (obj) {
 	return Object.prototype.toString.call(obj) === '[object Function]';
 };
 
+exports.Number = function (obj) {
+	return Object.prototype.toString.call(obj) === '[object Number]';
+};
+
 exports.NotNull = function (obj) {
 	return obj != null;
 };

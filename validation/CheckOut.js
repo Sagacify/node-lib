@@ -12,6 +12,8 @@ var SGError = require('../errorhandler/SagaError');
 // var sanitizerInstance = require('./Sanitizer.js');
 // var sanitize = sanitizerInstance.sanitize;
 
+var is = require('../strict_typing/validateType');
+
 var methodName = 'lenInferiorTo';
 var methodNameLen = methodName.length;
 
@@ -36,18 +38,18 @@ function applyToEle (value, conditions) {
 }
 
 function applyAllConditions (obj, conditions) {
-	return (obj == null) || !obj.isArray() ? applyToEle(obj, conditions) : obj.reduce(function (a, b) {
+	return is.Null(obj) || !is.Array(obj) ? applyToEle(obj, conditions) : obj.reduce(function (a, b) {
 		return a && applyToEle(b, conditions);
 	}, true);
 }
 
 function hasUndefined (obj) {
-	if(obj == undefined) {
+	if(is.Null(obj)) {
 		return true;
 	}
-	else if(obj.isArray()) {
+	else if(is.Array(obj)) {
 		return obj.reduce(function (a, b) {
-			return a && (b != undefined);
+			return a && (is.NotNull(b));
 		}, true);
 	}
 	else {

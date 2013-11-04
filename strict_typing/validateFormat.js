@@ -238,6 +238,14 @@ exports.mongo_ObjectId_hex = function (str) {
 	return exports.mongo_ObjectId(str, 16, false);
 };
 
-exports.lenInferiorTo = function (maxLen) {
-	return this.str.length < maxLen;
+exports.lenInferiorTo = function (str, maxLen) {
+	return str.length < maxLen;
+};
+
+exports.lenEqualTo = function (str, maxLen) {
+	return str.length === maxLen;
+};
+
+exports.lenSuperiorTo = function (str, maxLen) {
+	return str.length > maxLen;
 };

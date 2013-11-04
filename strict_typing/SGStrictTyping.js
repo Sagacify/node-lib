@@ -14,12 +14,26 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	};
 
 	this.validate_Format = function (obj, method_list) {
+		var valid = true;
+		var validation_method;
+		var validation_args;
+		var method;
 		for(var i = 0, len = method_list.length; i < len; i++) {
 			method = method_list[i];
-			if(!isValid[method](obj)) {
-				return false;
+			if(is.String(method)) {
+				valid = isValid[method](obj);
+			}
+			else if(is.Object(method)) {
+				validation_method = Object.keys(method)[0];
+				validation_args = [obj].concat(method[validation_method]);
+				valid = isValid[validation_method].apply(this, validation_args);
+			}
+			else {
+				valid = false;
+				break;
 			}
 		}
+		return valid;
 	};
 
 	this.validate_Config = function (ele_config) {
@@ -27,9 +41,9 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	};
 
 	this.apply_to_Ele = function (ele, key, ele_config) {
-		var expected_Type = args_config[0];
-		var expected_methods = args_config.splice(1);
-		if(is.String(expected_Type) && is.String(expected_methods)) {
+		var expected_Type = ele_config[0];
+		var expected_methods = ele_config.splice(1);
+		if(is.String(expected_Type) /*&& is.String(expected_methods))*/) {
 			var has_ValidType = this.validate_Type(ele, expected_Type);
 			var has_ValidFormat = this.validate_Format(ele, expected_methods);
 			return has_ValidType && has_ValidFormat;
@@ -50,7 +64,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 				i = keys[len];
 				ele = args[i];
 				ele_config = args_config[i];
-				if(is.Array(ele_config) && (ele_config.length > 1) && is.NotNull(ele)) {
+				if(is.Array(ele_config) && (ele_config.length > 0) && is.NotNull(ele)) {
 					if(this.apply_to_Ele(ele, i, ele_config)) {
 						if(this.strict_mode) {
 							this.args_buffer[i] = ele;

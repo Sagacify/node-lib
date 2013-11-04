@@ -3,7 +3,7 @@ var each = async.each;
 
 module.exports = function (mixin, callback) {
 	each(mixin.users, function (user, cb) {
-		if(user.state === mixin.required_state) {
+		if(user.state > mixin.expectedState) {
 			cb('USER_ALREADY_EXISTS');
 		}
 		else {

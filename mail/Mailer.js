@@ -98,10 +98,11 @@ function getSubject (mailTemplate) {
 
 exports.send_Mail = function (type, email, token, callback) {
 	var types = ['validation', 'reset_password'];
+	console.log('EmailType -> ' + type);
 	if(types.indexOf(type) !== -1) {
 		var base_uri = '/auth';
-		var uri = base_url + '/' + type;
-		var unique_uri = uri + '/' + token;
+		var uri = base_uri + '/' + type;
+		var unique_uri = config.hostname + uri + '/' + token;
 		sendMessage({
 			to: email,
 			link: unique_uri
