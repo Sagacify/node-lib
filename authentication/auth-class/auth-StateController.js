@@ -22,7 +22,10 @@ var Auth_StateController = {
 	ForgotPassword: 2,
 
 	// 2 means "VALIDATED" state
-	TokenStrategy: 2
+	TokenStrategy: 2,
+
+	// 2 means "VALIDATED" state
+	Logout: 2,
 
 };
 

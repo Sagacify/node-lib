@@ -98,7 +98,6 @@ function getSubject (mailTemplate) {
 
 exports.send_Mail = function (type, email, token, callback) {
 	var types = ['validation', 'reset_password'];
-	console.log('EmailType -> ' + type);
 	if(types.indexOf(type) !== -1) {
 		var base_uri = '/auth';
 		var uri = base_uri + '/' + type;

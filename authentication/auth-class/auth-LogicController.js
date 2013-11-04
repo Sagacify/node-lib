@@ -120,8 +120,7 @@ var Auth_LogicController = {
 		function (input, callback) {
 			waterfall([
 				echo_mixin(input),
-				compare_Token,
-				remove_Token,
+				remove_Token, // only a splice for now, should be changed in the future !
 				save_User
 			], callback);
 		},

@@ -22,7 +22,10 @@ var Auth_TransitionController = {
 	ForgotPassword: -1,
 
 	// "0" means state is unchanged
-	TokenStrategy: 0
+	TokenStrategy: 0,
+
+	// "0" means state is unchanged
+	Logout: 0
 
 };
 

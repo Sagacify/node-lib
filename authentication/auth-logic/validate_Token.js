@@ -12,7 +12,7 @@ module.exports = function (mixin, callback) {
 			//if(check(userid).mongo_ObjectId_hexWeb() && check(token).isSha2_Hash_hexWeb()) {
 			if(true) { // DANGEROUS : no validation yet !!!
 				mixin.token = token;
-				mixin.unique.push(userid);
+				mixin.search.push(userid);
 				callback(null, mixin);
 			}
 			else {

@@ -64,6 +64,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 				i = keys[len];
 				ele = args[i];
 				ele_config = args_config[i];
+				console.log('\n -> ' + i);
 				if(is.Array(ele_config) && (ele_config.length > 0) && is.NotNull(ele)) {
 					if(this.apply_to_Ele(ele, i, ele_config)) {
 						if(this.strict_mode) {

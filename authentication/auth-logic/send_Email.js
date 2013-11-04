@@ -11,6 +11,7 @@ module.exports = function (mixin, callback) {
 		typeof_email = 'reset_password';
 	}
 	if(typeof_email) {
+		console.log('Email is -> ' + mixin.email);
 		Mailer.send_Mail(typeof_email, mixin.email, mixin.token, function (e) {
 			if(e) {
 				callback('COULDNT_SEND_EMAIL');
