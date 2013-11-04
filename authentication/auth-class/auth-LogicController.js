@@ -1,7 +1,7 @@
 var async = require('async');
 var waterfall = async.waterfall;
 
-var init_Mixin = require('./auth-mixin');
+var init_Mixin = require('./auth-MixinController');
 
 var logic = require('../auth-logic/logic-lib');
 var add_Token				=	logic.add_Token,
