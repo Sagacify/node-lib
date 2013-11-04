@@ -116,8 +116,9 @@ module.exports = function (app) {
 		}, function (req, res, next) {
 			var filter = {};
 			req.query.keys().forEach(function (queryKey){
-				if(queryKey != "offset" && queryKey != "limit" && queryKey != "sort_by" && queryKey != "sort_how")
-					filter[queryKey] = req.query[queryKey];
+				if(queryKey != "offset" && queryKey != "limit" && queryKey != "sort_by" && queryKey != "sort_how"){
+					filter[queryKey] = JSON.parse(req.query[queryKey]);
+				}
 			});
 			var sort = {};
 			if(req.query.sort_by){
