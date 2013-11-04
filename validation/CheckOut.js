@@ -6,16 +6,16 @@ var sanitizeState = config.escapeDefault;
 
 var SGError = require('../errorhandler/SagaError');
 
-var validatorInstance = require('./Validator.js');
-var check = validatorInstance.check;
+// var validatorInstance = require('./Validator.js');
+// var check = validatorInstance.check;
 
-var sanitizerInstance = require('./Sanitizer.js');
-var sanitize = sanitizerInstance.sanitize;
+// var sanitizerInstance = require('./Sanitizer.js');
+// var sanitize = sanitizerInstance.sanitize;
 
 var methodName = 'lenInferiorTo';
 var methodNameLen = methodName.length;
 
-var apiRecorder = require('../model_share/api_recorder');
+var apiRecorder = require('../routes_recorder/api_recorder');
 
 var routeHandler = require('../request_handler/route_handler');
 

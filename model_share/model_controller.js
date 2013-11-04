@@ -1,4 +1,4 @@
-var apiRecorder = require('./api_recorder');
+var apiRecorder = require('../routes_recorder/api_recorder');
 
 module.exports = function (app) {
 

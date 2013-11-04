@@ -1,5 +1,5 @@
-var validatorInstance = require('../../validation/Validator.js');
-var check = validatorInstance.check;
+//var validatorInstance = require('../../validation/Validator.js');
+//var check = validatorInstance.check;
 
 module.exports = function (mixin, callback) {
 	var authorization = mixin.authorization;
