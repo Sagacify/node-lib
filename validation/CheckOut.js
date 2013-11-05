@@ -1,10 +1,11 @@
-var mpath = require('mpath');
 var requestHandler = require('../request_handler/request_handler');
 
 var authState = config.authDefault;
 var sanitizeState = config.escapeDefault;
 
 var SGError = require('../errorhandler/SagaError');
+
+var SGMixinValidation = require('./SGMixinValidation');
 
 // var validatorInstance = require('./Validator.js');
 // var check = validatorInstance.check;
@@ -20,79 +21,6 @@ var methodNameLen = methodName.length;
 var apiRecorder = require('../routes_recorder/api_recorder');
 
 var routeHandler = require('../request_handler/route_handler');
-
-function applyToEle (value, conditions) {
-	var condition;
-	var arg;
-	for(var i = 0, len = conditions.length; i < len; i++) {
-		condition = conditions[i];
-		if(condition.substr(0, methodNameLen) === methodName) {
-			arg = condition.replace(methodName, '');
-			condition = methodName;
-		}
-		if(!validatorInstance.check(value)[condition](arg)) {
-			return false;
-		}
-	}
-	return value;
-}
-
-function applyAllConditions (obj, conditions) {
-	return is.Null(obj) || !is.Array(obj) ? applyToEle(obj, conditions) : obj.reduce(function (a, b) {
-		return a && applyToEle(b, conditions);
-	}, true);
-}
-
-function hasUndefined (obj) {
-	if(is.Null(obj)) {
-		return true;
-	}
-	else if(is.Array(obj)) {
-		return obj.reduce(function (a, b) {
-			return a && (is.NotNull(b));
-		}, true);
-	}
-	else {
-		return false;
-	}
-}
-
-function handleRequest (callback, args, caja, req, res, next) {
-	var keys = Object.keys(args);
-	var additionalArgs = [];
-	var isOptional;
-	var conditions;
-	var isPresent;
-	var argument;
-	var value;
-	var key;
-	for(var i = 0, len = keys.length; i < len; i++) {
-		key = keys[i];
-		conditions = args[key].concat(caja ? ['cajaData'] : []);
-		argument = mpath.get(key, req.mixin);
-		isOptional = (conditions.length >= 1) && /optional/i.test(conditions[0]);
-		isPresent = !hasUndefined(argument);
-		if(!isPresent && !isOptional) {
-			return res.SGsend(new SGError('Validation', 400, 'Validation failed'));
-		}
-		else {
-			if(isOptional) {
-				conditions.splice(0, 1);
-			}
-			value = !isPresent ? null : applyAllConditions(argument, conditions);
-			if(value === false) {
-				return res.SGsend(new SGError('Validation', 400, 'Validation failed'));
-			}
-			else  {
-				additionalArgs.push(value);
-			}
-		}
-	}
-	var argsToArray = Array.apply(null, arguments);
-	argsToArray.splice(0, 3);
-	var newArguments = additionalArgs.concat(argsToArray);
-	callback.apply(this, newArguments);
-}
 
 module.exports = function (app) {
 	var BearerAuth = require('../../app/auth-middlewares/authenticate_token.js');
@@ -117,25 +45,35 @@ module.exports = function (app) {
 			return auth ? BearerAuth(req, res, next) : next();
 		}, function (req, res, next) {
 			var filter = {};
-			req.query.keys().forEach(function (queryKey){
-				if(queryKey != "offset" && queryKey != "limit" && queryKey != "sort_by" && queryKey != "sort_how"){
+			req.query.keys().forEach(function (queryKey) {
+				if(queryKey != "offset" && queryKey != "limit" && queryKey != "sort_by" && queryKey != "sort_how") {
 					filter[queryKey] = JSON.parse(req.query[queryKey]);
 				}
 			});
 			var sort = {};
-			if(req.query.sort_by){
+			if(req.query.sort_by) {
 				sort[req.query.sort_by] = req.query.sort_how||'asc';
 			}
-			req.mixin = req.params.clone().merge(req.body).merge({
-				paginate: {
+
+			var mixin_options = {};
+			if(req.query.offset || req.query.limit) {
+				mixin_options.paginate = {
 					offset: req.query.offset,
 					limit: req.query.limit
-				},
-				sort: sort,
-				filter: filter
-			});
+				};
+			}
+			if(Object.keys(sort).length) {
+				mixin_options.sort = sort;
+			}
+			if(Object.keys(filter).length) {
+				mixin_options.filter = filter;
+			}
 
-			handleRequest(callback, options.validation || {}, caja, req, res, next);
+			//The cloneToObject() method is needed because FUCK VISION-MEDIA !
+			// --> https://github.com/visionmedia/express/issues/1742
+			req.mixin = req.params.cloneToObject().merge(req.body).merge(mixin_options);
+
+			SGMixinValidation(callback, options.validation || {}, caja, req, res, next);
 		});
 	}
 

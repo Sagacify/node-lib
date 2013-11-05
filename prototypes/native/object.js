@@ -2,21 +2,33 @@ var is = require('../../strict_typing/validateType');
 var obj_proto = {};
 
 obj_proto.clone = function () {
-	var clone = {};
-	var keys = Object.keys(this);
-	var i = keys.length;
-	var key;
-	while(i--) {
-		key = keys[i];
-		if(this[key] instanceof Object) {
-			clone[key] = this[key].clone();
-		}
-		else {
-			clone[key] = this[key];
-		}
-		 
+	if ((this == null) || ((typeof this) !== 'object')) {
+		return this;
 	}
-	return clone;
+	else {
+		var copy = this.constructor();
+		for(var attr in this) {
+			if(this.hasOwnProperty(attr)) {
+				copy[attr] = this[attr];
+			}
+		}
+		return copy;
+	}
+};
+
+obj_proto.cloneToObject = function () {
+	if ((this == null) || ((typeof this) !== 'object')) {
+		return this;
+	}
+	else {
+		var copy = {};
+		for(var attr in this) {
+			if(this.hasOwnProperty(attr)) {
+				copy[attr] = this[attr];
+			}
+		}
+		return copy;
+	}
 };
 
 obj_proto.merge = function(obj){
@@ -29,7 +41,7 @@ obj_proto.merge = function(obj){
 	return this;
 };
 
-obj_proto.keys = function keys(){
+obj_proto.keys = function keys() {
 	return Object.keys(this);
 };
 
