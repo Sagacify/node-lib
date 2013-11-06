@@ -29,6 +29,7 @@ mongoose.Schema.prototype.getFormattedSchema = function (options, callback) {
 		//array
 		else if(schemaElement instanceof Array) {
 			var formattedArray = [];
+			formattedArray.public = schemaElement.public;
 			async.forEach(schemaElement, function (arrayItem, callback) {
 				getFormattedSchemaElement(arrayItem, function (err, formattedArrayItem) {
 					if(!err) {
@@ -41,13 +42,13 @@ mongoose.Schema.prototype.getFormattedSchema = function (options, callback) {
 			});
 		}
 		else if(schemaElement.ref) {
-			callback(null, {type:schemaElement.type, ref:schemaElement.ref});
+			callback(null, {type:schemaElement.type, ref:schemaElement.ref, public:schemaElement.public});
 		}
 		else if(schemaElement.name) {
-			callback(null, {type:schemaElement.name});
+			callback(null, {type:schemaElement.name, public:schemaElement.public});
 		}
 		else if(schemaElement.type && schemaElement.type.name) {
-			callback(null, {type:schemaElement.type.name});
+			callback(null, {type:schemaElement.type.name, public:schemaElement.public});
 		}
 		else if(schemaElement.path) {
 			callback(null, null);
@@ -106,6 +107,14 @@ mongoose.Schema.prepareSchemas = function () {
 		mongoose.models[model].schema.setDefaultVirtualsActions();
 		mongoose.models[model].schema.prepareSchemaValidation(model);
 	});
+};
+
+mongoose.Schema.isPublic = function(attr){
+	return this.tree._get(attr).public;
+};
+
+mongoose.Schema.setPublic = function(attr, public){
+	this.tree._get(attr).public = public;
 };
 
 mongoose.Schema.prototype.hasVirtual = function (name) {

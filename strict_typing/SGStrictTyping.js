@@ -95,6 +95,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	};
 
 	this.develop_ValidationConfig = function (args_config) {
+		//args_config.validation
 		if(is.Object(args_config)) {
 			var scope = args_config._scope;
 			if((scope != null) && is.String(scope)) {

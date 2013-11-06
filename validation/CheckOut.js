@@ -1,5 +1,3 @@
-var requestHandler = require('../request_handler/request_handler');
-
 var authState = config.authDefault;
 var sanitizeState = config.escapeDefault;
 
