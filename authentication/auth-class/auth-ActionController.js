@@ -27,8 +27,7 @@ var Auth_ActionController = function Auth_ActionController () {
 		var at_params = auth_process[0];
 		var auth_method = auth_process[1];
 		var at_return = auth_process[2];
-		var strict_typing = new SGStrictTyping(false);
-		strict_typing.apply_to_Args(args, at_params, function (error, validated_args) {
+		SGStrictTyping.apply_to_Args(args, at_params, function (error, validated_args) {
 			if(error) {
 				callback(error);
 			}

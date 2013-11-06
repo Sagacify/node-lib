@@ -16,7 +16,7 @@ function RouteHandler(options){
 
 RouteHandler.prototype.handle = function(req, res){
 	var me = this;
-	return function(req, res){
+	return function (req, res) {
 		me.buildContext(req, res);
 		me.buildRoute(function(err){
 			if(!err){
@@ -95,7 +95,7 @@ RouteHandler.prototype.checkout = function(callback){
 		break;
 	};
 
-	if(checkoutClass){
+	if(checkoutClass) {
 		new checkoutClass(this.context, this.route)[this.context.req.method.toLowerCase()](callback);
 	}
 	else{

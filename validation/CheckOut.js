@@ -38,42 +38,53 @@ module.exports = function (app) {
 
 		apiRecorder.addRoute(methodName, uri, {});
 
-		var auth = ('auth' in options)?options.auth:authState;
-		var caja = ('sanitize' in options)?options.sanitize:sanitizeState;
+		var auth = ('auth' in options) ? options.auth : authState;
+		var caja = ('sanitize' in options) ? options.sanitize : sanitizeState;
 
 		app[methodName](uri, function (req, res, next) {
 			return auth ? BearerAuth(req, res, next) : next();
 		}, function (req, res, next) {
+			var specialValidation = options.validation || {};
+			var specialQueryFields = ['offset', 'sort_by', 'sort_how', 'limit'];
 			var filter = {};
 			req.query.keys().forEach(function (queryKey) {
-				if(queryKey != "offset" && queryKey != "limit" && queryKey != "sort_by" && queryKey != "sort_how") {
-					filter[queryKey] = JSON.parse(req.query[queryKey]);
+				if(specialQueryFields.indexOf(queryKey) === -1) {
+					filter[queryKey] = req.query[queryKey];
+					// filter[queryKey] = JSON.parse(req.query[queryKey]);
 				}
 			});
+
 			var sort = {};
-			if(req.query.sort_by) {
-				sort[req.query.sort_by] = req.query.sort_how||'asc';
+			if('sort' in req.query) {
+				sort[req.query.sort_by] = req.query.sort_how || 'asc';
 			}
 
 			var mixin_options = {};
-			if(req.query.offset || req.query.limit) {
+			if(('offset' in req.query) && ('limit' in req.query)) {
 				mixin_options.paginate = {
 					offset: req.query.offset,
 					limit: req.query.limit
 				};
+				specialValidation['paginate.offset'] = ['isOptional', 'String', 'notNull', 'notEmpty'];
+				specialValidation['paginate.limit'] = ['isOptional', 'String', 'notNull', 'notEmpty'];
 			}
+
 			if(Object.keys(sort).length) {
 				mixin_options.sort = sort;
+				specialValidation['sort'] = ['isOptional', 'String', 'notNull', 'notEmpty'];
 			}
 			if(Object.keys(filter).length) {
 				mixin_options.filter = filter;
+				specialValidation['filter'] = ['isOptional', 'String', 'notNull', 'notEmpty'];
 			}
+
+			options.validation = specialValidation;
 
 			//The cloneToObject() method is needed because FUCK VISION-MEDIA !
 			// --> https://github.com/visionmedia/express/issues/1742
 			req.mixin = req.params.cloneToObject().merge(req.body).merge(mixin_options);
 
-			SGMixinValidation(callback, options.validation || {}, caja, req, res, next);
+			SGMixinValidation(callback, options.validation || {}, caja, req, res, next);
 		});
 	}
 
