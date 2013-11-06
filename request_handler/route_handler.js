@@ -15,8 +15,6 @@ function RouteHandler(options){
 };
 
 RouteHandler.prototype.handle = function(req, res){
-	console.log(req.params);
-	
 	var me = this;
 	return function (req, res) {
 		me.buildContext(req, res);
