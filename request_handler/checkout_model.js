@@ -5,12 +5,15 @@ function CheckoutModel(context, route){
 };
 
 CheckoutModel.prototype.get = function(callback){
-	this.model.process._apply(this.model, this.context.req.mixin, callback);
+	// var me = this;
+	// setInterval(function(){
+	// 	me.model.process._apply(me.model, me.context.req.mixin, callback);
+	// }, 3000);
+	this.model.get._apply(this.model, this.context.req.mixin, callback);
 };
 
 CheckoutModel.prototype.post = function(callback){
-	console.log(this.context.req.body);
-	this.model.create(this.context.req.body, callback);
+	this.model.sgCreate(this.context.req.body, callback);
 };
 
 CheckoutModel.prototype.put = function(callback){

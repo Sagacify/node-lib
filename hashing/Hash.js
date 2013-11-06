@@ -32,9 +32,9 @@ exports.compareHash = function (password, hash, callback) {
 };
 
 exports.generateSalt = function (callback) {
-	bcrypt.genSalt(10, function (error, salt) {
-		if(error) {
-			callback({ msg: 'COULDNT_GENERATE_SALT', error: error });
+	bcrypt.genSalt(10, function (e, salt) {
+		if(e) {
+			callback({ msg: 'COULDNT_GENERATE_SALT', error: e });
 		}
 		else {
 			callback(null, salt);

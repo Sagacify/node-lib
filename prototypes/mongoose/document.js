@@ -23,74 +23,134 @@ mongoose.Document.prototype.created_at = function() {
  		return null;
 };
 
-mongoose.Document.prototype._get = mongoose.Document.prototype.get;
-
-// mongoose.Document.prototype.get = function(path, options, callback){
-// 	if(typeof options == "function" || callback){
-// 		var callback = callback||options;
-// 		if(this.schema.tree._get(path)){
-// 			callback(null, this._get(path));
-// 		}
-// 		else{
-// 			if(this[path].hasCallback()){
-// 				if(options.params){
-// 					this[path]._apply(this, options.params, callback);
-// 				}
-// 				else{
-// 					this[path](callback);
-// 				}
-// 			}
-// 			else{
-// 				if(options.params){
-// 					callback(null, this[path]._apply(this, options.params));
-// 				}
-// 				else{
-// 					callback(null, this[path]());
-// 				}
-// 			}
-// 		}
-// 	}	
-// 	else{
-// 		return this._get(path, options);
-// 	}
-// };
-
-mongoose.Document.prototype.get = function(path, options, callback){
-	var getterName = "get"+path.capitalize();
-	if(typeof this[getterName] == "function"){
-		var callback = typeof options == "function"?options:callback;
-		options = options||{};
-		this[getterName]._apply(this, options.params, callback);
+mongoose.Document.prototype.will = function(meth, path, args, callback){
+	var willMeth = "will"+meth.capitalize();
+	if(path){
+		var methPath = meth.endsWith('Array')?meth.replace('Array', path.capitalize()):meth+path.capitalize();
+		var willMethPath = "will"+methPath.capitalize();
 	}
 	else{
-		return this._get(path, options);
+		var willMethPath = willMeth;
+	}
+	var willRes = typeof this[willMethPath] == "function"?this[willMethPath](args):this[willMeth](path, args);
+	if(willRes instanceof Error || willRes instanceof SGError){
+		if(callback)
+			callback(willRes);
+		return false;
+	}
+	else{
+		return true;
 	}
 };
 
-// mongoose.Document.prototype.do = function(action, params, callback){	
-// 	if(typeof this[action] == "function" && this[action].name){
-// 		if(this[action].name.startsWith("action")){
-// 			this[action]._apply(this, params, callback);
-// 		}
-// 		else if(this[action].name.startsWith("view")){
-// 			this[action+"_add"]._apply(this, params, callback);
-// 		}
-// 		else{
-// 			callback(new SGError());
-// 		}
-// 	}
-// 	else{
-// 		callback(new SGError());
-// 	}
+mongoose.Document.prototype.did = function(meth, path, args, callback){
+	var didMeth = "did"+meth.capitalize();
+	if(path){
+		var methPath = meth.endsWith('Array')?meth.replace('Array', path.capitalize()):meth+path.capitalize();
+		var didMethPath = "did"+methPath.capitalize();
+	}
+	else{
+		var didMethPath = didMethPath;
+	}
+	var me = this;
+	return function(err, result){
+		if(!err){
+			typeof me[didMethPath] == "function"?me[didMethPath](args):me[didMeth](path, args);
+		}
+		if(callback)
+			callback(null, result);
+		else
+			return result;
+	};
+};
+
+mongoose.Document.prototype.willGet = function(path, params){
+
+};
+
+mongoose.Document.prototype._get = mongoose.Document.prototype.get;
+
+mongoose.Document.prototype.get = function(path, options, callback){
+	if(typeof options == "function"){
+		callback = options;
+		options = {};
+	}
+	options = options||{};
+
+	var getPath = "get"+path.capitalize();
+
+	if(!this.will('get', path, options.params, callback)){
+		return;
+	}
+
+	var me = this;
+	var post = this.did('get', path, options.params, callback);
+
+	if(typeof this[getPath] == "function"){
+		if(callback)
+			this[getPath]._apply(this, options.params, post);
+		else
+			return post(null, this[getPath]._apply(this, options.params))
+	}
+	else{
+		return post(null, this._get(path, options));
+	}
+};
+
+// mongoose.Document.prototype.get = function(path, options, callback){
+//         var getterName = "get"+path.capitalize();
+//         if(typeof this[getterName] == "function"){
+//                 var callback = typeof options == "function"?options:callback;
+//                 options = options||{};
+//                 this[getterName]._apply(this, options.params, callback);
+//         }
+//         else{
+//         	console.log("_get")
+//         	if(typeof options == "function"){
+//         		callback = options;
+//         		options = null;
+//         	}
+//         	if(callback)
+//         		callback(null, this._get(path, options));
+//         	else
+//                 return this._get(path, options);
+//         }
 // };
 
-mongoose.Document.prototype.do = function(action, params, callback){	
+mongoose.Document.prototype.didGet = function(path, params){
+
+};
+
+mongoose.Document.prototype.willDo = function(action, params){
+
+};
+
+mongoose.Document.prototype.do = function(action, params, callback){
+	var willDoPath = "will"+action.capitalize();
+
+	if(!this.will('do', action, params, callback)){
+		return;
+	}
+
+	var post = this.did('do', action, params, callback);
+
 	if(typeof this[action] == "function" && this.schema.documentActions[action]){
-		this[action]._apply(this, params, callback);
+		if(callback)
+			this[action]._apply(this, params, post);
+		else
+			return post(null, this[action]._apply(this, params));
 	}
 	else{
 		callback(new SGError());
 	}
+};
+
+mongoose.Document.prototype.didDo = function(action, params){
+
+};
+
+mongoose.Document.prototype.willSet = function(path, val){
+
 };
 
 mongoose.Document.prototype._set = mongoose.Document.prototype.set;
@@ -108,27 +168,74 @@ mongoose.Document.prototype.set = function set(path, val, type, options, callbac
 		});
 	}
 	else{
-		var setterName = "set"+path.capitalize();
-		if(typeof this[setterName] == "function" && set.caller != this[setterName]){
-			if(this[setterName].hasCallback() && callback){
-				this[setterName](val, callback);	
+		var setPath = "set"+path.capitalize();
+
+		if(typeof this[setPath] == "function" && set.caller != this[setPath]){
+			if(this[setPath].hasCallback() && callback){
+				this[setPath](val, callback);	
 			}
 			else{
-				this[setterName](val);
+				this[setPath](val);
 				if(callback)
 					callback();
 			}
 		}
-		else if(this.schema.tree._get(path) && this.schema.tree._get(path)._id){
-			this.setSemiEmbedded(path, val, callback);
-		}
-		else{
-			this._set.apply(this, arguments);
-			if(callback)
-				callback();
+		else {
+			if(!this.will('set', path, val, callback)){
+				return;
+			}
+
+			var post = this.did('set', path, val, callback);
+
+			if(this.schema.tree._get(path) && this.schema.tree._get(path)._id){
+				this.setSemiEmbedded(path, val, post);
+			}
+			else{
+				this._set.apply(this, arguments);
+				post();
+			}
 		}
 	}
 },
+
+// mongoose.Document.prototype.set = function set(path, val, type, options, callback){
+// 	if(path && path.isObject()){
+// 		var me = this;
+// 		if(!callback && typeof val == "function")
+// 			callback = val;
+// 		async.each(path.keys(), function(key, callback){
+// 			me.set(key, path[key], null, null, callback);
+// 		}, function(err){
+// 			if(callback)
+// 				callback(err);
+// 		});
+// 	}
+// 	else{
+// 		var setterName = "set"+path.capitalize();
+// 		if(typeof this[setterName] == "function" && set.caller != this[setterName]){
+// 			if(this[setterName].hasCallback() && callback){
+// 				this[setterName](val, callback);	
+// 			}
+// 			else{
+// 				this[setterName](val);
+// 				if(callback)
+// 					callback();
+// 			}
+// 		}
+// 		else if(this.schema.tree._get(path) && this.schema.tree._get(path)._id){
+// 			this.setSemiEmbedded(path, val, callback);
+// 		}
+// 		else{
+// 			this._set.apply(this, arguments);
+// 			if(callback)
+// 				callback();
+// 		}
+// 	}
+// },
+
+mongoose.Document.prototype.didSet = function(path, val){
+
+};
 
 mongoose.Document.prototype.isSemiEmbedded = function(path){
 	var schema = this.schema.tree._get(path);
@@ -179,43 +286,78 @@ mongoose.Document.prototype.setSemiEmbedded = function(path, val, callback){
 	}
 };
 
-mongoose.Document.prototype.add = function(path, val, callback){
-	if(typeof this[path+"_add"] == "function"){
-		if(this[path+"_add"].hasCallback()){
-			this[path+"_add"](val, callback);
+mongoose.Document.prototype.willAddInArray = function(path, val){
+
+};
+
+mongoose.Document.prototype.addInArray = function(path, val, callback){
+	if(!this.will('addInArray', path, val, callback)){
+		return;
+	}
+
+	var post = this.did('addInArray', path, val, callback);
+
+	var addPath = "addIn"+path.capitalize();
+	if(typeof this[addPath] == "function"){
+		if(this[addPath].hasCallback()){
+			this[addPath](val, post);
 		}
 		else{
-			this[path+"_add"](val);
-			callback(null);
+			this[addPath](val);
+			post(null);
 		}
 	}
 	else if(this.isSemiEmbeddedArray(path)){
-		this.get(path).addSemiEmbedded(val, callback);
+		this.get(path).addSemiEmbedded(val, post);
 	}
 	else if(this.isRefArray(path)){
-		this.addInRefArray(path, val, callback);
+		this.addInRefArray(path, val, post);
 	}
 	else{
 		this.get(path).push(val);
-		if(callback)
-			callback(null, this.get(path).last());
+		post(null, this.get(path).last());
 	}
 };
 
+mongoose.Document.prototype.didAddInArray = function(path, val){
+
+};
+
+mongoose.Document.prototype.willRemoveFromArray = function(path, val){
+
+};
+
 mongoose.Document.prototype.removeFromArray = function(path, val, callback){
-	if(typeof this[path+"_remove"] == "function"){
-		this[path+"_remove"](val, callback);
+	if(!this.will('removeFromArray', path, val, callback)){
+		return;
+	}
+
+	var post = this.did('removeFromArray', path, val, callback);
+
+	var removePath = "removeFrom"+path.capitalize();
+
+	var me = this;
+	if(typeof this[removePath] == "function"){
+		if(this[removePath].hasCallback()){
+			this[removePath](val, post);
+		}
+		else{
+			this[removePath](val);
+			post(null);
+		}
 	}
 	else if(val instanceof mongoose.Document){
 		val.remove();
-		if(callback)
-			callback(null);
+		post(null);
 	}
 	else{
 		this.get(path).sgRemove(val);
-		if(callback)
-			callback(null);
+		post(null);
 	}
+};
+
+mongoose.Document.prototype.didRemoveFromArray = function(path, val){
+
 };
 
 mongoose.Document.prototype.addInRefArray = function(path, val, callback){
@@ -239,19 +381,33 @@ mongoose.Document.prototype.addInRefArray = function(path, val, callback){
 	}
 };
 
+mongoose.Document.prototype.willUpdate = function(args){
+
+};
+
 mongoose.Document.prototype.sgUpdate = function(args, callback){
+	if(!this.will('update', null, args, callback)){
+		return;
+	}
+
+	var post = this.did('update', null, args, callback);
+
 	var me = this;
 	this.set(args, function(err){
 		if(!err){
 			//me.ensureUpdateConsistency();
 			me.save(function(err){
-				callback(err, me);
+				post(err, me);
 			});
 		}
 		else{
-			callback(err);
+			post(err);
 		}
 	});
+};
+
+mongoose.Document.prototype.didUpdate = function(args){
+
 };
 
 mongoose.Document.prototype.ensureUpdateConsistency = function(){

@@ -1,11 +1,8 @@
 var models = mongoose.models;
+var is = require('../strict_typing/validateType');
 
 function getSchema (modelName) {
 	return model(modelName).schema.tree;
-}
-
-function isNullOrUndefined (obj) {
-	return obj == null;
 }
 
 function hasLinkToModel (obj, path) {
@@ -47,13 +44,13 @@ function inspectArray (arr, path) {
 }
 
 function getFieldSubLinks (obj, path) {
-	if(isNullOrUndefined(obj)) {
+	if(is.Null(obj)) {
 		return false;
 	}
-	else if(obj.isObject()) {
+	else if(is.Object(obj)) {
 		return hasLinkToModel(obj, path) || inspectObject(obj, path);
 	}
-	else if(obj.isArray()) {
+	else if(is.Array(obj)) {
 		return inspectArray(obj, path);
 	}
 	else {
@@ -84,7 +81,7 @@ exports.getSkelleton = function () {
 		modelName = modelNames[i];
 		schema = getSchema(modelName);
 		links = getFieldSubLinks(schema, '');
-		skelleton[modelName] = links.isArray() ? mergeLinksOfModel(links) : [];
+		skelleton[modelName] = is.Array(links) ? mergeLinksOfModel(links) : [];
 	}
 	return skelleton;
 };

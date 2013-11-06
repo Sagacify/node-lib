@@ -2,12 +2,12 @@ var UserModel = model('User');
 
 module.exports = function (mixin, callback) {
 	var search = {};
-	search[mixin.unique[0]] = mixin.unique[1];
+	search[mixin.search[0]] = mixin.search[1];
 	UserModel.find(search, function (e, users) {
 		if(e) {
 			callback('COULDNT_FIND_USER');
 		}
-		else if(!mixin.is_registering && (!users || !users.length)) {
+		else if((mixin.action !== 'Register') && (!users || !users.length)) {
 			callback('INVALID_ATTR_COMBINATION');
 		}
 		else if(users.length > 1) {

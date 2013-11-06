@@ -15,7 +15,7 @@ CheckoutDocumentArray.prototype.get = function(callback){
 CheckoutDocumentArray.prototype.post = function(callback){
 	var me = this;
 	if(this.parentState.state.type() == "Document"){
-		this.parentState.state.obj.add(this.parentState.path, this.context.req.body, function(err, added){
+		this.parentState.state.obj.addInArray(this.parentState.path, this.context.req.body, function(err, added){
 			if(!err){
 				me.parentState.state.obj.save(function(err){
 					callback(err, added);

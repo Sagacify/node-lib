@@ -1,21 +1,34 @@
+var is = require('../../strict_typing/validateType');
 var obj_proto = {};
 
 obj_proto.clone = function () {
-	var clone = {};
-	var keys = Object.keys(this);
-	var i = keys.length;
-	var key;
-	while(i--) {
-		key = keys[i];
-		if(this[key] instanceof Object) {
-			clone[key] = this[key].clone();
-		}
-		else {
-			clone[key] = this[key];
-		}
-		 
+	if ((this == null) || ((typeof this) !== 'object')) {
+		return this;
 	}
-	return clone;
+	else {
+		var copy = this.constructor();
+		for(var attr in this) {
+			if(this.hasOwnProperty(attr)) {
+				copy[attr] = this[attr];
+			}
+		}
+		return copy;
+	}
+};
+
+obj_proto.cloneToObject = function () {
+	if ((this == null) || ((typeof this) !== 'object')) {
+		return this;
+	}
+	else {
+		var copy = {};
+		for(var attr in this) {
+			if(this.hasOwnProperty(attr)) {
+				copy[attr] = this[attr];
+			}
+		}
+		return copy;
+	}
 };
 
 obj_proto.merge = function(obj){
@@ -28,7 +41,7 @@ obj_proto.merge = function(obj){
 	return this;
 };
 
-obj_proto.keys = function keys(){
+obj_proto.keys = function keys() {
 	return Object.keys(this);
 };
 
@@ -80,23 +93,27 @@ obj_proto.isMongooseDocument = function(){
 }
 
 obj_proto.isObject = function(){
-	return Object.prototype.toString.call(this) === '[object Object]';
-};
-
-obj_proto.isArray = function(){
-	return Object.prototype.toString.call(this) === '[object Array]';
+	return is.Object(this);
 };
 
 obj_proto.isString = function(){
-	return Object.prototype.toString.call(this) === '[object String]';
+	return is.String(this);
 };
 
-obj_proto.isFunction = function(){
-	return Object.prototype.toString.call(this) === '[object Function]';
+obj_proto.isNumber = function(){
+	return is.Number(this);
 };
 
-obj_proto.isVirtualType = function(){
-	return this.constructor.name === "VirtualType";
+obj_proto.isBoolean = function(){
+	return is.Boolean(this);
+};
+
+obj_proto.isDate = function(){
+	return is.Date(this);
+};
+
+obj_proto.isArray = function(){
+	return is.Array(this);
 };
 
 for(var key in obj_proto){
