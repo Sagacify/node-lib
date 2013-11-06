@@ -83,6 +83,15 @@ obj_proto.getType = function() {
 	return Object.prototype.toString.call(this);
 };
 
+
+obj_proto.isMongooseDocument = function(){
+	if (!this.isObject()) {
+		return false;
+	};
+
+	return this instanceof mongoose.Document;
+}
+
 obj_proto.isObject = function(){
 	return is.Object(this);
 };
