@@ -32,8 +32,8 @@ function sendMessage (data, template, callback) {
 }
 
 
-function generateMail (data, mailTemplate, callback) {
-	generateHTML(mailTemplate, data, function (e, html, text) {
+function generateMail (data, mailTemplate, callback){
+	exports.generateHTML(mailTemplate, data, function (e, html, text){
 		if(e) {
 			callback(e);
 		}
@@ -56,7 +56,7 @@ function generateMail (data, mailTemplate, callback) {
 
 function getAttachments (mailTemplate) {
 	var attachments = [];
-	var dirname = getDirname(mailTemplate);
+	var dirname = exports.getDirname(mailTemplate);
 	var attachmentsFilesPath = dirname + '/attachments';
 	var attachmentsFiles = fs.readdirSync(attachmentsFilesPath);
 	attachmentsFiles.forEach(function (anAttachment) {
@@ -71,6 +71,7 @@ function getAttachments (mailTemplate) {
 function getDirname (mailTemplate) {
 	return __dirname + '/../../views/emails/templates/' + mailTemplate;
 }
+
 
 function generateHTML (mailTemplate, data, callback) {
 	var dirname = __dirname + '/../../views/emails/templates';
@@ -92,7 +93,7 @@ function generateHTML (mailTemplate, data, callback) {
 }
 
 function getSubject (mailTemplate) {
-	var dirname = getDirname(mailTemplate);
+	var dirname = exports.getDirname(mailTemplate);
 	return fs.readFileSync(dirname + '/subject.txt', 'utf8');
 }
 

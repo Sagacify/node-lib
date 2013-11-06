@@ -395,7 +395,7 @@ mongoose.Document.prototype.sgUpdate = function(args, callback){
 	var me = this;
 	this.set(args, function(err){
 		if(!err){
-			me.ensureUpdateConsistency();
+			//me.ensureUpdateConsistency();
 			me.save(function(err){
 				post(err, me);
 			});

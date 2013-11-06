@@ -1,13 +1,26 @@
 var is = require('./validateType');
 var isValid = require('./validateFormat');
 
+var models = mongoose.models;
+var mpath = require('mpath');
+
+var escape_default = config.escapeDefault;
+var sanitize_default = config.sanitizeDefault;
+
+function get_FieldValidation (field, schema) {
+	var schema_field = schema.path(field, schema);
+	var validation_rules = false;
+	if((schema_field != null) && is.Array(schema_field.validation)) {
+		validation_rules = schema_field.options.validation;
+	}
+	return validation_rules;
+}
+
 var SGStrictTyping = function SGStrictTyping (strict_mode) {
 
 	this.strict_mode = is.NotNull(strict_mode) ? strict_mode : true;
 
 	this.base_error = 'VALIDATION_FAIL';
-
-	this.args_buffer = null;
 
 	this.validate_Type = function (obj, type) {
 		return (type in is) && (is[type](obj));
@@ -37,25 +50,103 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	};
 
 	this.validate_Config = function (ele_config) {
-		return is.NotNull(ele_config) && is.Array(ele_config);
+		return is.NotNull(ele_config) && is.Array(ele_config) /*&& ele_config.length*/;
+	};
+
+	this.hasInheritFlag = function (field, conditions)  {
+		var first_condition = conditions[0];
+		var inherited_validation = false;
+		if(is.String(first_condition) && first_condition.startsWith('inherits:')) {
+			var modelname = first_condition.split(':')[1];
+			if(modelname in models) {
+				var schema = models[modelname].schema;
+				inherited_validation = get_FieldValidation(field, schema);
+			}
+		}
+		return inherited_validation;
+	};
+
+	this.hasOptionalFlag = function (conditions) {
+		var first_condition = conditions[0];
+		return (first_condition === 'isOptional');
 	};
 
 	this.apply_to_Ele = function (ele, key, ele_config) {
-		var expected_Type = ele_config[0];
-		var expected_methods = ele_config.splice(1);
-		if(is.String(expected_Type) /*&& is.String(expected_methods))*/) {
-			var has_ValidType = this.validate_Type(ele, expected_Type);
-			var has_ValidFormat = this.validate_Format(ele, expected_methods);
-			return has_ValidType && has_ValidFormat;
+		var isOptional = false;
+		if(ele_config.length) {
+			isOptional = this.hasOptionalFlag(ele_config);
+			ele_config = ele_config.splice(isOptional, ele_config.length);
+		}
+		if(isOptional && (ele == null)) {
+			return true;
+		}
+		else if(ele_config.length && (ele != null)) {
+			var expected_Type = ele_config[0];
+			var expected_methods = ele_config.splice(1);
+			if(is.String(expected_Type) && is.Array(expected_methods)) {
+				var has_ValidType = this.validate_Type(ele, expected_Type);
+				var has_ValidFormat = this.validate_Format(ele, expected_methods);
+				return !!(has_ValidType && has_ValidFormat);
+			}
 		}
 		else {
 			return false;
 		}
 	};
 
+	this.develop_ValidationConfig = function (args_config) {
+		if(is.Object(args_config)) {
+			var scope = args_config._scope;
+			if((scope != null) && is.String(scope)) {
+				var scope_validation = this.import_from_Scope(scope);
+				args_config = scope_validation.merge(args_config);
+				delete args_config._scope;
+			}
+			var field_names = Object.keys(args_config);
+			var len = field_names.length;
+			var inheritedValidation;
+			var ele_config;
+			var i;
+			while(len--) {
+				i = field_names[len];
+				ele_config = args_config[i];
+				if(ele_config.length) {
+					inheritedValidation = this.hasInheritFlag(i, ele_config);
+					ele_config = inheritedValidation || ele_config;
+				}
+				args_config[i] = ele_config;
+			}
+		}
+		return args_config || {};
+	};
+
+	this.import_from_Scope = function (scope) {
+		var scope_validation = {};
+		if((scope in models)) {
+			var schema = models[scope].schema;
+			var scope_fields = schema.developOptions();
+			var i = scope_fields.length;
+			var field_validation;
+			var field;
+			while(i--) {
+				field = scope_fields[i];
+				field_validation = get_FieldValidation(field, schema);
+				if(field_validation !== false) {
+					scope_validation[field] = field_validation;
+				}
+			}
+		}
+		return scope_validation;
+	};
+
 	this.apply_to_Args = function (args, args_config, callback) {
+		args_config = this.develop_ValidationConfig(args_config);
+		console.log('\n--------- Arguments -------');
+		console.log(args);
+		console.log(args_config);
+		var args_buffer = {};
 		if(is.Object(args) && is.Object(args_config)) {
-			var keys = Object.keys(args);
+			var keys = Object.keys(args_config);
 			var len = keys.length;
 			var ele_config;
 			var ele;
@@ -63,12 +154,14 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			while(len--) {
 				i = keys[len];
 				ele = args[i];
-				ele_config = args_config[i];
-				console.log('\n -> ' + i);
-				if(is.Array(ele_config) && (ele_config.length > 0) && is.NotNull(ele)) {
+				console.log('\n --> ' + i);
+				//ele_config = args_config[i];
+				ele_config = args_config[i].clone();
+				if(this.validate_Config(ele_config)) {
 					if(this.apply_to_Ele(ele, i, ele_config)) {
+						console.log(' --> [X] OK');
 						if(this.strict_mode) {
-							this.args_buffer[i] = ele;
+							args_buffer[i] = ele;
 						}
 					}
 					else {
@@ -80,7 +173,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 				}
 			}
 			var array_ags = Array.apply(null, arguments);
-			var new_args = this.strict_mode ? this.args_buffer : array_ags;
+			var new_args = this.strict_mode ? args_buffer : array_ags;
 			return callback.apply(this, [null].concat(new_args));
 		}
 		else {
@@ -90,8 +183,6 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 
 };
 
-SGStrictTyping.prototype = {
-	args_buffer		:	{}
-};
+var mySGStrictTyping = new SGStrictTyping(true);
 
-module.exports = SGStrictTyping;
+module.exports = mySGStrictTyping;

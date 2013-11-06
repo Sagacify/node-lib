@@ -2,6 +2,7 @@ var Mailer = require('../../mail/Mailer');
 var send_VerficationMail = Mailer.send_VerficationMail;
 var send_PasswordResetMail = Mailer.send_PasswordResetMail;
 
+
 module.exports = function (mixin, callback) {
 	var typeof_email = false;
 	if(mixin.action === 'Register') {
