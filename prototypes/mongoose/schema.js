@@ -40,13 +40,13 @@ mongoose.Schema.prototype.getFormattedSchema = function(options, callback){
 			});
 		}
 		else if(schemaElement.ref){
-			callback(null, {type:schemaElement.type, ref:schemaElement.ref});
+			callback(null, {type:schemaElement.type, ref:schemaElement.ref, validation:schemaElement.validation});
 		}
 		else if(schemaElement.name){
-			callback(null, {type:schemaElement.name});
+			callback(null, {type:schemaElement.name, validation:schemaElement.validation});
 		}
 		else if(schemaElement.type && schemaElement.type.name){
-			callback(null, {type:schemaElement.type.name});
+			callback(null, {type:schemaElement.type.name, validation:schemaElement.validation});
 		}
 		else if(schemaElement.path){
 			callback(null, null);
