@@ -2,7 +2,6 @@ var is = require('./validateType');
 var isValid = require('./validateFormat');
 
 var models = mongoose.models;
-var mpath = require('mpath');
 
 var escape_default = config.escapeDefault;
 var sanitize_default = config.sanitizeDefault;
@@ -140,11 +139,24 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		return scope_validation;
 	};
 
+	this.assemble_Object = function (obj, key, value) {
+		var parts = key.split('.');
+		var p = parts.pop();
+		for(var i = 0, j; obj && (j = parts[i]); i++) {
+			obj = (j in obj ? obj[j] : obj[j] = {});
+		}
+		return obj && p ? (obj[p] = value) : undefined;
+	};
+
+	this.disassemble_Object = function (obj, key) {
+		function index(obj, i) {
+			return obj[i];
+		}
+		return key.split('.').reduce(index, obj);
+	};
+
 	this.apply_to_Args = function (args, args_config, callback) {
 		args_config = this.develop_ValidationConfig(args_config);
-		console.log('\n--------- Arguments -------');
-		console.log(args);
-		console.log(args_config);
 		var args_buffer = {};
 		if(is.Object(args) && is.Object(args_config)) {
 			var keys = Object.keys(args_config);
@@ -154,15 +166,15 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			var i;
 			while(len--) {
 				i = keys[len];
-				ele = args[i];
+				ele = this.disassemble_Object(args, i);
 				console.log('\n --> ' + i);
-				//ele_config = args_config[i];
-				ele_config = args_config[i].clone();
+				ele_config = args_config[i];
+				//ele_config = args_config[i].clone();
 				if(this.validate_Config(ele_config)) {
 					if(this.apply_to_Ele(ele, i, ele_config)) {
 						console.log(' --> [X] OK');
 						if(this.strict_mode) {
-							args_buffer[i] = ele;
+							this.assemble_Object(args_buffer, i, ele);
 						}
 					}
 					else {
