@@ -7,9 +7,9 @@ var escape_default = config.escapeDefault;
 var sanitize_default = config.sanitizeDefault;
 
 function get_FieldValidation (field, schema) {
-	var schema_field = schema.path(field, schema);
+	var schema_field = schema.path(field);
 	var validation_rules = false;
-	if((schema_field != null) && is.Array(schema_field.validation)) {
+	if((schema_field != null) && is.Array(schema_field.options.validation)) {
 		validation_rules = schema_field.options.validation;
 	}
 	return validation_rules;
@@ -124,7 +124,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		var scope_validation = {};
 		if((scope in models)) {
 			var schema = models[scope].schema;
-			var scope_fields = schema.developOptions();
+			var scope_fields = schema.developOptions().fields;
 			var i = scope_fields.length;
 			var field_validation;
 			var field;
@@ -168,8 +168,8 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 				i = keys[len];
 				ele = this.disassemble_Object(args, i);
 				console.log('\n --> ' + i);
-				ele_config = args_config[i];
-				//ele_config = args_config[i].clone();
+				//ele_config = args_config[i];
+				ele_config = args_config[i].clone();
 				if(this.validate_Config(ele_config)) {
 					if(this.apply_to_Ele(ele, i, ele_config)) {
 						console.log(' --> [X] OK');

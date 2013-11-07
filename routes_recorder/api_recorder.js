@@ -6,8 +6,8 @@ exports.routes = routes;
 
 exports.addRoute = function(method, uri, options){
 	if(uri && uri.startsWith('/api') && uri != '/api/app_models'){
-		console.log(options.validation)
 		options.validation = SGStrictTyping.develop_ValidationConfig(options.validation);
+		console.log(options.validation);
 		routes[method][uri] = options;
 	}
 };

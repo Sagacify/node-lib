@@ -13,6 +13,7 @@ module.exports = function validate (callback, args, caja, req, res, next) {
 		SGStrictTyping.apply_to_Args(mixin, args, function (error, validated_args) {
 			console.log('\n----- Mixin-2 : -----');
 			console.log(validated_args);
+			console.log('\n');
 			if(error) {
 				console.log('\n----- Validation Error : -----');
 				console.log(error);

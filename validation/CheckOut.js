@@ -34,7 +34,6 @@ module.exports = function (app) {
 			callback = new routeHandler(callback).handle();
 		}
 
-		console.log(options)
 		apiRecorder.addRoute(methodName, uri, options);
 
 		var auth = ('auth' in options) ? options.auth : authState;
