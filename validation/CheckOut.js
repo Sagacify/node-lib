@@ -34,7 +34,8 @@ module.exports = function (app) {
 			callback = new routeHandler(callback).handle();
 		}
 
-		apiRecorder.addRoute(methodName, uri, {});
+		console.log(options)
+		apiRecorder.addRoute(methodName, uri, options);
 
 		var auth = ('auth' in options) ? options.auth : authState;
 		var caja = ('sanitize' in options) ? options.sanitize : sanitizeState;
@@ -69,11 +70,11 @@ module.exports = function (app) {
 
 			if(Object.keys(sort).length) {
 				mixin_options.sort = sort;
-				specialValidation['sort'] = ['isOptional', 'String', 'notNull', 'notEmpty'];
+				specialValidation['sort'] = ['isOptional', 'isObject'];
 			}
 			if(Object.keys(filter).length) {
 				mixin_options.filter = filter;
-				specialValidation['filter'] = ['isOptional', 'String', 'notNull', 'notEmpty'];
+				specialValidation['filter'] = ['isOptional', 'isObject'];
 			}
 
 			options.validation = specialValidation;

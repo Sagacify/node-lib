@@ -109,14 +109,6 @@ mongoose.Schema.prepareSchemas = function () {
 	});
 };
 
-mongoose.Schema.isPublic = function(attr){
-	return this.tree._get(attr).public;
-};
-
-mongoose.Schema.setPublic = function(attr, public){
-	this.tree._get(attr).public = public;
-};
-
 mongoose.Schema.prototype.hasVirtual = function (name) {
 	return this.documentVirtuals[name]||this.collectionVirtuals[name];
 };
