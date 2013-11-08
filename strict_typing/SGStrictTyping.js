@@ -2,15 +2,14 @@ var is = require('./validateType');
 var isValid = require('./validateFormat');
 
 var models = mongoose.models;
-var mpath = require('mpath');
 
 var escape_default = config.escapeDefault;
 var sanitize_default = config.sanitizeDefault;
 
 function get_FieldValidation (field, schema) {
-	var schema_field = schema.path(field, schema);
+	var schema_field = schema.path(field);
 	var validation_rules = false;
-	if((schema_field != null) && is.Array(schema_field.validation)) {
+	if((schema_field != null) && is.Array(schema_field.options.validation)) {
 		validation_rules = schema_field.options.validation;
 	}
 	return validation_rules;
@@ -95,6 +94,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	};
 
 	this.develop_ValidationConfig = function (args_config) {
+		//args_config.validation
 		if(is.Object(args_config)) {
 			var scope = args_config._scope;
 			if((scope != null) && is.String(scope)) {
@@ -124,7 +124,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		var scope_validation = {};
 		if((scope in models)) {
 			var schema = models[scope].schema;
-			var scope_fields = schema.developOptions();
+			var scope_fields = schema.developOptions().fields;
 			var i = scope_fields.length;
 			var field_validation;
 			var field;
@@ -139,11 +139,25 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		return scope_validation;
 	};
 
+	this.assemble_Object = function (obj, key, value) {
+		var parts = key.split('.');
+		var p = parts.pop();
+		for(var i = 0, j; obj && (j = parts[i]); i++) {
+			obj = (j in obj ? obj[j] : obj[j] = {});
+		}
+		return obj && p ? (obj[p] = value) : undefined;
+	};
+
+	this.disassemble_Object = function (obj, key) {
+		function index(obj, i) {
+			return obj[i];
+		}
+		return key.split('.').reduce(index, obj);
+	};
+
 	this.apply_to_Args = function (args, args_config, callback) {
+		console.log(arguments)
 		args_config = this.develop_ValidationConfig(args_config);
-		console.log('\n--------- Arguments -------');
-		console.log(args);
-		console.log(args_config);
 		var args_buffer = {};
 		if(is.Object(args) && is.Object(args_config)) {
 			var keys = Object.keys(args_config);
@@ -153,15 +167,18 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			var i;
 			while(len--) {
 				i = keys[len];
-				ele = args[i];
+				ele = this.disassemble_Object(args, i);
 				console.log('\n --> ' + i);
+				console.log(ele);
+
 				//ele_config = args_config[i];
 				ele_config = args_config[i].clone();
+				console.log(ele_config);
 				if(this.validate_Config(ele_config)) {
 					if(this.apply_to_Ele(ele, i, ele_config)) {
 						console.log(' --> [X] OK');
 						if(this.strict_mode) {
-							args_buffer[i] = ele;
+							this.assemble_Object(args_buffer, i, ele);
 						}
 					}
 					else {

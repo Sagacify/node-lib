@@ -1,59 +1,60 @@
-// mongoose.Schema.prototype.getClientFormat = function(){
-// 	var clientFormat = {doc:{tree:{}, views:{}, actions:{}}, collection:{views:{}, actions:{}}};
-// 	var me = this;
-// 	if(this.clientView){
-// 		this.clientView.forEach(function(key){
-// 			var value = me.formattedSchema._get(key);
-// 			if(value)
-// 				clientFormat.doc.tree._set(key, value);
-// 		});
-// 	}
+mongoose.Schema.prototype.isPublic = function(path){
+	return this.paths[path].options.public||(this.paths[path].caller&&this.paths[path].caller.options.public);
+};
 
-// 	var scan = function(methodsStatics, docColl){
-// 		me[methodsStatics].keys().forEach(function(key){
-// 			var isView = me[methodsStatics][key].name && me[methodsStatics][key].name.startsWith('view');
-// 			var isAction = me[methodsStatics][key].name && me[methodsStatics][key].name.startsWith('action');
-// 			if(isView || isAction){
-// 				var viewAction = isView?'views':'actions';
-// 				var modCollName = me[methodsStatics][key].name.split('_')[1];
-// 				if(!modCollName){
-// 					clientFormat[docColl][viewAction][key] = {type:"unknown"};
-// 				}
-// 				else if(modCollName == "primitive"){
-// 					clientFormat[docColl][viewAction][key] = {type:"primitive"};
-// 				}
-// 				else if(modCollName && modCollName in mongoose.getModelsByCollection()){
-// 					clientFormat[docColl][viewAction][key] = [{type:mongoose.modelNameFromCollectionName(modCollName)}];
-// 				}
-// 				else if(modCollName && modCollName.capitalize() in mongoose.models){
-// 					clientFormat[docColl][viewAction][key] = {type:modCollName.capitalize()};
-// 				}
+mongoose.Schema.prototype.setPublic = function(path, public){
+	this.paths[path].options.public = public;
+};
 
-// 				if(isAction && clientFormat[docColl][viewAction][key]){
-// 					var args = me[methodsStatics][key].getParamNames();
-// 					args.remove("callback");
-// 					clientFormat[docColl][viewAction][key].args = args;
-// 				}
-// 			};
-// 		});
-// 	}
+mongoose.Schema.prototype.publicFormat = function(){
+	var publicFormat = {doc:{tree:{}, virtuals:{}, actions:{}}, collection:{virtuals:{}, actions:{}}};
 
-// 	scan('methods', 'doc');
-// 	scan('statics', 'collection');
-
-// 	return clientFormat;
-// };
-
-mongoose.Schema.prototype.getClientFormat = function(){
-	var clientFormat = {doc:{tree:{}, virtuals:this.documentVirtuals, actions:this.documentActions}, collection:{virtuals:this.collectionVirtuals, actions:this.collectionActions}};
-	var me = this;
-	if(this.clientView){
-		this.clientView.forEach(function(key){
-			var value = me.formattedSchema._get(key);
-			if(value)
-				clientFormat.doc.tree._set(key, value);
-		});
+	var publicSpec = function(spec){
+		var publicSpec = {type:spec.instance};
+		if(spec.options.ref)
+			publicSpec.ref = spec.options.ref;
+		return publicSpec;
 	}
 
-	return clientFormat;
+	var publicVirtualActionSpec = function(virtualActionSpec){
+		var publicSpec = {type: virtualActionSpec.type};
+		return publicSpec;
+	}
+
+	for(var path in this.paths){
+		if(path=="_id" || this.isPublic(path)){
+			var spec = this.paths[path];
+			if(spec.schema){
+				publicFormat.doc.tree[path] = [spec.schema.publicFormat()];
+			}
+			else if(spec.caster){
+				publicFormat.doc.tree[path] = [publicSpec(spec.caster)];
+			}
+			else{
+				publicFormat.doc.tree[path] = publicSpec(spec);
+			}
+		}
+	}
+
+	for(var path in this.documentVirtuals){
+		if(this.documentVirtuals[path].public)
+			publicFormat.doc.virtuals[path] = publicVirtualActionSpec(this.documentVirtuals[path]);
+	}
+
+	for(var path in this.documentActions){
+		if(this.documentActions[path].public)
+			publicFormat.doc.actions[path] = publicVirtualActionSpec(this.documentActions[path]);
+	}
+
+	for(var path in this.collectionVirtuals){
+		if(this.collectionVirtuals[path].public)
+			publicFormat.collection.virtuals[path] = publicVirtualActionSpec(this.collectionVirtuals[path]);
+	}
+
+	for(var path in this.collectionActions){
+		if(this.collectionActions[path].public)
+			publicFormat.collection.actions[path] = publicVirtualActionSpec(this.collectionActions[path]);
+	}
+
+	return publicFormat;
 };

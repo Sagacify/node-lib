@@ -9,12 +9,12 @@ module.exports = function (app) {
 		var schemas = {};
 		mongoose.models.keys().forEach(function(model){
 			if(model != 'Bug'){
-				schemas[model] = mongoose.models[model].schema.getClientFormat();
+				schemas[model] = mongoose.models[model].schema.publicFormat();
 				schemas[model].collection.name = mongoose.collectionNameFromModelName(model);
 			}
 		});
 		var structure = {routes: routes, schemas:schemas};
-		res.SGsend(schemas);
+		res.SGsend(structure);
 	});
 
 };

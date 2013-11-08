@@ -1,5 +1,3 @@
-var requestHandler = require('../request_handler/request_handler');
-
 var authState = config.authDefault;
 var sanitizeState = config.escapeDefault;
 
@@ -26,17 +24,14 @@ module.exports = function (app) {
 	var BearerAuth = require('../../app/auth-middlewares/authenticate_token.js');
 
 	function expressMethodWrapper (methodName, uri, options, callback) {
-		if(arguments.length == 3){
-			callback = options;
-			options = {};
-		}
-
+		console.log(arguments)
 		if(typeof callback !== "function"){
 			//callback = requestHandler.handle(callback);
 			callback = new routeHandler(callback).handle();
 		}
-
-		apiRecorder.addRoute(methodName, uri, {});
+		console.log("CHECKOUT:")
+		console.log(options.validation)
+		apiRecorder.addRoute(methodName, uri, options);
 
 		var auth = ('auth' in options) ? options.auth : authState;
 		var caja = ('sanitize' in options) ? options.sanitize : sanitizeState;
@@ -71,11 +66,11 @@ module.exports = function (app) {
 
 			if(Object.keys(sort).length) {
 				mixin_options.sort = sort;
-				specialValidation['sort'] = ['isOptional', 'String', 'notNull', 'notEmpty'];
+				specialValidation['sort'] = ['isOptional', 'isObject'];
 			}
 			if(Object.keys(filter).length) {
 				mixin_options.filter = filter;
-				specialValidation['filter'] = ['isOptional', 'String', 'notNull', 'notEmpty'];
+				specialValidation['filter'] = ['isOptional', 'isObject'];
 			}
 
 			options.validation = specialValidation;
@@ -83,7 +78,6 @@ module.exports = function (app) {
 			//The cloneToObject() method is needed because FUCK VISION-MEDIA !
 			// --> https://github.com/visionmedia/express/issues/1742
 			req.mixin = req.params.cloneToObject().merge(req.body).merge(mixin_options);
-
 			SGMixinValidation(callback, options.validation || {}, caja, req, res, next);
 		});
 	}

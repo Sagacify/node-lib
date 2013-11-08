@@ -13,10 +13,7 @@ var CheckoutVirtual = require('./checkout_virtual');
 function RouteHandler(options){
 	this.options = options;
 };
-
-RouteHandler.prototype.handle = function(req, res){
-
-	
+RouteHandler.prototype.handle = function(){
 	var me = this;
 	return function (req, res) {
 		me.buildContext(req, res);
