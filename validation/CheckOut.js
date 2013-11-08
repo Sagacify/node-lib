@@ -24,13 +24,11 @@ module.exports = function (app) {
 	var BearerAuth = require('../../app/auth-middlewares/authenticate_token.js');
 
 	function expressMethodWrapper (methodName, uri, options, callback) {
-		console.log(arguments)
 		if(typeof callback !== "function"){
 			//callback = requestHandler.handle(callback);
 			callback = new routeHandler(callback).handle();
 		}
-		console.log("CHECKOUT:")
-		console.log(options.validation)
+
 		apiRecorder.addRoute(methodName, uri, options);
 
 		var auth = ('auth' in options) ? options.auth : authState;
