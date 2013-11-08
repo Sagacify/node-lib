@@ -410,6 +410,15 @@ mongoose.Document.prototype.didUpdate = function(args){
 
 };
 
+mongoose.Document.prototype.willCreate = function(){
+
+};
+
+
+mongoose.Document.prototype.didCreate = function(){
+
+};
+
 mongoose.Document.prototype.ensureUpdateConsistency = function(){
 	var me = this;
 	if(this.getModelName){

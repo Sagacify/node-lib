@@ -120,6 +120,10 @@ exports.isAlphanumeric = function (str) {
 	return str.match(/^[a-zA-Z0-9]+$/);
 };
 
+exports.isTrue = function (bool) {
+	return bool === true;
+};
+
 exports.isNumeric = function (str) {
 	return str.match(/^-?[0-9]+$/);
 };
