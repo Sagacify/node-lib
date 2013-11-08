@@ -349,6 +349,12 @@ mongoose.Model.willCreate = function(){
 
 };
 
+
+mongoose.Model.didCreate = function(){
+
+};
+
+
 mongoose.Model.sgCreate = function(doc, callback){
 	if(!mongoose.Document.prototype.will.apply(this, ['create', null, doc, callback])){
 		return;
@@ -359,9 +365,6 @@ mongoose.Model.sgCreate = function(doc, callback){
 	this.create(doc, post);
 };
 
-mongoose.Model.didCreate = function(){
-
-};
 
 mongoose.Model.get = function(filter, sort, paginate, callback){
 	if(this instanceof Array){
@@ -407,7 +410,13 @@ mongoose.Model.get = function(filter, sort, paginate, callback){
 		callback(null, processedArray);
 	}
 	else if(this.name == "model"){
-		this.find(filter).sort(sort).paginate(paginate).exec(callback);
+		//work around
+		if (!paginate) {
+			this.find(filter).sort(sort).exec(callback);
+		} else {
+			this.find(filter).sort(sort).paginate(paginate).exec(callback);	
+		}
+		
 	}
 	else{
 		callback(new SGError());
