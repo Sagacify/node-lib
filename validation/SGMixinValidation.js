@@ -12,12 +12,12 @@ module.exports = function validate (callback, args, caja, req, res, next) {
 
 
 
-		console.log('\n----- Mixin-1 : -----');
-		console.log(mixin);
+		// console.log('\n----- Mixin-1 : -----');
+		// console.log(mixin);
 		SGStrictTyping.apply_to_Args(mixin, args, function (error, validated_args) {
-			console.log('\n----- Mixin-2 : -----');
-			console.log(validated_args);
-			console.log('\n');
+			// console.log('\n----- Mixin-2 : -----');
+			// console.log(validated_args);
+			// console.log('\n');
 			if(error) {
 				console.log('\n----- Validation Error : -----');
 				console.log(error);
