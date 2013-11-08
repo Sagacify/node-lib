@@ -362,7 +362,21 @@ mongoose.Model.sgCreate = function(doc, callback){
 
 	var post = mongoose.Document.prototype.did.apply(this, ['create', null, doc, callback]);
 
-	this.create(doc, post);
+	var model = this;
+	var doc = new model(doc);
+
+	Object.defineProperty(doc, "context", {
+		writable: true,
+		value: this.context
+	});
+
+	doc.willCreate();
+	doc.save(function(err){
+		doc.didCreate();
+		post(err, doc);
+	});
+
+	//this.create(doc, post);
 };
 
 

@@ -25,10 +25,8 @@ module.exports = function (app) {
 
 	function expressMethodWrapper (methodName, uri, options, callback) {
 		if(typeof callback !== "function"){
-			//callback = requestHandler.handle(callback);
 			callback = new routeHandler(callback).handle();
 		}
-
 		apiRecorder.addRoute(methodName, uri, options);
 
 		var auth = ('auth' in options) ? options.auth : authState;
