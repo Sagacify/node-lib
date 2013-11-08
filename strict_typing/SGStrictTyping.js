@@ -156,6 +156,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	};
 
 	this.apply_to_Args = function (args, args_config, callback) {
+		console.log(arguments)
 		args_config = this.develop_ValidationConfig(args_config);
 		var args_buffer = {};
 		if(is.Object(args) && is.Object(args_config)) {
@@ -168,8 +169,11 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 				i = keys[len];
 				ele = this.disassemble_Object(args, i);
 				console.log('\n --> ' + i);
+				console.log(ele);
+
 				//ele_config = args_config[i];
 				ele_config = args_config[i].clone();
+				console.log(ele_config);
 				if(this.validate_Config(ele_config)) {
 					if(this.apply_to_Ele(ele, i, ele_config)) {
 						console.log(' --> [X] OK');

@@ -8,6 +8,10 @@ module.exports = function validate (callback, args, caja, req, res, next) {
 	if(is.Object(mixin = req.mixin)) {
 		var argsToArray = Array.apply(null, arguments);
 		argsToArray.splice(0, 3);
+
+
+
+
 		console.log('\n----- Mixin-1 : -----');
 		console.log(mixin);
 		SGStrictTyping.apply_to_Args(mixin, args, function (error, validated_args) {
