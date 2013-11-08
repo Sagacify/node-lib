@@ -199,7 +199,7 @@ RouteState.prototype.attachCaller = function(){
 };
 
 RouteState.prototype.attachContext = function(){
-	if(this.obj && this.obj.isObject()){
+	if(this.obj && this instanceof Object){
 		Object.defineProperty(this.obj, "context", {
 			writable: true,
 			value: this.context
