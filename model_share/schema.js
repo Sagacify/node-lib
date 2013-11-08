@@ -33,6 +33,16 @@ mongoose.Schema.prototype.publicFormat = function(){
 			else{
 				publicFormat.doc.tree[path] = publicSpec(spec);
 			}
+
+			// if(spec.schema){
+			// 	publicFormat.doc.tree._set(path, spec.schema.publicFormat());
+			// }
+			// else if(spec.caster){
+			// 	publicFormat.doc.tree._set(path, publicSpec(spec.caster));
+			// }
+			// else{
+			// 	publicFormat.doc.tree._set(path, publicSpec(spec));
+			// }
 		}
 	}
 
