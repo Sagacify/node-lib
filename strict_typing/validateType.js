@@ -22,6 +22,15 @@ exports.Number = function (obj) {
 	return Object.prototype.toString.call(obj) === '[object Number]';
 };
 
+exports.Date = function (obj) {
+	return Object.prototype.toString.call(obj) === '[object Date]';
+};
+
+exports.Boolean = function (obj) {
+	return Object.prototype.toString.call(obj) === '[object Boolean]';
+};
+
+
 exports.NotNull = function (obj) {
 	return obj != null;
 };
