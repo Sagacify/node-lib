@@ -370,7 +370,11 @@ mongoose.Model.sgCreate = function(doc, callback){
 		value: this.context
 	});
 
-	doc.willCreate();
+	var err = doc.willCreate();
+	if(err){
+		return callback(err);
+	}
+	
 	doc.save(function(err){
 		doc.didCreate();
 		post(err, doc);

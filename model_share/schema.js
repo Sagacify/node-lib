@@ -10,7 +10,7 @@ mongoose.Schema.prototype.publicFormat = function(){
 	var publicFormat = {doc:{tree:{}, virtuals:{}, actions:{}}, collection:{virtuals:{}, actions:{}}};
 
 	var publicSpec = function(spec){
-		var publicSpec = {type:spec.instance};
+		var publicSpec = {type:spec.options.type.name};
 		if(spec.options.ref)
 			publicSpec.ref = spec.options.ref;
 		return publicSpec;
@@ -33,16 +33,6 @@ mongoose.Schema.prototype.publicFormat = function(){
 			else{
 				publicFormat.doc.tree[path] = publicSpec(spec);
 			}
-
-			// if(spec.schema){
-			// 	publicFormat.doc.tree._set(path, spec.schema.publicFormat());
-			// }
-			// else if(spec.caster){
-			// 	publicFormat.doc.tree._set(path, publicSpec(spec.caster));
-			// }
-			// else{
-			// 	publicFormat.doc.tree._set(path, publicSpec(spec));
-			// }
 		}
 	}
 

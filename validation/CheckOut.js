@@ -18,7 +18,7 @@ var methodNameLen = methodName.length;
 
 var apiRecorder = require('../routes_recorder/api_recorder');
 
-var routeHandler = require('../request_handler/route_handler');
+var routeHandler = require('../route_handler/route_handler');
 
 module.exports = function (app) {
 	var BearerAuth = require('../../app/auth-middlewares/authenticate_token.js');
