@@ -282,10 +282,10 @@ mongoose.Model.prototype.save = function save(fn){
 
 mongoose.Model.prototype._remove = mongoose.Model.prototype.remove;
 
-mongoose.Model.prototype.remove = function(){
-	this.ensureRemoveConsistency();
-	return this._remove.apply(this, arguments);
-};
+// mongoose.Model.prototype.remove = function(){
+// 	this.ensureRemoveConsistency();
+// 	return this._remove.apply(this, arguments);
+// };
 
 mongoose.Model.prototype.ensureRemoveConsistency = function(){
 	var me = this;
@@ -331,56 +331,68 @@ mongoose.Model.prototype.willRemove = function(){
 
 };
 
-mongoose.Model.prototype.sgRemove = function(callback){
-	if(!this.will('remove', null, null, callback)){
-		return;
-	}
+// mongoose.Model.prototype.sgRemove = function(callback){
+// 	if(!this.will('remove', null, null, callback)){
+// 		return;
+// 	}
 
-	var post = this.did('remove', null, null, callback);
+// 	var post = this.did('remove', null, null, callback);
 
-	this.remove(post);
-};
+// 	this.remove(post);
+// };
+mongoose.Model.prototype.doRemove = function(){
+	this.ensureRemoveConsistency();
+   	return this._remove.apply(this, arguments);
+}
 
 mongoose.Model.prototype.didRemove = function(){
 
 };
 
-mongoose.Model.willCreate = function(){
+// mongoose.Model.willCreate = function(){
 
-};
+// };
 
+// mongoose.Model.sgCreate = function(doc, callback){
+// 	if(!mongoose.Document.prototype.will.apply(this, ['create', null, doc, callback])){
+// 		return;
+// 	}
 
-mongoose.Model.didCreate = function(){
+// 	var post = mongoose.Document.prototype.did.apply(this, ['create', null, doc, callback]);
 
-};
+// 	var model = this;
+// 	var doc = new model(doc);
 
+// 	Object.defineProperty(doc, "context", {
+// 		writable: true,
+// 		value: this.context
+// 	});
 
-mongoose.Model.sgCreate = function(doc, callback){
-	if(!mongoose.Document.prototype.will.apply(this, ['create', null, doc, callback])){
-		return;
-	}
+// 	var err = doc.willCreate();
+// 	if(err){
+// 		return callback(err);
+// 	}
+	
+// 	doc.save(function(err){
+// 		doc.didCreate();
+// 		post(err, doc);
+// 	});
+// };
 
-	var post = mongoose.Document.prototype.did.apply(this, ['create', null, doc, callback]);
+// mongoose.Model.didCreate = function(){
 
+// };
+
+mongoose.Model.sgCreate = function(raw, callback){
 	var model = this;
-	var doc = new model(doc);
+	var doc = new model();
 
 	Object.defineProperty(doc, "context", {
 		writable: true,
 		value: this.context
 	});
 
-	var err = doc.willCreate();
-	if(err){
-		return callback(err);
-	}
-	
-	doc.save(function(err){
-		doc.didCreate();
-		post(err, doc);
-	});
-
-	//this.create(doc, post);
+	doc.sgUpdate(raw, callback);
 };
 
 
