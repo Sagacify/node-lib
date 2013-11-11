@@ -33,7 +33,7 @@ function sendMessage (data, template, callback) {
 
 
 function generateMail (data, mailTemplate, callback){
-	exports.generateHTML(mailTemplate, data, function (e, html, text){
+	generateHTML(mailTemplate, data, function (e, html, text){
 		if(e) {
 			callback(e);
 		}
@@ -56,7 +56,7 @@ function generateMail (data, mailTemplate, callback){
 
 function getAttachments (mailTemplate) {
 	var attachments = [];
-	var dirname = exports.getDirname(mailTemplate);
+	var dirname = getDirname(mailTemplate);
 	var attachmentsFilesPath = dirname + '/attachments';
 	var attachmentsFiles = fs.readdirSync(attachmentsFilesPath);
 	attachmentsFiles.forEach(function (anAttachment) {
@@ -93,7 +93,7 @@ function generateHTML (mailTemplate, data, callback) {
 }
 
 function getSubject (mailTemplate) {
-	var dirname = exports.getDirname(mailTemplate);
+	var dirname = getDirname(mailTemplate);
 	return fs.readFileSync(dirname + '/subject.txt', 'utf8');
 }
 

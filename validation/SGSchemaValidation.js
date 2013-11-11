@@ -4,7 +4,8 @@ var is = require('../strict_typing//validateType');
 
 function generic_validator (field, field_name, conditions) {
 	field.validate(function (value) {
-		return SGStrictTyping.apply_to_Ele(value, field_name, conditions);
+		var isValid = SGStrictTyping.apply_to_Ele(value, field_name, conditions);
+		return isValid;
 	});
 }
 

@@ -145,6 +145,9 @@ var Auth_LogicController = {
 				hash_Password,
 				create_Token,
 				hash_Token,
+				add_Token,
+				remove_ExpiredTokens,
+				remove_ExcessTokens,
 				save_User
 			], callback);
 		},

@@ -151,7 +151,7 @@ RouteState.prototype.getObjectFromFixPath = function(callback){
 RouteState.prototype.populateObject = function(callback){
 	//console.log("populateObject")
 	var parentState = this.parentState();
-	if(this.type()=='Virtual' || this.type()=='Action' || this.type()=='DocumentArray' || !parentState || !(parentState.state.obj instanceof mongoose.Document)){
+	if(this.type()=='Virtual' || this.type()=='Action' || this.type()=='Primitive' || this.type()=='DocumentArray' || !parentState || !(parentState.state.obj instanceof mongoose.Document)){
 		return callback(null);
 	}
 	if(this.index == this.route.length-1 || parentState.state.type() != "Document" || !parentState.state.obj.isRef(parentState.path) || !parentState.state.obj.isRefArray(parentState.path) ||
@@ -199,7 +199,7 @@ RouteState.prototype.attachCaller = function(){
 };
 
 RouteState.prototype.attachContext = function(){
-	if(this.obj && this.obj.isObject()){
+	if(this.obj && (this.obj.isObject()||this.obj instanceof Function)){
 		Object.defineProperty(this.obj, "context", {
 			writable: true,
 			value: this.context
@@ -217,7 +217,6 @@ RouteState.prototype.build = function(callback){
 					me.populated = obj;
 					me.obj = popObj;
 				}
-				//console.log(me.obj)
 				me.attachCaller();
 				me.attachContext();
 				callback(err);
