@@ -647,15 +647,13 @@ var generateMeth = function(meth){
 		meth = "sg"+meth.capitalize();
 	}
 	var Class = meth=="sgRemove"?mongoose.Model:mongoose.Document;
-	Class.prototype[meth] = function(path, args, callback){
-		console.log(meth)
-		console.log(arguments)
+	Class.prototype[meth] = function(path, args, callback){		
 		if(typeof args == "function"){
 			callback = args;
 			args = {};
 		}
 
-		if(!callback){
+		if(!(typeof callback == "function")){
 			var willRes = this[willMeth](path, args);
 			if(willRes instanceof Error || willRes instanceof SGError){
 				return willRes;
@@ -665,7 +663,6 @@ var generateMeth = function(meth){
 			return val;
 		}
 		else{
-			console.log(3)
 			if(meth == "sgUpdate"){
 				args = null;
 			}
@@ -675,14 +672,13 @@ var generateMeth = function(meth){
 			}
 			var me = this;
 			var doCallback = function(err, res){
-				console.log("doCallback")
 				if(!err){
 					me[didMeth](path, args);
 				}
+
 				callback(err, res);
 			}
 			var willCallback = function(err){
-				console.log("willCallback")
 				if(!err){
 					me[doMeth](path||doCallback, args||doCallback, doCallback);
 				}
@@ -690,6 +686,7 @@ var generateMeth = function(meth){
 					callback(err);
 				}
 			}
+				
 			this[willMeth](path||willCallback, args||willCallback, willCallback);
 		}
 	};
