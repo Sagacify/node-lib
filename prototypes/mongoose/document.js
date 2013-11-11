@@ -259,9 +259,6 @@ mongoose.Document.prototype._set = mongoose.Document.prototype.set;
 // },
 
 mongoose.Document.prototype.doSet = function(path, val, type, options, callback){
-	console.log("doSet")
-	console.log(path)
-	console.log(val)
 	if(!callback && typeof type == "function")
 		callback = type;
 	if(path && path.isObject()){
@@ -291,7 +288,9 @@ mongoose.Document.prototype.doSet = function(path, val, type, options, callback)
 			this.setSemiEmbedded(path, val, callback);
 		}
 		else{
-			this._set.apply(this, arguments);
+			console.log(arguments)
+			//this._set.apply(this, arguments);
+			this._set(path, val)
 			if(callback)
 				callback();
 		}
@@ -539,8 +538,8 @@ mongoose.Document.prototype.addInRefArray = function(path, val, callback){
 	}
 };
 
-mongoose.Document.prototype.willUpdate = function(args){
-	
+mongoose.Document.prototype.willUpdate = function(args, callback){
+	return callback?callback(null):null;
 };
 
 // mongoose.Document.prototype.sgUpdate = function(args, callback){
@@ -566,8 +565,10 @@ mongoose.Document.prototype.willUpdate = function(args){
 
 mongoose.Document.prototype.doUpdate = function(args, callback){
 	var me = this;
+	console.log(1)
 	this.set(args, function(err){
 	    if(!err){
+	    	console.log(2)
 	        //me.ensureUpdateConsistency();
 			me.save(function(err){
 				callback(err, me);
@@ -646,13 +647,13 @@ var generateMeth = function(meth){
 		meth = "sg"+meth.capitalize();
 	}
 	var Class = meth=="sgRemove"?mongoose.Model:mongoose.Document;
-	Class.prototype[meth] = function(path, args, callback){
+	Class.prototype[meth] = function(path, args, callback){		
 		if(typeof args == "function"){
 			callback = args;
 			args = {};
 		}
 
-		if(!callback){
+		if(!(typeof callback == "function")){
 			var willRes = this[willMeth](path, args);
 			if(willRes instanceof Error || willRes instanceof SGError){
 				return willRes;
@@ -674,6 +675,7 @@ var generateMeth = function(meth){
 				if(!err){
 					me[didMeth](path, args);
 				}
+
 				callback(err, res);
 			}
 			var willCallback = function(err){
@@ -684,6 +686,7 @@ var generateMeth = function(meth){
 					callback(err);
 				}
 			}
+				
 			this[willMeth](path||willCallback, args||willCallback, willCallback);
 		}
 	};
