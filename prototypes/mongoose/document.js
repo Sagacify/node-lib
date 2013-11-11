@@ -259,9 +259,6 @@ mongoose.Document.prototype._set = mongoose.Document.prototype.set;
 // },
 
 mongoose.Document.prototype.doSet = function(path, val, type, options, callback){
-	console.log("doSet")
-	console.log(path)
-	console.log(val)
 	if(!callback && typeof type == "function")
 		callback = type;
 	if(path && path.isObject()){
@@ -291,7 +288,9 @@ mongoose.Document.prototype.doSet = function(path, val, type, options, callback)
 			this.setSemiEmbedded(path, val, callback);
 		}
 		else{
-			this._set.apply(this, arguments);
+			console.log(arguments)
+			//this._set.apply(this, arguments);
+			this._set(path, val)
 			if(callback)
 				callback();
 		}
@@ -539,8 +538,8 @@ mongoose.Document.prototype.addInRefArray = function(path, val, callback){
 	}
 };
 
-mongoose.Document.prototype.willUpdate = function(args){
-	
+mongoose.Document.prototype.willUpdate = function(args, callback){
+	return callback?callback(null):null;
 };
 
 // mongoose.Document.prototype.sgUpdate = function(args, callback){
@@ -566,8 +565,10 @@ mongoose.Document.prototype.willUpdate = function(args){
 
 mongoose.Document.prototype.doUpdate = function(args, callback){
 	var me = this;
+	console.log(1)
 	this.set(args, function(err){
 	    if(!err){
+	    	console.log(2)
 	        //me.ensureUpdateConsistency();
 			me.save(function(err){
 				callback(err, me);
@@ -647,6 +648,8 @@ var generateMeth = function(meth){
 	}
 	var Class = meth=="sgRemove"?mongoose.Model:mongoose.Document;
 	Class.prototype[meth] = function(path, args, callback){
+		console.log(meth)
+		console.log(arguments)
 		if(typeof args == "function"){
 			callback = args;
 			args = {};
@@ -662,6 +665,7 @@ var generateMeth = function(meth){
 			return val;
 		}
 		else{
+			console.log(3)
 			if(meth == "sgUpdate"){
 				args = null;
 			}
@@ -671,12 +675,14 @@ var generateMeth = function(meth){
 			}
 			var me = this;
 			var doCallback = function(err, res){
+				console.log("doCallback")
 				if(!err){
 					me[didMeth](path, args);
 				}
 				callback(err, res);
 			}
 			var willCallback = function(err){
+				console.log("willCallback")
 				if(!err){
 					me[doMeth](path||doCallback, args||doCallback, doCallback);
 				}
