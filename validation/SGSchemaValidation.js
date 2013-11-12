@@ -4,8 +4,7 @@ var is = require('../strict_typing//validateType');
 
 function generic_validator (field, field_name, conditions) {
 	field.validate(function (value) {
-		var isValid = SGStrictTyping.apply_to_Ele(value, field_name, conditions);
-		return isValid;
+		return SGStrictTyping.apply_to_Ele(value, field_name, conditions);
 	});
 }
 
@@ -21,8 +20,11 @@ mongoose.Schema.prototype.prepareSchemaValidation = function (model_name) {
 		path = paths[i];
 		conditions = path.options.validation;
 		if((conditions != null) && is.Array(conditions) && conditions.length) {
-			console.log('-- Validation for ' + model_name + ':' + i + ' added !');
+			console.log('-- Validation for ' + model_name + '.' + i + ' added !');
 			generic_validator(this.path(i), i, conditions);
+		}
+		else if(path.schema) {
+			this.prepareSchemaValidation.apply(path.schema, [model_name + '.' + i + '.$']);
 		}
 	}
 };

@@ -32,6 +32,9 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		var method;
 		for(var i = 0, len = method_list.length; i < len; i++) {
 			method = method_list[i];
+			console.log('\n-------------- FORMAT ---------------------');
+			console.log(method);
+			console.log(obj);
 			if(is.String(method)) {
 				valid = isValid[method](obj);
 			}
@@ -85,10 +88,6 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			if(is.String(expected_Type) && is.Array(expected_methods)) {
 				var has_ValidType = this.validate_Type(ele, expected_Type);
 				var has_ValidFormat = this.validate_Format(ele, expected_methods);
-				console.log('\n______ Results for ' + key +' ______');
-				console.log(has_ValidType);
-				console.log(has_ValidFormat);
-				console.log(expected_methods);
 				return !!(has_ValidType && has_ValidFormat);
 			}
 		}
