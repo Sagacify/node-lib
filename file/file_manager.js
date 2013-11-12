@@ -31,6 +31,9 @@ exports.s3BucketInitialization = function(){
 		            	else console.log("Successfully created S3 "+bucketName+ " bucket");
 					});
 				}
+				else {
+					console.log("S3 bucket "+bucketName+" connected...");
+				}
 			});   
 		}
 	});

@@ -7,7 +7,7 @@ function CheckoutVirtual(context, route){
 };
 
 CheckoutVirtual.prototype.get = function(callback){
-	this.parentState.state.caller.get.apply(this.parentState.state.obj, [this.parentState.path, {params:this.context.req.mixin.filter}, callback]);
+	this.parentState.state.caller.get.apply(this.parentState.state.obj, [this.parentState.path, this.context.req.mixin.filter, callback]);
 };
 
 CheckoutVirtual.prototype.post = function(callback){

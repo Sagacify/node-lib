@@ -116,6 +116,10 @@ obj_proto.isArray = function(){
 	return is.Array(this);
 };
 
+obj_proto.isFunction = function(){
+	return is.Function(this);
+}
+
 for(var key in obj_proto){
 	Object.defineProperty(Object.prototype, key, {
 		writable: true,
