@@ -565,12 +565,13 @@ mongoose.Document.prototype.willUpdate = function(args, callback){
 
 mongoose.Document.prototype.doUpdate = function(args, callback){
 	var me = this;
-	console.log(1)
 	this.set(args, function(err){
 	    if(!err){
-	    	console.log(2)
 	        //me.ensureUpdateConsistency();
-			me.save(function(err){
+	        docToSave = me;
+	        if(me.parent)
+	        	docToSave = me.parent();
+			docToSave.save(function(err){
 				callback(err, me);
 			});
 	    }
