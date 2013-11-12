@@ -10,7 +10,7 @@ mongoose.Schema.prototype.publicFormat = function(){
 	var publicFormat = {doc:{tree:{}, virtuals:{}, actions:{}}, collection:{virtuals:{}, actions:{}}};
 
 	var publicSpec = function(spec){
-		var publicSpec = {type:spec.instance};
+		var publicSpec = {type:spec.options.type.name};
 		if(spec.options.ref)
 			publicSpec.ref = spec.options.ref;
 		return publicSpec;

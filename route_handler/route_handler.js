@@ -11,9 +11,8 @@ var CheckoutAction = require('./checkout_action');
 var CheckoutVirtual = require('./checkout_virtual');
 
 function RouteHandler(options){
-	this.options = options;
+	this.options = options||{};
 };
-
 RouteHandler.prototype.handle = function(){
 	var me = this;
 	return function (req, res) {

@@ -18,19 +18,15 @@ var methodNameLen = methodName.length;
 
 var apiRecorder = require('../routes_recorder/api_recorder');
 
-var routeHandler = require('../request_handler/route_handler');
+var routeHandler = require('../route_handler/route_handler');
 
 module.exports = function (app) {
 	var BearerAuth = require('../../app/auth-middlewares/authenticate_token.js');
 
 	function expressMethodWrapper (methodName, uri, options, callback) {
-		console.log(arguments)
 		if(typeof callback !== "function"){
-			//callback = requestHandler.handle(callback);
 			callback = new routeHandler(callback).handle();
 		}
-		console.log("CHECKOUT:")
-		console.log(options.validation)
 		apiRecorder.addRoute(methodName, uri, options);
 
 		var auth = ('auth' in options) ? options.auth : authState;

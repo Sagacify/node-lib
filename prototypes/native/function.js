@@ -10,7 +10,8 @@ Function.prototype.getParamNames = function(){
 
 Function.prototype.hasCallback = function(){
 	var paramNames = this.getParamNames();
-	return paramNames.last() == 'callback';
+	var lastParamName = paramNames.last();
+	return lastParamName == 'callback'||lastParamName == 'next';
 };
 
 Function.prototype._apply = function(thisArg, argsObject, callback){
@@ -20,7 +21,7 @@ Function.prototype._apply = function(thisArg, argsObject, callback){
 		if(paramName == "args"){
 			argsArray.push(argsObject);
 		}
-		else if(paramName == "callback"){
+		else if(paramName == "callback"||paramName == "next"){
 			argsArray.push(callback);
 			hasCallback = true;
 		}
@@ -33,7 +34,10 @@ Function.prototype._apply = function(thisArg, argsObject, callback){
 	}
 	else if(callback){
 		var ret = this.apply(thisArg, argsArray);
-		callback(null, ret);
+		if(ret instanceof Error||ret instanceof SGError)
+			callback(ret);
+		else
+			callback(null, ret);
 		return ret;
 	}
 };
