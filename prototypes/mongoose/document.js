@@ -287,15 +287,15 @@ mongoose.Document.prototype.doSet = function(path, val, type, options, callback)
 			}
 			else{
 				this[setterName](val);
-				if(callback)
-					callback();
+				if(callback) {
+					callback()
+				}
 			}
 		}
 		else if(this.schema.tree._get(path) && this.schema.tree._get(path)._id){
 			this.setSemiEmbedded(path, val, callback);
 		}
 		else{
-			console.log(arguments)
 			//this._set.apply(this, arguments);
 			this._set(path, val)
 			if(callback)
@@ -687,14 +687,14 @@ var generateMeth = function(meth){
 			}
 			var willCallback = function(err){
 				if(!err){
-					me[doMeth](path||doCallback, args||doCallback, doCallback);
+					me[doMeth]((path != null) ? path : doCallback, (args != null) ? args : doCallback, doCallback);
 				}
 				else{
 					callback(err);
 				}
 			}
 				
-			this[willMeth](path||willCallback, args||willCallback, willCallback);
+			this[willMeth]((path != null) ? path : willCallback, (args != null) ? args : willCallback, willCallback);
 		}
 	};
 };
