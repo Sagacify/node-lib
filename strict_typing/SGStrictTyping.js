@@ -70,44 +70,6 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		return (first_condition === 'isOptional');
 	};
 
-	this.apply_to_Ele = function (ele, ele_config) {
-		var isOptional = false;
-		if(ele_config.length) {
-			isOptional = this.hasOptionalFlag(ele_config);
-			ele_config = ele_config.clone().splice(isOptional, ele_config.length);
-		}
-		if(isOptional && (ele == null)) {
-			return true;
-		}
-		else if(ele_config.length && (ele != null)) {
-			var expected_Type = ele_config[0];
-			var expected_methods = ele_config.splice(1);
-			if(is.String(expected_Type) && is.Array(expected_methods)) {
-				var has_ValidType = this.validate_Type(ele, expected_Type);
-				var has_ValidFormat = this.validate_Format(ele, expected_methods);
-				return !!(has_ValidType && has_ValidFormat);
-			}
-		}
-		else {
-			return false;
-		}
-	};
-
-	this.apply_to_Array = function (ele_list, key, ele_config) {
-		if(!is.Array(ele_list)) {
-			ele_list = [ele_list];
-		}
-		var i = ele_list.length;
-		var isValid = true;
-		console.log('\nELEMENTS');
-		console.log(ele_list);
-		console.log(ele_config);
-		while(i--) {
-			isValid = isValid && this.apply_to_Ele(ele_list[i], ele_config);
-		}
-		return isValid;
-	};
-
 	this.develop_ValidationConfig = function (args_config) {
 		//args_config.validation
 		if(is.Object(args_config)) {
@@ -165,14 +127,56 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 
 	this.disassemble_Object = function (obj, key) {
 		function arrIndex (arr, i) {
+			var re = [];
+			res.custom = true;
 			return arr.reduce(function (a, b) {
 				return (i in b) && (b[i] != null) ? a.concat([b[i]]) : a;
-			}, []);
+			}, res);
 		}
 		function index(obj, i) {
 			return is.Array(obj) ? arrIndex(obj, i) : obj[i];
 		}
 		return key.split('.').reduce(index, obj);
+	};
+
+	this.apply_to_Ele = function (ele, ele_config) {
+		var isOptional = false;
+		if(ele_config.length) {
+			isOptional = this.hasOptionalFlag(ele_config);
+			ele_config = ele_config.clone().splice(isOptional, ele_config.length);
+		}
+		if(isOptional && (ele == null)) {
+			return true;
+		}
+		else if(ele_config.length && (ele != null)) {
+			var expected_Type = ele_config[0];
+			if((expected_Type === 'Date') && is.DateString(ele)) {
+				ele = new Date(ele);
+			}
+			var expected_methods = ele_config.splice(1);
+			if(is.String(expected_Type) && is.Array(expected_methods)) {
+				var has_ValidType = this.validate_Type(ele, expected_Type);
+				var has_ValidFormat = this.validate_Format(ele, expected_methods);
+				return !!(has_ValidType && has_ValidFormat);
+			}
+		}
+		else {
+			return false;
+		}
+	};
+
+	this.apply_to_Array = function (ele_list, key, ele_config) {
+		if(!is.Array(ele_list) || (ele_list.custom !== true)) {
+			return this.apply_to_Ele(ele_list, ele_config);
+		}
+		else {
+			var i = ele_list.length;
+			var isValid = true;
+			while(i--) {
+				isValid = isValid && this.apply_to_Ele(ele_list[i], ele_config);
+			}
+			return isValid;
+		}
 	};
 
 	this.apply_to_Args = function (args, args_config, callback) {
