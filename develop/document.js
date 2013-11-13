@@ -65,9 +65,13 @@ mongoose.Document.prototype.develop = function(callback){
 	}
 
 	var developOptions = this.schema.developOptions();
-	var fields = developOptions.fields;
-	var fsKeys = formattedSchema.keys();
+	if(developOptions)
+		var fields = developOptions.fields;
+	else{
+		var fields = this.schema.paths.keys().concat(this.schema.documentVirtuals.keys());
+	}
 
+	var fsKeys = formattedSchema.keys();
 	//delete non wanted fields
 	var fieldsToDelete = !fields || (fields.length === 0) ? [] : developedDoc.keys().diff(fields);
 	fieldsToDelete.forEach(function(fieldToDelete){
@@ -79,16 +83,17 @@ mongoose.Document.prototype.develop = function(callback){
 	var cbFields = [];
 	var cbFunctions = [];
 	fieldsToAdd.forEach(function(fieldToAdd){
+		fieldToAddGetter = 'get'+fieldToAdd.capitalize();
 		if(me[fieldToAdd] && me[fieldToAdd] in me.schema.virtuals){
 			developedDoc[fieldToAdd] = me[fieldToAdd];
 		}
-		else if(me[fieldToAdd] && me[fieldToAdd].isFunction()){
-			if(me[fieldToAdd].hasCallback()){
+		else if(me[fieldToAddGetter] && me[fieldToAddGetter].isFunction() && fieldToAdd in me.schema.documentVirtuals){
+			if(me[fieldToAddGetter].hasCallback()){
 				cbFields.push(fieldToAdd);
-				cbFunctions.push(me[fieldToAdd]);
+				cbFunctions.push(me[fieldToAddGetter]);
 			}
 			else{
-				developedDoc[fieldToAdd] = me[fieldToAdd]();
+				developedDoc[fieldToAdd] = me[fieldToAddGetter]();
 			}
 		}
 	});
