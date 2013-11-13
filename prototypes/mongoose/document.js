@@ -676,7 +676,6 @@ var generateMeth = function(meth){
 				if(!err){
 					me[didMeth](path, args);
 				}
-
 				callback(err, res);
 			}
 			var willCallback = function(err){
