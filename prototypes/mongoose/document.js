@@ -46,21 +46,28 @@ mongoose.Document.prototype.will = function(meth, path, args, callback){
 mongoose.Document.prototype.did = function(meth, path, args, callback){
 	var didMeth = "did"+meth.capitalize();
 	if(path){
-		var methPath = meth.endsWith('Array')?meth.replace('Array', path.capitalize()):meth+path.capitalize();
+		var methPath = meth.endsWith('Array') ? meth.replace('Array', path.capitalize()) : meth + path.capitalize();
 		var didMethPath = "did"+methPath.capitalize();
 	}
 	else{
 		var didMethPath = didMethPath;
 	}
 	var me = this;
-	return function(err, result){
-		if(!err){
-			typeof me[didMethPath] == "function"?me[didMethPath](args):me[didMeth](path, args);
+	return function (err, result) {
+		if(!err) {
+			if(typeof me[didMethPath] == "function") {
+				me[didMethPath](args);
+			}
+			else {
+				me[didMeth](path, args);
+			}
 		}
-		if(callback)
+		if(callback) {
 			callback(null, result);
-		else
+		}
+		else {
 			return result;
+		}
 	};
 };
 
@@ -565,12 +572,13 @@ mongoose.Document.prototype.willUpdate = function(args, callback){
 
 mongoose.Document.prototype.doUpdate = function(args, callback){
 	var me = this;
-	console.log(1)
 	this.set(args, function(err){
 	    if(!err){
-	    	console.log(2)
 	        //me.ensureUpdateConsistency();
-			me.save(function(err){
+	        docToSave = me;
+	        if(me.parent)
+	        	docToSave = me.parent();
+			docToSave.save(function(err){
 				callback(err, me);
 			});
 	    }
@@ -671,11 +679,10 @@ var generateMeth = function(meth){
 				args = null;
 			}
 			var me = this;
-			var doCallback = function(err, res){
-				if(!err){
+			var doCallback = function (err, res) {
+				if(!err) {
 					me[didMeth](path, args);
 				}
-
 				callback(err, res);
 			}
 			var willCallback = function(err){
