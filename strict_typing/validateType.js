@@ -15,7 +15,7 @@ exports.String = function (obj) {
 };
 
 exports.DateString = function (str) {
-	return str.match(/[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}\.[0-9]{3}Z/);
+	return exports.String(str)&&str.match(/[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}\.[0-9]{3}Z/);
 };
 
 exports.Function = function (obj) {

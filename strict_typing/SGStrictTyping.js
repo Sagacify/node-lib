@@ -127,11 +127,13 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 
 	this.disassemble_Object = function (obj, key) {
 		function arrIndex (arr, i) {
-			var re = [];
+			var res = [];
 			res.custom = true;
-			return arr.reduce(function (a, b) {
+			var redarr = arr.reduce(function (a, b) {
 				return (i in b) && (b[i] != null) ? a.concat([b[i]]) : a;
 			}, res);
+			redarr.custom = true;
+			return redarr;
 		}
 		function index(obj, i) {
 			return is.Array(obj) ? arrIndex(obj, i) : obj[i];
