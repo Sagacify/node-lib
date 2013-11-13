@@ -199,7 +199,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 					//if(this.apply_to_Ele(ele, ele_config)) {
 						console.log(' --> [X] OK');
 						if(this.strict_mode) {
-							this.assemble_Object(args_buffer, i, ele);
+							this.assemble_Object(args_buffer, i, is.DateString(ele) ? new Date(ele) : ele);
 						}
 					}
 					else {
