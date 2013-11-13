@@ -46,21 +46,28 @@ mongoose.Document.prototype.will = function(meth, path, args, callback){
 mongoose.Document.prototype.did = function(meth, path, args, callback){
 	var didMeth = "did"+meth.capitalize();
 	if(path){
-		var methPath = meth.endsWith('Array')?meth.replace('Array', path.capitalize()):meth+path.capitalize();
+		var methPath = meth.endsWith('Array') ? meth.replace('Array', path.capitalize()) : meth + path.capitalize();
 		var didMethPath = "did"+methPath.capitalize();
 	}
 	else{
 		var didMethPath = didMethPath;
 	}
 	var me = this;
-	return function(err, result){
-		if(!err){
-			typeof me[didMethPath] == "function"?me[didMethPath](args):me[didMeth](path, args);
+	return function (err, result) {
+		if(!err) {
+			if(typeof me[didMethPath] == "function") {
+				me[didMethPath](args);
+			}
+			else {
+				me[didMeth](path, args);
+			}
 		}
-		if(callback)
+		if(callback) {
 			callback(null, result);
-		else
+		}
+		else {
 			return result;
+		}
 	};
 };
 
@@ -280,15 +287,15 @@ mongoose.Document.prototype.doSet = function(path, val, type, options, callback)
 			}
 			else{
 				this[setterName](val);
-				if(callback)
-					callback();
+				if(callback) {
+					callback()
+				}
 			}
 		}
 		else if(this.schema.tree._get(path) && this.schema.tree._get(path)._id){
 			this.setSemiEmbedded(path, val, callback);
 		}
 		else{
-			console.log(arguments)
 			//this._set.apply(this, arguments);
 			this._set(path, val)
 			if(callback)
@@ -648,7 +655,7 @@ var generateMeth = function(meth){
 		meth = "sg"+meth.capitalize();
 	}
 	var Class = meth=="sgRemove"?mongoose.Model:mongoose.Document;
-	Class.prototype[meth] = function(path, args, callback){		
+	Class.prototype[meth] = function(path, args, callback){
 		if(typeof args == "function"){
 			callback = args;
 			args = {};
@@ -672,22 +679,22 @@ var generateMeth = function(meth){
 				args = null;
 			}
 			var me = this;
-			var doCallback = function(err, res){
-				if(!err){
+			var doCallback = function (err, res) {
+				if(!err) {
 					me[didMeth](path, args);
 				}
 				callback(err, res);
 			}
 			var willCallback = function(err){
 				if(!err){
-					me[doMeth](path||doCallback, args||doCallback, doCallback);
+					me[doMeth]((path != null) ? path : doCallback, (args != null) ? args : doCallback, doCallback);
 				}
 				else{
 					callback(err);
 				}
 			}
 				
-			this[willMeth](path||willCallback, args||willCallback, willCallback);
+			this[willMeth]((path != null) ? path : willCallback, (args != null) ? args : willCallback, willCallback);
 		}
 	};
 };
