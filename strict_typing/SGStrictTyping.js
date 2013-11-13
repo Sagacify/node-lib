@@ -94,10 +94,16 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	};
 
 	this.apply_to_Array = function (ele_list, key, ele_config) {
+		if(!is.Array(ele_list)) {
+			ele_list = [ele_list];
+		}
 		var i = ele_list.length;
 		var isValid = true;
+		console.log('\nELEMENTS');
+		console.log(ele_list);
+		console.log(ele_config);
 		while(i--) {
-			isValid = this.apply_to_Ele(ele_list[i][key], ele_config);
+			isValid = isValid && this.apply_to_Ele(ele_list[i], ele_config);
 		}
 		return isValid;
 	};
@@ -158,9 +164,13 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	};
 
 	this.disassemble_Object = function (obj, key) {
+		function arrIndex (arr, i) {
+			return arr.reduce(function (a, b) {
+				return (i in b) && (b[i] != null) ? a.concat([b[i]]) : a;
+			}, []);
+		}
 		function index(obj, i) {
-			//return is.Array(obj) ? obj : obj[i];
-			return obj[i];
+			return is.Array(obj) ? arrIndex(obj, i) : obj[i];
 		}
 		return key.split('.').reduce(index, obj);
 	};
@@ -181,8 +191,8 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 				//ele_config = args_config[i].clone();
 				console.log('\n --> ' + i);
 				if(this.validate_Config(ele_config)) {
-					//if(is.Array(ele) ? this.apply_to_Array(ele, i, ele_config) : this.apply_to_Ele(ele, ele_config)) {
-					if(this.apply_to_Ele(ele, ele_config)) {
+					if(this.apply_to_Array(ele, i, ele_config)) {
+					//if(this.apply_to_Ele(ele, ele_config)) {
 						console.log(' --> [X] OK');
 						if(this.strict_mode) {
 							this.assemble_Object(args_buffer, i, ele);
