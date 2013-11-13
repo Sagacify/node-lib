@@ -70,7 +70,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		return (first_condition === 'isOptional');
 	};
 
-	this.apply_to_Ele = function (ele, key, ele_config) {
+	this.apply_to_Ele = function (ele, ele_config) {
 		var isOptional = false;
 		if(ele_config.length) {
 			isOptional = this.hasOptionalFlag(ele_config);
@@ -85,16 +85,21 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			if(is.String(expected_Type) && is.Array(expected_methods)) {
 				var has_ValidType = this.validate_Type(ele, expected_Type);
 				var has_ValidFormat = this.validate_Format(ele, expected_methods);
-				console.log('\n______ Results for ' + key +' ______');
-				console.log(has_ValidType);
-				console.log(has_ValidFormat);
-				console.log(expected_methods);
 				return !!(has_ValidType && has_ValidFormat);
 			}
 		}
 		else {
 			return false;
 		}
+	};
+
+	this.apply_to_Array = function (ele_list, key, ele_config) {
+		var i = ele_list.length;
+		var isValid = true;
+		while(i--) {
+			isValid = this.apply_to_Ele(ele_list[i][key], ele_config);
+		}
+		return isValid;
 	};
 
 	this.develop_ValidationConfig = function (args_config) {
@@ -153,18 +158,14 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	};
 
 	this.disassemble_Object = function (obj, key) {
-		// console.log('Splitter_Start ' + key);
-		// console.log(obj);
 		function index(obj, i) {
-			// console.log('Splitter ' + i);
-			// console.log(obj);
+			//return is.Array(obj) ? obj : obj[i];
 			return obj[i];
 		}
 		return key.split('.').reduce(index, obj);
 	};
 
 	this.apply_to_Args = function (args, args_config, callback) {
-		console.log(arguments)
 		args_config = this.develop_ValidationConfig(args_config);
 		var args_buffer = {};
 		if(is.Object(args) && is.Object(args_config)) {
@@ -176,11 +177,12 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			while(len--) {
 				i = keys[len];
 				ele = (args[i] != null) ? args[i] : this.disassemble_Object(args, i);
-				console.log('\n --> ' + i);
 				ele_config = args_config[i];
 				//ele_config = args_config[i].clone();
+				console.log('\n --> ' + i);
 				if(this.validate_Config(ele_config)) {
-					if(this.apply_to_Ele(ele, i, ele_config)) {
+					//if(is.Array(ele) ? this.apply_to_Array(ele, i, ele_config) : this.apply_to_Ele(ele, ele_config)) {
+					if(this.apply_to_Ele(ele, ele_config)) {
 						console.log(' --> [X] OK');
 						if(this.strict_mode) {
 							this.assemble_Object(args_buffer, i, ele);
