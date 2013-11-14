@@ -41,8 +41,12 @@ exports.s3BucketInitialization = function(){
 
 exports.writeFileToS3 = function (base64data, extension, secure, callback){
 	var name = uuid.v4();
-	var filename = extension?name+"."+extension:extension;
-	console.log("start upload");
+// <<<<<<< HEAD
+// 	var filename = extension?name+"."+extension:extension;
+// 	console.log("start upload");
+// =======
+	var filename = extension?name+"."+extension:name;
+// >>>>>>> 23d3c19ce5cb3c06e57923e24d7f342748f24a85
 	s3.client.putObject({
 		Bucket: secure?config.AWS.s3SecuredBucketName:config.AWS.s3BucketName,
 		Key: filename,

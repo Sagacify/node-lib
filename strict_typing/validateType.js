@@ -14,6 +14,10 @@ exports.String = function (obj) {
 	return Object.prototype.toString.call(obj) === '[object String]';
 };
 
+exports.DateString = function (str) {
+	return exports.String(str)&&str.match(/[0-9]{4}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}\.[0-9]{3}Z/);
+};
+
 exports.Function = function (obj) {
 	return Object.prototype.toString.call(obj) === '[object Function]';
 };
