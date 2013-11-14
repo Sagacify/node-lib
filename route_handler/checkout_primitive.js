@@ -7,6 +7,7 @@ function CheckoutPrimitive(context, route){
 };
 
 CheckoutPrimitive.prototype.get = function(callback){
+	console.log(this.primitive)
 	if(this.parentState.state.obj.isRef(this.parentState.path)){
 		this.parentState.state.obj.populate(this.parentState.path, function(err){
 			if(!err){
@@ -28,10 +29,9 @@ CheckoutPrimitive.prototype.post = function(callback){
 
 CheckoutPrimitive.prototype.put = function(callback){
 	var me = this;
-	console.log(this.parentState.obj instanceof mongoose.Document)
 	if(this.parentState.state.obj.isRef(this.parentState.path)){
 		this.get(function(err, doc){
-			doc.sgUpdate.apply(doc, [me.context.req.body._item||me.context.req.body, callback]);
+			doc.sgUpdate.apply(doc, [me.context.req.body._item || me.context.req.body, callback]);
 		});
 	}
 	else{

@@ -5,7 +5,7 @@ var routes = {get:{}, post:{}, put:{}, delete:{}};
 exports.routes = routes;
 
 exports.addRoute = function(method, uri, options){
-	if(uri && uri.startsWith('/api') && uri != '/api/app_models'){
+	if(uri && (uri.startsWith('/api')||uri.startsWith('/auth')) && uri != '/api/app_models'){
 		options.validation = SGStrictTyping.develop_ValidationConfig(options.validation);
 		routes[method][uri] = options;
 	}

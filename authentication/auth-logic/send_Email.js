@@ -14,13 +14,15 @@ module.exports = function (mixin, callback) {
 	if(typeof_email) {
 		console.log('Email is -> ' + mixin.email);
 		Mailer.send_Mail(typeof_email, mixin.email, mixin.token, function (e) {
-			if(e) {
-				callback('COULDNT_SEND_EMAIL');
-			}
-			else {
-				callback(null, mixin);
-			}
+			//TODO resend mail if fail
+			// if(e) {
+			// 	callback('COULDNT_SEND_EMAIL');
+			// }
+			// else {
+			// 	callback(null, mixin);
+			// }
 		});
+		callback(null, mixin);
 	}
 	else {
 		callback('INVALID_EMAIL_TYPE');
