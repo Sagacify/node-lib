@@ -48,6 +48,7 @@ exports.writeFileToS3 = function (base64data, extension, secure, callback){
 		Body: new Buffer(base64data, 'base64'),
 		ContentType:ct.ext.getContentType(extension)},
 		function(err) {
+			console.log("end upload");
 			callback(err, filename);							
 		}
 	);		
