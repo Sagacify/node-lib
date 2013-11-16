@@ -55,6 +55,10 @@ exports.createCustomerWithToken = function(stripeToken, customerName, callback){
         }).then(callback);
 }
 
+exports.subscribeCustomerToPlan = function(customerId, plan, callback){
+	stripe.customer.updateSubscription(customerId, {plan:plan}).then(callback);
+}
+
 //Example Customer
 // {
 //   "object": "customer",
