@@ -265,13 +265,8 @@ mongoose.Document.prototype._set = mongoose.Document.prototype.set;
 // 	}
 // },
 
-// mongoose.Document.prototype.set = function(){
-// 	//console.log(arguments)
-// 	this._set(arguments[0], arguments[1]);
-// }
 
-
-mongoose.Document.prototype.set = function(path, val, type, options, callback){
+mongoose.Document.prototype.doSet = function(path, val, type, options, callback){
 	if(arguments.callee.caller == this._set){
 		return this._set.apply(this, arguments);
 	}
@@ -710,5 +705,5 @@ var generateMeth = function(meth){
 };
 
 ['get', 'set', 'do', 'addInArray', 'removeFromArray', 'update', 'remove'].forEach(function(meth){
-	//generateMeth(meth);
+	generateMeth(meth);
 });
