@@ -31,7 +31,7 @@ CheckoutPrimitive.prototype.put = function(callback){
 	var me = this;
 	if(this.parentState.state.obj.isRef(this.parentState.path)){
 		this.get(function(err, doc){
-			doc.sgUpdate.apply(doc, [me.context.req.body._item||me.context.req.body, callback]);
+			doc.sgUpdate.apply(doc, [me.context.req.body._item || me.context.req.body, callback]);
 		});
 	}
 	else{

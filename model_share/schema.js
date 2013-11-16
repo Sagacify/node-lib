@@ -1,16 +1,27 @@
 mongoose.Schema.prototype.isPublic = function(path){
-	return this.paths[path].options.public||(this.paths[path].caller&&this.paths[path].caller.options.public);
+	return this.paths[path].options.public||(this.paths[path].caller&&this.paths[path].caller.options.public)||(this.paths[path].caster&&this.paths[path].caster.options&&this.paths[path].caster.options.public);
 };
 
 mongoose.Schema.prototype.setPublic = function(path, public){
 	this.paths[path].options.public = public;
 };
 
+mongoose.Schema.prototype.isSingle = function(path){
+	return this.paths[path].options.single;
+};
+
+mongoose.Schema.prototype.setSingle = function(path, single){
+	this.paths[path].options.single = single;
+};
+
 mongoose.Schema.prototype.publicFormat = function(){
 	var publicFormat = {doc:{tree:{}, virtuals:{}, actions:{}}, collection:{virtuals:{}, actions:{}}};
 
 	var publicSpec = function(spec){
-		var publicSpec = {type:spec.options.type.name};
+		if(spec.options.type instanceof Array)
+			var publicSpec = {type:spec.options.type[0].type.name};	
+		else
+			var publicSpec = {type:spec.options.type.name};
 		if(spec.options.ref)
 			publicSpec.ref = spec.options.ref;
 		return publicSpec;
@@ -26,8 +37,11 @@ mongoose.Schema.prototype.publicFormat = function(){
 			var spec = this.paths[path];
 			if(spec.schema){
 				publicFormat.doc.tree[path] = [spec.schema.publicFormat()];
+				console.log(this.isSingle(path))
+				if(this.isSingle(path))
+					publicFormat.doc.tree[path][0].single = true;
 			}
-			else if(spec.caster){
+			else if(spec.caster && !(spec.options.type instanceof Array)){
 				publicFormat.doc.tree[path] = [publicSpec(spec.caster)];
 			}
 			else{
