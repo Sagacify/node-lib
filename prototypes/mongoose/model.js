@@ -386,8 +386,6 @@ mongoose.Model.prototype.didRemove = function(){
 mongoose.Model.sgCreate = function(raw, callback){
 	var model = this;
 	var doc = new model();
-	console.log("sgCreate")
-	console.log(this.context)
 
 	Object.defineProperty(doc, "context", {
 		writable: true,

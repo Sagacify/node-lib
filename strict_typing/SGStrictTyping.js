@@ -197,6 +197,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 				ele_config = args_config[i];
 				//ele_config = args_config[i].clone();
 				console.log('\n --> ' + i);
+				console.log(ele);
 				if(this.validate_Config(ele_config)) {
 					if(this.apply_to_Array(ele, i, ele_config)) {
 					//if(this.apply_to_Ele(ele, ele_config)) {
