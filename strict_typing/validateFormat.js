@@ -64,7 +64,7 @@ function objectidLen(base) {
 	return bitSize_to_nthSize(objectidSize, base);
 }
 
-function isLowerHexadecimal () {
+function isLowerHexadecimal (str) {
 	return str.match(/^[0-9a-f]+$/);
 }
 
@@ -227,19 +227,19 @@ exports.isSha2_Hash_hex = function (str) {
 };
 
 exports.mongo_ObjectId_base64Web = function (str) {
-	return exports.mongo_ObjectId(str, 64, true);
+	return mongo_ObjectId(str, 64, true);
 };
 
 exports.mongo_ObjectId_base64 = function (str) {
-	return exports.mongo_ObjectId(str, 64, false);
+	return mongo_ObjectId(str, 64, false);
 };
 
 exports.mongo_ObjectId_hexWeb = function (str) {
-	return exports.mongo_ObjectId(str, 16, true);
+	return mongo_ObjectId(str, 16, true);
 };
 
 exports.mongo_ObjectId_hex = function (str) {
-	return exports.mongo_ObjectId(str, 16, false);
+	return mongo_ObjectId(str, 16, false);
 };
 
 exports.lenInferiorTo = function (str, maxLen) {
