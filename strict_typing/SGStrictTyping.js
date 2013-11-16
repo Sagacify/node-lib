@@ -183,6 +183,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 
 	this.apply_to_Args = function (args, args_config, callback) {
 		args_config = this.develop_ValidationConfig(args_config);
+		console.log(args.user_attr)
 		var args_buffer = {};
 		if(is.Object(args) && is.Object(args_config)) {
 			var keys = Object.keys(args_config);
