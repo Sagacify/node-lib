@@ -116,6 +116,27 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		return scope_validation;
 	};
 
+	function setCustom (obj) {
+		function unsetCustom (obj) {
+			Object.defineProperty(obj, 'custom', {
+				configurable: false,
+				enumerable: false,
+				writable: false,
+				value: undefined
+			});
+		}
+		const __TRUE__ = true;
+		Object.defineProperty(obj, 'custom', {
+			configurable: true,
+			get: function () {
+				return __TRUE__;
+			},
+			set: function () {
+				unsetCustom(this);
+			}
+		});
+	}
+
 	this.assemble_Object = function (obj, key, value) {
 		var parts = key.split('.');
 		var p = parts.pop();
@@ -127,13 +148,21 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 
 	this.disassemble_Object = function (obj, key) {
 		function arrIndex (arr, i) {
-			var res = [];
-			res.custom = true;
-			var redarr = arr.reduce(function (a, b) {
+			var keyArr = arr.reduce(function (a, b) {
 				return (i in b) && (b[i] != null) ? a.concat([b[i]]) : a;
-			}, res);
-			redarr.custom = true;
-			return redarr;
+			}, []);
+			//keyArr.custom = true;
+			Object.defineProperty(keyArr, 'custom', {
+				writable: true,
+				value: true,
+				get : function get () {
+					return true;
+				},
+				set: function (newValue) {
+					newValue
+				}
+			});
+			return keyArr;
 		}
 		function index(obj, i) {
 			return is.Array(obj) ? arrIndex(obj, i) : obj[i];
@@ -185,6 +214,8 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		args_config = this.develop_ValidationConfig(args_config);
 		console.log(args.user_attr)
 		var args_buffer = {};
+		console.log(args);
+		console.log(args.user_attr);
 		if(is.Object(args) && is.Object(args_config)) {
 			var keys = Object.keys(args_config);
 			var len = keys.length;
