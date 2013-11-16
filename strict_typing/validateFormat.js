@@ -27,32 +27,46 @@ function bitSize_to_nthSize (bitsize, nthsize) {
 function mongo_ObjectId (str, base, isWeb) {
 	var len = str.length;
 	if((base === 16) && (len === objectidLen(16)) && isLowerHexadecimal(str)) {
-		return this;
+		return true;
 	}
 	else if((base === 64) && (len === objectidLen(64)) && isBase64(str, isWeb)) {
-		return this;
+		return true;
 	}
 	else if((base !== 16) && (base !== 64)) {
-		this.error(base + ' is not a valid encoding format (16 for hex / 64 for base64)');
+		return false;
+		//this.error(base + ' is not a valid encoding format (16 for hex / 64 for base64)');
 	}
 	else {
-		this.error(str + ' is not a valid MongoDB ObjectId of length ' + objectidSize + ' in base ' + base);
+		return false;
+		//this.error(str + ' is not a valid MongoDB ObjectId of length ' + objectidSize + ' in base ' + base);
 	}
 }
 
 function isSha2_Hash (str, base, isWeb) {
 	var len = str.length;
 	if((base === 16) && (len === tokenLen(16)) && isLowerHexadecimal(str)) {
-		return this;
+		return true;
 	}
 	else if((base === 64) && (len === tokenLen(64)) && isBase64(str, isWeb)) {
-		return this;
+		return true;
 	}
 	else if((base !== 16) && (base !== 64)) {
-		this.error(base + ' is not a valid encoding format (16 for hex / 64 for base64)');
+		return false;
+		//this.error(base + ' is not a valid encoding format (16 for hex / 64 for base64)');
 	}
 	else {
-		this.error(str + ' is not a valid sha' + tokenSize + ' ' + base + ' token');
+		return false;
+		//this.error(str + ' is not a valid sha' + tokenSize + ' ' + base + ' token');
+	}
+}
+
+function isToken (str, base){
+	var len = str.length;
+	if((base === 16) && (len === 256) && isLowerHexadecimal(str)) {
+		return true;
+	}
+	else{
+		return false;
 	}
 }
 
@@ -64,7 +78,7 @@ function objectidLen(base) {
 	return bitSize_to_nthSize(objectidSize, base);
 }
 
-function isLowerHexadecimal () {
+function isLowerHexadecimal (str) {
 	return str.match(/^[0-9a-f]+$/);
 }
 
@@ -223,23 +237,27 @@ exports.isSha2_Hash_hexWeb = function (str) {
 };
 
 exports.isSha2_Hash_hex = function (str) {
-	return exports.isSha2_Hash(str, 16, false);
+	return isSha2_Hash(str, 16, false);
+};
+
+exports.isToken_hex = function(str){
+	return isToken(str, 16);
 };
 
 exports.mongo_ObjectId_base64Web = function (str) {
-	return exports.mongo_ObjectId(str, 64, true);
+	return mongo_ObjectId(str, 64, true);
 };
 
 exports.mongo_ObjectId_base64 = function (str) {
-	return exports.mongo_ObjectId(str, 64, false);
+	return mongo_ObjectId(str, 64, false);
 };
 
 exports.mongo_ObjectId_hexWeb = function (str) {
-	return exports.mongo_ObjectId(str, 16, true);
+	return mongo_ObjectId(str, 16, true);
 };
 
 exports.mongo_ObjectId_hex = function (str) {
-	return exports.mongo_ObjectId(str, 16, false);
+	return mongo_ObjectId(str, 16, false);
 };
 
 exports.lenInferiorTo = function (str, maxLen) {
