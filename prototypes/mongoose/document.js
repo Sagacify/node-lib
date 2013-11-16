@@ -267,7 +267,7 @@ mongoose.Document.prototype._set = mongoose.Document.prototype.set;
 
 
 mongoose.Document.prototype.doSet = function(path, val, type, options, callback){
-	if(arguments.callee.caller == this._set){
+	if(arguments.callee.caller == this.set){
 		return this._set.apply(this, arguments);
 	}
 
