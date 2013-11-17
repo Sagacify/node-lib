@@ -48,16 +48,29 @@ exports.createCustomerWithCard = function(cardDict, plan, userName, userEmail, u
         }).then(callback)
 }
 
-exports.createCustomerWithToken = function(stripeToken, customerName, callback){
+exports.createCustomerWithToken = function(stripeToken, customerName, customerEmail, callback){
     stripe.customers.create({
         card : stripeToken,
+        email : customerEmail,
         description : customerName
         }).then(callback);
 }
 
 exports.subscribeCustomerToPlan = function(customerId, plan, callback){
-	stripe.customer.updateSubscription(customerId, {plan:plan}).then(callback);
+	stripe.customers.updateSubscription(customerId, { plan: plan, prorate: true}).then(callback);
 }
+
+// export.updateCustomerDetailsWithUser = function(user){
+
+// }
+
+
+exports.retrievePlan = function(plan, callback){
+	stripe.plans.retrieve(plan, callback);
+}
+
+//export.updateCustomer
+//update customer email 
 
 //Example Customer
 // {
