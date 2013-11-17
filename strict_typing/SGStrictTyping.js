@@ -116,26 +116,15 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		return scope_validation;
 	};
 
-	function setCustom (obj) {
-		function unsetCustom (obj) {
-			Object.defineProperty(obj, 'custom', {
-				configurable: false,
-				enumerable: false,
-				writable: false,
-				value: undefined
-			});
-		}
+	this.setCustom = function (obj) {
 		const __TRUE__ = true;
 		Object.defineProperty(obj, 'custom', {
 			configurable: true,
 			get: function () {
-				return __TRUE__;
-			},
-			set: function () {
-				unsetCustom(this);
+				return __TRUE__ && (delete this.custom);
 			}
 		});
-	}
+	};
 
 	this.assemble_Object = function (obj, key, value) {
 		var parts = key.split('.');
@@ -147,21 +136,12 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	};
 
 	this.disassemble_Object = function (obj, key) {
+		var me = this;
 		function arrIndex (arr, i) {
 			var keyArr = arr.reduce(function (a, b) {
 				return (i in b) && (b[i] != null) ? a.concat([b[i]]) : a;
 			}, []);
-			//keyArr.custom = true;
-			Object.defineProperty(keyArr, 'custom', {
-				writable: true,
-				value: true,
-				get : function get () {
-					return true;
-				},
-				set: function (newValue) {
-					newValue
-				}
-			});
+			me.setCustom(keyArr);
 			return keyArr;
 		}
 		function index(obj, i) {
@@ -212,10 +192,9 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 
 	this.apply_to_Args = function (args, args_config, callback) {
 		args_config = this.develop_ValidationConfig(args_config);
-		console.log(args.user_attr)
 		var args_buffer = {};
 		console.log(args);
-		console.log(args.user_attr);
+		console.log(args_config);
 		if(is.Object(args) && is.Object(args_config)) {
 			var keys = Object.keys(args_config);
 			var len = keys.length;
