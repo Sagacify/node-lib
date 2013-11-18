@@ -383,6 +383,44 @@ mongoose.Model.prototype.didRemove = function(){
 
 // };
 
+mongoose.Model.willFindById = function(id){
+
+};
+
+mongoose.Model.sgFindById = function(id, callback){
+	var me = this;	
+	var find = function(){
+		me.findById(id, function(err, doc){
+			callback(err, doc);
+			if(!err){
+				me.didFindById(doc);
+			}
+		});
+	}
+	if(!this.willFindById.hasCallback()){
+		var willRes = this.willFindById(id);
+		if(willRes instanceof Error||willRes instanceof SGError){
+			callback(willRes);
+			return;
+		}
+		find();
+	}
+	else{
+		this.willFindById(id, function(err){
+			if(!err){
+				find();
+			}
+			else{
+				callback(err);
+			}
+		});
+	}
+};
+
+mongoose.Model.didFindById = function(doc){
+
+};
+
 mongoose.Model.sgCreate = function(raw, callback){
 	var model = this;
 	var doc = new model();
