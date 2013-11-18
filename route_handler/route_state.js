@@ -111,7 +111,7 @@ RouteState.prototype.getObjectFromVariablePath = function(callback){
 	if(this.pathPart().toLowerCase().endsWith("id")){
 		//parentState is Model
 		if(parentState.state.type() == "Model"){
-			parentState.state.obj.findById(this.urlPart(), callback);
+			parentState.state.obj.sgFindById(this.urlPart(), callback);
 		}
 		//parentState is DocumentArray
 		else if(parentState.state.type() == "DocumentArray"){
