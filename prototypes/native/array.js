@@ -106,3 +106,16 @@ Array.prototype.sgRemove = function(item){
 		}
 	}
 };
+
+Array.prototype.pairs = function(){
+	var pairArray = [];
+	var valueA, valueB;
+	for(var i = 0; i<this.length; i++){
+		valueA = this[i];
+		for(var j = i+1; j<this.length; j++){
+			valueB = this[j]; 
+		}
+		pairArray.push([valueA, valueB]);
+	}
+	return pairArray;
+}
