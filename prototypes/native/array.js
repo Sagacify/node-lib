@@ -6,13 +6,13 @@ Array.prototype.contains = function(item){
 
 	// return founded;
 
-	if(this[0] instanceof Object){
-		var _id = item instanceof Object?item._id:item;
-		for(var i = 0; i < this.length; i++){
-			if(this[i]._id && this[i]._id.equals(item))
-				return true;
-		}
-		return false;
+	if (item.isMongooseDocument()) {
+		for (var i = 0; i < self.length; i++) {
+			if (this[i].isMongooseDocument() && this[i]._id.toString() == item._id.toString()) {
+				return i;
+			};
+		};
+		return -1;
 	}
 	else{
 		this.indexOf(item) != -1
@@ -42,6 +42,10 @@ Array.prototype.contains = function(item){
 // 	var index = this.indexOf(item);
 // 	console.log("index "+ index);
 // 	return index;
+// }
+
+	//Add other specific comparators
+// 	return this.indexOf(item);
 // }
 
 
