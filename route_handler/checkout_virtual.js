@@ -21,7 +21,6 @@ CheckoutVirtual.prototype.post = function(callback){
 		this.parentState.state.obj.addInArray(this.parentState.path, this.context.req.body._item||this.context.req.body, function(err, added){
 			if(!err){
 				me.parentState.state.obj.save(function(err){
-					console.log(err)
 					callback(err, me.parentState.state.obj);
 				});
 			}
