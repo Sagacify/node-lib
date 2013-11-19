@@ -24,7 +24,7 @@ Array.prototype.robustIndexOf = function(item){
 
 	if (item.isMongooseDocument()) {
 		for (var i = 0; i < self.length; i++) {
-			if (this[i].isMongooseDocument() && this[i]._id.equals(item._id)) {
+			if (this[i].isMongooseDocument() && this[i]._id.toString() == item._id.toString()) {
 				return i;
 			};
 		};
@@ -32,7 +32,6 @@ Array.prototype.robustIndexOf = function(item){
 	}
 
 	//Add other specific comparators
-
 
 	return this.indexOf(item);
 }
