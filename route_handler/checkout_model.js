@@ -9,7 +9,7 @@ CheckoutModel.prototype.get = function(callback){
 	// setInterval(function(){
 	// 	me.model.process._apply(me.model, me.context.req.mixin, callback);
 	// }, 3000);
-	this.model.get._apply(this.model, this.context.req.mixin, callback);
+	this.model.getRoot._apply(this.model, this.context.req.mixin, callback);
 };
 
 CheckoutModel.prototype.post = function(callback){
