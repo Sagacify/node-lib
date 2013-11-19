@@ -11,8 +11,8 @@ module.exports = function SGError (type, code, verbose) {
 		this.stack = ('stack' in error) ? error.stack : (new Error().stack);
 	}
 	else {
-		var error_type = verbose_errors[this.type];
 		this.type = type || 'generic';
+		var error_type = verbose_errors[this.type];
 		this.code = code || (error_type ? error_type[0] : 500);
 		this.verbose = verbose || (error_type ? error_type[1] : '');
 		this.stack = new Error().stack;

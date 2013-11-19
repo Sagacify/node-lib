@@ -20,6 +20,6 @@ module.exports = function (mixin, callback) {
 		callback(null, mixin);
 	}
 	else {
-		callback('INVALID_ATTR_COMBINATION');
+		callback('INVALID_TOKEN');
 	}
 };
