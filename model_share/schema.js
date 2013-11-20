@@ -37,7 +37,6 @@ mongoose.Schema.prototype.publicFormat = function(){
 			var spec = this.paths[path];
 			if(spec.schema){
 				publicFormat.doc.tree[path] = [spec.schema.publicFormat()];
-				console.log(this.isSingle(path))
 				if(this.isSingle(path))
 					publicFormat.doc.tree[path][0].single = true;
 			}
