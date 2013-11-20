@@ -4,7 +4,6 @@ module.exports = function (mixin, callback) {
 	var search = {};
 	search[mixin.search[0]] = mixin.search[1];
 	UserModel.find(search, function (e, users) {
-		console.log(users)
 		if(e) {
 			callback('COULDNT_FIND_USER');
 		}

@@ -697,7 +697,6 @@ var generateMeth = function(meth){
 					callback(err);
 				}
 			}
-				
 			this[willMeth]((path != null) ? path : willCallback, (args != null) ? args : willCallback, willCallback);
 		}
 	};

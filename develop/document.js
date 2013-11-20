@@ -90,7 +90,7 @@ mongoose.Document.prototype.develop = function(callback){
 		else if(me[fieldToAddGetter] && me[fieldToAddGetter].isFunction() && fieldToAdd in me.schema.documentVirtuals){
 			if(me[fieldToAddGetter].hasCallback()){
 				cbFields.push(fieldToAdd);
-				cbFunctions.push(me[fieldToAddGetter]);
+				cbFunctions.push(me[fieldToAddGetter].bind(me));
 			}
 			else{
 				developedDoc[fieldToAdd] = me[fieldToAddGetter]();

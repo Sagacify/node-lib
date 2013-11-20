@@ -139,7 +139,6 @@ RouteState.prototype.getObjectFromFixPath = function(callback){
 		var path = parentState.path;
 		if(parentState.state.obj.schema.hasVirtual(parentState.path))
 			path = "get"+path.capitalize();
-		console.log(path)
 		callback(null, parentState.state.obj[path]);
 	}
 	//get me from document or collection, i am in a virtual or in the tree 
