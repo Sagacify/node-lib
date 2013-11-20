@@ -7,12 +7,12 @@ Array.prototype.contains = function(item){
 	// return founded;
 
 	if (item.isMongooseDocument()) {
-		for (var i = 0; i < self.length; i++) {
+		for (var i = 0; i < this.length; i++) {
 			if (this[i].isMongooseDocument() && this[i]._id.toString() == item._id.toString()) {
-				return i;
+				return !!~i;
 			};
 		};
-		return -1;
+		return !!~-1;
 	}
 	else{
 		this.indexOf(item) != -1
