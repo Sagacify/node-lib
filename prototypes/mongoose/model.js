@@ -439,8 +439,17 @@ mongoose.Model.sgCreate = function(raw, callback){
 	doc.sgUpdate(raw, callback);
 };
 
+mongoose.Model.get = function(path, args, callback){
+	var getterPath = "get"+path.capitalize();
+	if(typeof this[getterPath] == "function"){
+		this[getterPath]._apply(this, args, callback);
+	}
+	else{
+		callback(new SGError());
+	}
+};
 
-mongoose.Model.get = function(filter, sort, paginate, callback){
+mongoose.Model.getRoot = function(filter, sort, paginate, callback){
 	if(this instanceof Array){
 		if(filter){
 			var processedArray = this.filter(function(item){

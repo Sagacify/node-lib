@@ -61,10 +61,10 @@ RouteState.prototype.type = function(){
 	}
 	else{
 		var parentState = this.parentState();
-		if(typeof this.obj == "function" && parentState.state.type() == "Document" && (parentState.state.obj.schema.hasAction(this.urlPart()))){
+		if(typeof this.obj == "function" /*&& parentState.state.type() == "Document"*/ && (parentState.state.obj.schema.hasAction(this.urlPart()))){
 			return "Action";
 		}
-		if(typeof this.obj == "function" && parentState.state.type() == "Document" && (parentState.state.obj.schema.hasVirtual(this.urlPart()))){
+		if(typeof this.obj == "function" /*&& parentState.state.type() == "Document"*/ && (parentState.state.obj.schema.hasVirtual(this.urlPart()))){
 			return "Virtual";
 		}
 		else{
@@ -139,7 +139,8 @@ RouteState.prototype.getObjectFromFixPath = function(callback){
 		var path = parentState.path;
 		if(parentState.state.obj.schema.hasVirtual(parentState.path))
 			path = "get"+path.capitalize();
-		callback(null, parentState.state.caller[path]);
+		console.log(path)
+		callback(null, parentState.state.obj[path]);
 	}
 	//get me from document or collection, i am in a virtual or in the tree 
 	else{
