@@ -393,10 +393,12 @@ mongoose.Model.sgFindById = function(id, callback){
 		me.findById(id, function(err, doc){
 			callback(err, doc);
 			if(!err){
-				Object.defineProperty(doc, "context", {
-					writable: true,
-					value: me.context
-				});
+				if(doc){
+					Object.defineProperty(doc, "context", {
+						writable: true,
+						value: me.context
+					});
+				}	
 				me.didFindById(doc);
 			}
 		});
