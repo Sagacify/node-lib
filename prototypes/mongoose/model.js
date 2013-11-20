@@ -393,10 +393,12 @@ mongoose.Model.sgFindById = function(id, callback){
 		me.findById(id, function(err, doc){
 			callback(err, doc);
 			if(!err){
-				Object.defineProperty(doc, "context", {
-					writable: true,
-					value: me.context
-				});
+				if(doc){
+					Object.defineProperty(doc, "context", {
+						writable: true,
+						value: me.context
+					});
+				}	
 				me.didFindById(doc);
 			}
 		});
@@ -437,8 +439,17 @@ mongoose.Model.sgCreate = function(raw, callback){
 	doc.sgUpdate(raw, callback);
 };
 
+mongoose.Model.get = function(path, args, callback){
+	var getterPath = "get"+path.capitalize();
+	if(typeof this[getterPath] == "function"){
+		this[getterPath]._apply(this, args, callback);
+	}
+	else{
+		callback(new SGError());
+	}
+};
 
-mongoose.Model.get = function(filter, sort, paginate, callback){
+mongoose.Model.getRoot = function(filter, sort, paginate, callback){
 	if(this instanceof Array){
 		if(filter){
 			var processedArray = this.filter(function(item){
