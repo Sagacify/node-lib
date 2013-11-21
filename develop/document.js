@@ -35,7 +35,12 @@ mongoose.Document.prototype.populateFromContext = function(callback){
 	var populateOptions = this.schema.populateOptions(context.scope);
 	var fieldsToPopulate = [];
 
-	if(populateOptions.fields){
+	if(populateOptions.isArray()){
+		fieldsToPopulate = populateOptions.filter(function(fieldToPopulate){
+			return !me.populated(fieldToPopulate);
+		});
+	}
+	else if(populateOptions.fields){
 		fieldsToPopulate = populateOptions.fields.filter(function(fieldToPopulate){
 			return !me.populated(fieldToPopulate);
 		});
@@ -64,9 +69,15 @@ mongoose.Document.prototype.develop = function(callback){
 		return callback(null, developedDoc);
 	}
 
-	var developOptions = this.schema.developOptions();
-	if(developOptions)
-		var fields = developOptions.fields;
+	var developOptions = this.schema.developOptions(context.scope);
+	if(developOptions){
+		if(developOptions.isArray()){
+			var fields = developOptions;
+		}
+		else{
+			var fields = developOptions.fields;
+		}
+	}
 	else{
 		var fields = this.schema.paths.keys().concat(this.schema.documentVirtuals.keys());
 	}

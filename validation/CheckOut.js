@@ -35,6 +35,11 @@ module.exports = function (app) {
 		app[methodName](uri, function (req, res, next) {
 			return auth ? BearerAuth(req, res, next) : next();
 		}, function (req, res, next) {
+			if(req.query._scope){
+				req.clientScope = req.query._scope;
+				delete req.query._scope;
+			}
+
 			var specialValidation = options.validation || {};
 			var specialQueryFields = ['offset', 'sort_by', 'sort_how', 'limit'];
 			var filter = {};
