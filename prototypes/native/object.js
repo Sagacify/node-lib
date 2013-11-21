@@ -118,7 +118,14 @@ obj_proto.isArray = function(){
 
 obj_proto.isFunction = function(){
 	return is.Function(this);
-}
+};
+
+obj_proto.disassemble_Object = function (key) {
+	function index(obj, i) {
+		return obj[i];
+	}
+	return key.split('.').reduce(index, this);
+};
 
 for(var key in obj_proto){
 	Object.defineProperty(Object.prototype, key, {
