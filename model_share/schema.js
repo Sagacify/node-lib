@@ -19,11 +19,9 @@ mongoose.Schema.prototype.publicFormat = function(){
 
 	var publicSpec = function(spec){
 		if(spec.options.type instanceof Array)
-			var publicSpec = {type:spec.options.type[0].type.name};	
+			var publicSpec = [{type:spec.options.type[0].type.name, ref:spec.options.type[0].ref}];	
 		else
-			var publicSpec = {type:spec.options.type.name};
-		if(spec.options.ref)
-			publicSpec.ref = spec.options.ref;
+			var publicSpec = {type:spec.options.type.name, ref:spec.options.ref};
 		return publicSpec;
 	}
 
@@ -35,14 +33,15 @@ mongoose.Schema.prototype.publicFormat = function(){
 	for(var path in this.paths){
 		if(path=="_id" || this.isPublic(path)){
 			var spec = this.paths[path];
+			console.log()
 			if(spec.schema){
 				publicFormat.doc.tree[path] = [spec.schema.publicFormat()];
 				if(this.isSingle(path))
 					publicFormat.doc.tree[path][0].single = true;
 			}
-			else if(spec.caster && !(spec.options.type instanceof Array)){
-				publicFormat.doc.tree[path] = [publicSpec(spec.caster)];
-			}
+			// else if(spec.caster/* && !(spec.options.type instanceof Array)*/){
+			// 	publicFormat.doc.tree[path] = [publicSpec(spec.caster)];
+			// }
 			else{
 				publicFormat.doc.tree[path] = publicSpec(spec);
 			}
