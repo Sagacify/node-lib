@@ -156,7 +156,16 @@ mongoose.Schema.prototype.get = function (path, callback) {
 	}
 };
 
-mongoose.Schema.prototype.do = function (action, params, callback) {
+mongoose.Document.prototype.willDo = function(action, params, callback){
+	if(typeof this.statics["will"+action.capitalize()] == "function"){
+		return this.statics["will"+action.capitalize()]._apply(this, params, callback);
+	}
+	else{
+		return callback?callback(null):null;
+	}
+};
+
+mongoose.Schema.prototype.doDo = function (action, params, callback) {
 	if(this instanceof mongoose.Schema) {
 		this.statics[action]._apply(this, params, callback);
 	}
@@ -178,6 +187,11 @@ mongoose.Schema.prototype.do = function (action, params, callback) {
 	else{
 		callback(new SGError());
 	}
+};
+
+mongoose.Document.prototype.didDo = function(action, params){
+	if(typeof this.statics["did"+action.capitalize()] == "function")
+		return this.statics["did"+action.capitalize()]._apply(this, params);
 };
 
 mongoose.Schema.prototype.sgUpdate = function (args, callback) {

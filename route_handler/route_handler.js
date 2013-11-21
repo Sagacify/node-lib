@@ -46,7 +46,19 @@ RouteHandler.prototype.handle = function(){
 };
 
 RouteHandler.prototype.buildContext = function(req){
-	this.context = {req:req, user:req.user, scope:this.options.scope, cache:this.options.cache};
+	console.log("buildContext")
+	console.log(req.mixin)
+	var scope;
+	if(this.options.scope == "clientScope"){
+		scope = req.clientScope;
+	}
+	else if(typeof this.options.scope == "function"){
+		scope = this.options.scope(req.clientScope, req.user);
+	}
+	else{
+		scope = this.options.scope;
+	}
+	this.context = {req:req, user:req.user, scope:scope, cache:this.options.cache};
 };
 
 RouteHandler.prototype.buildRoute = function(callback){

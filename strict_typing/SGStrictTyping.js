@@ -145,6 +145,12 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			return keyArr;
 		}
 		function index(obj, i) {
+			// try {
+			// 	return is.Array(obj) ? arrIndex(obj, i) : obj[i];
+			// }
+			// catch(e) {
+			// 	return undefined;
+			// }
 			return is.Array(obj) ? arrIndex(obj, i) : obj[i];
 		}
 		return key.split('.').reduce(index, obj);
