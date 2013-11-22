@@ -76,7 +76,7 @@ mongoose.Schema.prototype.developOptions = function(scope){
 	if(typeof this.statics.developOptions == "function")
 		return this.statics.developOptions.apply(this, arguments);
 	else
-		return {fields: []};
+		return null;
 };
 
 mongoose.Schema.prototype.populateDevelopChildrenOptions = function(scope){
