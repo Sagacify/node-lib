@@ -33,6 +33,8 @@ function sendMessage (data, template, callback) {
 
 
 function generateMail (data, mailTemplate, callback){
+	console.log("EMAIL DATA");
+	console.log(data);
 	generateHTML(mailTemplate, data, function (e, html, text){
 		if(e) {
 			callback(e);
@@ -97,7 +99,7 @@ function getSubject (mailTemplate) {
 	return fs.readFileSync(dirname + '/subject.txt', 'utf8');
 }
 
-exports.send_Mail = function (type, email, token, callback) {
+exports.send_Mail = function (type, email, name, token, callback) {
 	var types = ['validation', 'reset_password'];
 	if(types.indexOf(type) !== -1) {
 		var base_uri = '/auth';
@@ -105,7 +107,8 @@ exports.send_Mail = function (type, email, token, callback) {
 		var unique_uri = config.hostname + uri + '/' + token;
 		sendMessage({
 			to: email,
-			link: unique_uri
+			link: unique_uri, 
+			name: name
 		}, 'validation_mail', callback);
 	}
 	else {
