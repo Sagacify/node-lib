@@ -18,6 +18,9 @@ mongoose.Schema.prototype.publicFormat = function(){
 	var publicFormat = {doc:{tree:{}, virtuals:{}, actions:{}}, collection:{virtuals:{}, actions:{}}};
 
 	var publicSpec = function(spec){
+		if(spec.options.geoindex){
+			return [{type:'Number'}];
+		}
 		if(spec.options.type instanceof Array)
 			var publicSpec = [{type:spec.options.type[0].type.name, ref:spec.options.type[0].ref}];	
 		else

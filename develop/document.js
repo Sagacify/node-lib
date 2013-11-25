@@ -63,6 +63,7 @@ mongoose.Document.prototype.develop = function(callback){
 	var context = this.context;
 	var developedDoc = this.toObject();
 
+
 	var formattedSchema = this.schema.formattedSchema;
 
 	if(!formattedSchema){
@@ -82,29 +83,32 @@ mongoose.Document.prototype.develop = function(callback){
 		var fields = this.schema.paths.keys().concat(this.schema.documentVirtuals.keys());
 	}
 
-	var fsKeys = formattedSchema.keys();
+
+	//var fsKeys = formattedSchema.keys();
+	var fsKeys = this.schema.paths.keys();
 	//delete non wanted fields
-	var fieldsToDelete = !fields || (fields.length === 0) ? [] : developedDoc.keys().diff(fields);
+	var fieldsToDelete = !fields || (fields.length === 0) ? [] : developedDoc.pathsKeys().diff(fields);
 	fieldsToDelete.forEach(function(fieldToDelete){
 		delete developedDoc[fieldToDelete];
 	});
-
 	//add views
 	var fieldsToAdd = fields.diff(fsKeys);
 	var cbFields = [];
 	var cbFunctions = [];
 	fieldsToAdd.forEach(function(fieldToAdd){
 		fieldToAddGetter = 'get'+fieldToAdd.capitalize();
-		if(me[fieldToAdd] && me[fieldToAdd] in me.schema.virtuals){
-			developedDoc[fieldToAdd] = me[fieldToAdd];
+		console.log(me)
+		if(false && me[fieldToAdd] && me[fieldToAdd] in me.schema.virtuals){
+			developedDoc._set(fieldToAdd, me[fieldToAdd]);
 		}
-		else if(me[fieldToAddGetter] && me[fieldToAddGetter].isFunction() && fieldToAdd in me.schema.documentVirtuals){
-			if(me[fieldToAddGetter].hasCallback()){
+		else if(true || me[fieldToAddGetter] && me[fieldToAddGetter].isFunction() && fieldToAdd in me.schema.documentVirtuals){
+			if(false && me[fieldToAddGetter].hasCallback()){
 				cbFields.push(fieldToAdd);
 				cbFunctions.push(me[fieldToAddGetter].bind(me));
 			}
 			else{
-				developedDoc[fieldToAdd] = me[fieldToAddGetter]();
+				developedDoc._set(fieldToAdd, me.get(fieldToAdd));
+				//console.log(developedDoc)
 			}
 		}
 	});
@@ -112,7 +116,7 @@ mongoose.Document.prototype.develop = function(callback){
 	async.parallel(cbFunctions, function(err, results){
 		if(!err){
 			for(var i = 0; i < cbFields.length; i++){
-				developedDoc[cbFields[i]] = results[i];
+				developedDoc._set(cbFields[i], results[i]);
 			}
 		}
 		callback(err, developedDoc);

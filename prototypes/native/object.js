@@ -127,6 +127,16 @@ obj_proto.disassemble_Object = function (key) {
 	return key.split('.').reduce(index, this);
 };
 
+obj_proto.pathsKeys = function() {
+	var me = this;
+	return this.isObject() ? this.keys().reduce(function (base, ele) {
+		var children = me[ele].pathsKeys();
+		return base.concat(children.map(function (child) {
+			return ele + (child ? '.' + child : '');
+		}));
+	}, []) : [''];
+};
+
 for(var key in obj_proto){
 	Object.defineProperty(Object.prototype, key, {
 		writable: true,
