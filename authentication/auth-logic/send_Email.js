@@ -13,7 +13,8 @@ module.exports = function (mixin, callback) {
 	}
 	if(typeof_email) {
 		console.log('Email is -> ' + mixin.email);
-		Mailer.send_Mail(typeof_email, mixin.email, mixin.token, function (e) {
+		var name = mixin.user.firstname + ' ' + mixin.user.lastname;
+		Mailer.send_Mail(typeof_email, mixin.email, name, mixin.token, function (e) {
 			//TODO resend mail if fail
 			// if(e) {
 			// 	callback('COULDNT_SEND_EMAIL');
