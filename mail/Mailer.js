@@ -13,6 +13,8 @@ var transport = nodemailer.createTransport('SES', {
 
 setupInfo('SES Configured');
 
+var lang = 'en';
+
 function sendMessage (data, template, callback) {
 	generateMail(data, template, function (e, message) {
 		if(e) {
@@ -71,12 +73,12 @@ function getAttachments (mailTemplate) {
 }
 
 function getDirname (mailTemplate) {
-	return __dirname + '/../../views/emails/templates/' + mailTemplate;
+	return __dirname + '/../../views/emails/templates/' + lang +'/' + mailTemplate;
 }
 
 
 function generateHTML (mailTemplate, data, callback) {
-	var dirname = __dirname + '/../../views/emails/templates';
+	var dirname = __dirname + '/../../views/emails/templates/'+lang;
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
 			callback(e);
@@ -99,8 +101,11 @@ function getSubject (mailTemplate) {
 	return fs.readFileSync(dirname + '/subject.txt', 'utf8');
 }
 
-exports.send_Mail = function (type, email, name, token, callback) {
+exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 	var types = ['validation', 'reset_password'];
+	if (prefLang)
+		lang = prefLang;
+
 	if(types.indexOf(type) !== -1) {
 		var base_uri = '/auth';
 		var uri = base_uri + '/' + type;
