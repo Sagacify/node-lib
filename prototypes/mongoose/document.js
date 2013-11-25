@@ -268,7 +268,6 @@ mongoose.Document.prototype._set = mongoose.Document.prototype.set;
 
 mongoose.Document.prototype.doSet = function(path, val, type, options, callback){
 	if(arguments.callee.caller.caller == this._set){
-		console.log("default _set")
 		return this._set.apply(this, arguments);
 	}
 	if(!callback && typeof type == "function")
@@ -286,7 +285,7 @@ mongoose.Document.prototype.doSet = function(path, val, type, options, callback)
 	}
 	else{
 		var setterName = "set"+path.capitalize();
-		if(typeof this[setterName] == "function" && arguments.callee.caller.caller != this[setterName]){
+		if(typeof this[setterName] == "function" && arguments.callee.caller.caller.caller != this[setterName]){
 			if(this[setterName].hasCallback() && callback){
 				this[setterName](val, callback);	
 			}
@@ -378,7 +377,7 @@ mongoose.Document.prototype.willAddInArray = function(path, val, callback){
 					callback(null, willRes)
 			}
 			else{
-				callback(willRes);
+				return willRes;
 			}
 		}
 	}

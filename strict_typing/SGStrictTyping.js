@@ -199,8 +199,9 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	this.apply_to_Args = function (args, args_config, callback) {
 		args_config = this.develop_ValidationConfig(args_config);
 		var args_buffer = {};
+		console.log('\nARGS :');
 		console.log(args);
-		console.log(args_config);
+		// console.log(args_config);
 		if(is.Object(args) && is.Object(args_config)) {
 			var keys = Object.keys(args_config);
 			var len = keys.length;
@@ -213,7 +214,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 				ele_config = args_config[i];
 				//ele_config = args_config[i].clone();
 				console.log('\n --> ' + i);
-				console.log(ele);
+				// console.log(ele);
 				if(this.validate_Config(ele_config)) {
 					if(this.apply_to_Array(ele, i, ele_config)) {
 					//if(this.apply_to_Ele(ele, ele_config)) {
@@ -232,6 +233,8 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			}
 			var array_ags = Array.apply(null, arguments);
 			var new_args = this.strict_mode ? args_buffer : array_ags;
+			console.log('\nARGS BUFFER :');
+			console.log(Object.keys(args_buffer).length ? args_buffer : args);
 			return callback.apply(this, [null].concat(new_args));
 		}
 		else {
@@ -241,6 +244,6 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 
 };
 
-var mySGStrictTyping = new SGStrictTyping(true);
+var mySGStrictTyping = new SGStrictTyping(false); // ideally should be true
 
 module.exports = mySGStrictTyping;
