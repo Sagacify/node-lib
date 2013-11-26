@@ -57,6 +57,13 @@ var special_Primitives = [
 	void 1
 ];
 
+// DATES
+var special_Dates = [
+	new Date(8640000000000000),
+	new Date(8640000000000001),
+	new Date(-8640000000000001)
+];
+
 var special_Objects = [
 	{},
 	new Object(),
