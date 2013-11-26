@@ -82,7 +82,9 @@ Array.prototype.indexes = function(){
 };
 
 Array.prototype.diff = function(a) {
-    return this.filter(function(i) {return !(a.indexOf(i) > -1);});
+	return this.filter(function (i) {
+		return !(a.indexOf(i) > -1);
+	});
 };
 
 Array.prototype.populateDevelop = function(callback){

@@ -2,8 +2,6 @@ var Hash = require('../../hashing/Hash');
 
 module.exports = function (mixin, callback) {
 	var hashed_token = mixin.hashed_token;
-	console.log(hashed_token);
-	console.log(mixin);
 	var i = mixin.user.tokens.length;
 	var now = Date.now();
 	var match = false;
