@@ -13,13 +13,13 @@ CheckoutModel.prototype.get = function(callback){
 };
 
 CheckoutModel.prototype.post = function(callback){
-	this.model.sgCreate(this.context.req.body, callback);
+	this.model.sgCreate(this.context.req.mixin, callback);
 };
 
 CheckoutModel.prototype.put = function(callback){
 	var me = this;
 	this.get(function(err, docs){
-		me.model.schema.sgUpdate.apply(docs, [me.context.req.body, callback]);
+		me.model.schema.sgUpdate.apply(docs, [me.context.req.mixin, callback]);
 	});
 };
 

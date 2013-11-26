@@ -17,6 +17,9 @@ var special_Strings = [
 	'\'',
 	'\n\r',
 	'%00',
+	'\x00',
+	'\u0000',
+	'\0',
 	'null',
 	'ﬂ∂∏ı',
 	'void',
@@ -55,6 +58,13 @@ var special_Primitives = [
 	undefined,
 	primitive_undefined(),
 	void 1
+];
+
+// DATES
+var special_Dates = [
+	new Date(8640000000000000),
+	new Date(8640000000000001),
+	new Date(-8640000000000001)
 ];
 
 var special_Objects = [
