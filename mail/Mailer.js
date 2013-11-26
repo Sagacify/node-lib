@@ -73,7 +73,7 @@ function getAttachments (mailTemplate) {
 }
 
 function getDirname (mailTemplate) {
-	return __dirname + '/../../views/emails/templates/' + lang +'/' + mailTemplate;
+	return __dirname + '/../../views/emails/templates/' + lang +'/' + mailTemplate + '_mail';
 }
 
 
@@ -114,7 +114,7 @@ exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 			to: email,
 			link: unique_uri, 
 			name: name
-		}, 'validation_mail', callback);
+		}, type, callback);
 	}
 	else {
 		callback('INVALID_EMAIL_TYPE');
