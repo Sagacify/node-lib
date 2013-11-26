@@ -2,7 +2,7 @@ var emailTemplates = require('email-templates');
 var nodemailer = require('nodemailer');
 var fs = require('fs');
 
-var fromEmail = 'noreply@i4-community.com';
+var fromEmail = config.AWS.sesFromEmail;
 
 // Create an Amazon SES transport object
 var transport = nodemailer.createTransport('SES', {
@@ -18,11 +18,13 @@ var lang = 'en';
 function sendMessage (data, template, callback) {
 	generateMail(data, template, function (e, message) {
 		if(e) {
+			console.log(e);
 			callback(e);
 		}
 		else {
 			transport.sendMail(message, function (e) {
 				if(e) {
+					console.log(e);
 					callback(e);
 				}
 				else {
@@ -39,6 +41,7 @@ function generateMail (data, mailTemplate, callback){
 	console.log(data);
 	generateHTML(mailTemplate, data, function (e, html, text){
 		if(e) {
+			console.log(e);
 			callback(e);
 		}
 		else {
@@ -73,7 +76,7 @@ function getAttachments (mailTemplate) {
 }
 
 function getDirname (mailTemplate) {
-	return __dirname + '/../../views/emails/templates/' + lang +'/' + mailTemplate + '_mail';
+	return __dirname + '/../../views/emails/templates/' + lang +'/' + mailTemplate;
 }
 
 
@@ -81,11 +84,13 @@ function generateHTML (mailTemplate, data, callback) {
 	var dirname = __dirname + '/../../views/emails/templates/'+lang;
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
+			console.log(e);
 			callback(e);
 		}
 		else {
 			template(mailTemplate, data, function (e, html, text) {
 				if(e) {
+					console.log(e);
 					callback(e);
 				}
 				else {

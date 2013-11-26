@@ -12,10 +12,8 @@ function emitEvent(event, data) {
 }
 
 EventEmitter.on('FrostyBug', function(args) {
-	if(_NODE_ENV !== 'production') {
-		consoleError(args.stack || args.msg);
-	}
-	if(_NODE_ENV !== 'development') {
+	
+	if(config.errorLog) {
 		if(args && (args.length > 0)) {
 			var bug = model('Bug')({
 				message: args.err
@@ -23,6 +21,9 @@ EventEmitter.on('FrostyBug', function(args) {
 				message: args.err
 			});
 		}
+	}
+	else {
+		consoleError(args.stack || args.msg);
 	}
 });
 
