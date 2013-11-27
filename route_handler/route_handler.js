@@ -56,7 +56,6 @@ RouteHandler.prototype.buildContext = function(req){
 	else{
 		scope = this.options.scope;
 	}
-	console.log(req.user)
 	this.context = {req:req, user:req.user, scope:scope, cache:this.options.cache};
 };
 

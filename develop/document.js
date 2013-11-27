@@ -5,7 +5,7 @@ mongoose.Document.prototype.populateDevelop = function(callback){
 	var me = this;
 	var context = this.context;
 	this.populateFromContext(function(err){
-		if(!err){
+		if(!err) {
 			me.develop(function(err, devObject){
 				if(!err){
 					me.populateDevelopChildren(devObject, function(err, popDevObject){
@@ -45,7 +45,6 @@ mongoose.Document.prototype.populateFromContext = function(callback){
 			return !me.populated(fieldToPopulate);
 		});
 	}
-
 	if(fieldsToPopulate.length == 0){
 		callback(null);
 	}
@@ -86,7 +85,6 @@ mongoose.Document.prototype.develop = function(callback){
 		};
 	}
 
-
 	//var fsKeys = formattedSchema.keys();
 	var fsKeys = this.schema.paths.keys();
 	//delete non wanted fields
@@ -100,7 +98,6 @@ mongoose.Document.prototype.develop = function(callback){
 	var cbFunctions = [];
 	fieldsToAdd.forEach(function(fieldToAdd){
 		fieldToAddGetter = 'get'+fieldToAdd.capitalize();
-		console.log(me)
 		if(false && me[fieldToAdd] && me[fieldToAdd] in me.schema.virtuals){
 			developedDoc._set(fieldToAdd, me[fieldToAdd]);
 		}
@@ -111,7 +108,6 @@ mongoose.Document.prototype.develop = function(callback){
 			}
 			else{
 				developedDoc._set(fieldToAdd, me.get(fieldToAdd));
-				//console.log(developedDoc)
 			}
 		}
 	});
