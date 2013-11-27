@@ -189,7 +189,7 @@ mongoose.Schema.prototype.doDo = function (action, params, callback) {
 	}
 };
 
-mongoose.Document.prototype.didDo = function(action, params){
+mongoose.Schema.prototype.didDo = function(action, params){
 	if(typeof this.statics["did"+action.capitalize()] == "function")
 		return this.statics["did"+action.capitalize()]._apply(this, params);
 };
