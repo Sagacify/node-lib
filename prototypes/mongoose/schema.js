@@ -156,7 +156,7 @@ mongoose.Schema.prototype.get = function (path, callback) {
 	}
 };
 
-mongoose.Document.prototype.willDo = function(action, params, callback){
+mongoose.Schema.prototype.willDo = function(action, params, callback){
 	if(typeof this.statics["will"+action.capitalize()] == "function"){
 		return this.statics["will"+action.capitalize()]._apply(this, params, callback);
 	}

@@ -80,7 +80,10 @@ mongoose.Document.prototype.develop = function(callback){
 		}
 	}
 	else{
-		var fields = this.schema.paths.keys().concat(this.schema.documentVirtuals.keys());
+		var fields = this.schema.paths.keys();
+		if (this.schema.documentVirtuals) {
+			fields = fields.concat(this.schema.documentVirtuals.keys());	
+		};
 	}
 
 
