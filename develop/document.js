@@ -84,16 +84,24 @@ mongoose.Document.prototype.develop = function(callback){
 			fields = fields.concat(this.schema.documentVirtuals.keys());	
 		};
 	}
+	// console.log("develo")
+	// console.log(fields)
+	// console.log(this)
+	// console.log(developedDoc)
 
 	//var fsKeys = formattedSchema.keys();
 	var fsKeys = this.schema.paths.keys();
 	//delete non wanted fields
 	var fieldsToDelete = !fields || (fields.length === 0) ? [] : developedDoc.pathsKeys().diff(fields);
+	console.log(developedDoc.pathsKeys())
+	console.log(fieldsToDelete)
 	fieldsToDelete.forEach(function(fieldToDelete){
 		delete developedDoc[fieldToDelete];
 	});
 	//add views
 	var fieldsToAdd = fields.diff(fsKeys);
+	console.log(fieldsToAdd)
+	console.log(fsKeys)
 	var cbFields = [];
 	var cbFunctions = [];
 	fieldsToAdd.forEach(function(fieldToAdd){
