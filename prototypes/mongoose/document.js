@@ -132,10 +132,10 @@ mongoose.Document.prototype.doSet = function(path, val, type, options, callback)
 		else if(this.schema.tree._get(path) && this.schema.tree._get(path)._id){
 			this.setSemiEmbedded(path, val, callback);
 		}
-		else if(this.schema.tree._get(path) && this.schema.tree._get(path).ref == 'File' && this.schema.tree._get(path).kind == 'Image'){
+		else if(this.schema.tree._get(path) && this.schema.tree._get(path).ref == 'File' && this.schema.tree._get(path).base64){
 			this.setBase64File(path, val, callback);
 		}
-		else if(this.schema.tree._get(path) instanceof Array && this.schema.tree._get(path)[0].ref == 'File' && this.schema.tree._get(path)[0].kind == 'Image'){
+		else if(this.schema.tree._get(path) instanceof Array && this.schema.tree._get(path)[0].ref == 'File' && this.schema.tree._get(path)[0].base64){
 			this.setBase64Files(path, val, callback);
 		}
 		else{
@@ -182,6 +182,9 @@ var base64File = function(args, callback){
 			base64data: args,
 			extension: 'png'
 		}
+	}
+	if(args.base64data.startsWith('data')){
+		args.base64data = args.base64data.split(',')[1];
 	}
 	var me = this;
 	var FileModel = model('File');
