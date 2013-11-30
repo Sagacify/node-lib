@@ -40,6 +40,7 @@ exports.s3BucketInitialization = function(){
 }
 
 exports.writeFileToS3 = function (base64data, extension, secure, callback){
+	console.log(base64data)
 	var name = uuid.v4();
 	var filename = extension?name+"."+extension:name;
 	s3.client.putObject({

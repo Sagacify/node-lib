@@ -84,7 +84,6 @@ RouteState.prototype.getObject = function(callback){
 	if(this.index == nbPartsToSkip){
 		//get current user
 		if(this.pathPart()=="user"){
-			console.log(this.context.user)
 			callback(null, this.context.user);
 		}
 		else{

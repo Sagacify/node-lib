@@ -20,7 +20,6 @@ module.exports = function validate (callback, args, caja, req, res, next) {
 				return res.SGsend(new SGError('Validation', 400, 'Validation failed'));
 			}
 			else {
-				console.log(validated_args);
 				req.mixin = validated_args;
 				//var newArguments = validated_args.concat(argsToArray);
 				callback.apply(this, argsToArray);
