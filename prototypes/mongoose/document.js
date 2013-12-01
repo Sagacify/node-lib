@@ -183,6 +183,9 @@ var base64File = function(args, callback){
 			extension: 'png'
 		}
 	}
+	if(!args.base64data){
+		return callback(null, {_id:null});
+	}
 	if(args.base64data.startsWith('data')){
 		args.base64data = args.base64data.split(',')[1];
 	}
