@@ -1,15 +1,40 @@
+Object.defineProperty(global, '__stack', {
+	get: function () {
+		var origin = Error.prepareStackTrace;
+		Error.prepareStackTrace = function (_, stack) {
+			return stack;
+		};
+		var error = new Error();
+		Error.captureStackTrace(error, arguments.callee);
+		var stack = error.stack;
+		Error.prepareStackTrace = origin;
+		return stack;
+	}
+});
+
+Object.defineProperty(global, '__line', {
+	get: function () {
+		var stack = __stack[2];
+		return stack && stack.getLineNumber() || '';
+	}
+});
+
+Object.defineProperty(global, '__function', {
+	get: function () {
+		var stack = __stack[2];
+		return stack && stack.getFunctionName() || 'anonymous';
+	}
+});
+
+Object.defineProperty(global, '__script', {
+	get: function () {
+		var stack = __stack[2];
+		return stack && stack.getFileName() || '';
+	}
+});
+
 // console._log = console.log;
 // console.log = function(text){
-// 	var stack = new Error().stack;
-// 	var fullLine = stack.split("\n")[2];
-// 	var line;
-// 	if(fullLine.indexOf('(') != -1){
-// 		var str = stack.split("\n")[2].split('(')[1];
-// 		line = str.substring(0, str.length-1);
-// 	}
-// 	else{
-// 		line = fullLine.trim(3);
-// 	}
-// 	console._log(line);
+// 	console._log(__script +' : ' + __line);
 // 	console._log(text+'\n');
-// }
+// };
