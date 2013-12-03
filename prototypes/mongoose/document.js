@@ -100,7 +100,6 @@ mongoose.Document.prototype.willSet = function(path, val, callback){
 mongoose.Document.prototype._set = mongoose.Document.prototype.set;
 
 mongoose.Document.prototype.doSet = function(path, val, type, options, callback){
-	console.log('doSet', path)
 	if(arguments.callee.caller.caller == this._set){
 		return this._set.apply(this, arguments);
 	}
@@ -418,27 +417,19 @@ mongoose.Document.prototype.didCreate = function(){
 };
 
 mongoose.Document.prototype.ensureUpdateConsistency = function(){
-	console.log(new Error().stack)
 	var me = this;
 	if(this.getModelName){
 		var myModelName = this.getModelName();
-		console.log(1, myModelName)
 		mongoose.models.keys().forEach(function(modelName){
-			console.log(2, modelName)
 			var skelleton = mongoose.models[modelName].schema.skelleton;
 			if(skelleton[myModelName]){
-				console.log(3)
 				skelleton[myModelName].forEach(function(path){
-					console.log(4, path)
 					if(path.endsWith('._id')){
 						var findArgs = {};
 						findArgs[path] = me._id;
-						console.log(5, me._id)
 						model(modelName).find(findArgs, function(err, docs){
 							if(docs){
-								console.log(6)
 								docs.forEach(function(doc){
-									console.log(doc)
 									var semiEmbeddedPath = path.substring(0, path.length-4);
 									var semiEmbeddedDoc;
 									if(doc.isSemiEmbedded(semiEmbeddedPath)){
@@ -448,27 +439,17 @@ mongoose.Document.prototype.ensureUpdateConsistency = function(){
 									// 	semiEmbeddedDoc = doc.get(semiEmbeddedPath).id(me._id);
 									// }
 									if(semiEmbeddedDoc){
-										console.log(semiEmbeddedDoc)
 										var changed = false;
 										doc.schema.paths.keys().forEach(function(key){
 											var semiEmbeddedKey = key.substring(semiEmbeddedPath.length+1, key.length);
-											console.log('semiEmbeddedKey', semiEmbeddedKey)
-											console.log(key)
 											if(semiEmbeddedKey && !key.endsWith("_id") && key.startsWith(semiEmbeddedPath) && me.get(semiEmbeddedKey) != semiEmbeddedDoc._get(semiEmbeddedKey)){
-												console.log(7, key)
 												doc.set(key, me.get(semiEmbeddedKey));
 												//semiEmbeddedDoc[key] = me[key];
 												changed = true;
 											}
 										});
-										console.log(changed)
 										if(changed){
-											doc.save(function(err){
-												console.log("doc saved")
-												model('Location').findById(doc._id, function(err, ndoc){
-													console.log(ndoc)
-												});
-											});
+											doc.save();
 										}
 									}
 								});
