@@ -218,7 +218,7 @@ RouteState.prototype.build = function(callback){
 					me.populated = obj;
 					me.obj = popObj;
 				}
-				console.log(me.obj)
+				//console.log(me.obj)
 				me.attachCaller();
 				me.attachContext();
 				callback(err);
