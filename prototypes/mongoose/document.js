@@ -387,12 +387,12 @@ mongoose.Document.prototype.doUpdate = function(args, callback){
 	var me = this;
 	this.set(args, function(err){
 	    if(!err){
-	        //me.ensureUpdateConsistency();
 	        docToSave = me;
 	        if(me.parent)
 	        	docToSave = me.parent();
 			docToSave.save(function(err){
 				callback(err, me);
+				me.ensureUpdateConsistency();
 			});
 	    }
 		else{
@@ -401,8 +401,10 @@ mongoose.Document.prototype.doUpdate = function(args, callback){
 	});
 };
 
+console.log(mongoose.Document.prototype.didUpdate)
+
 mongoose.Document.prototype.didUpdate = function(args){
-	
+
 };
 
 mongoose.Document.prototype.willCreate = function(){
@@ -433,20 +435,22 @@ mongoose.Document.prototype.ensureUpdateConsistency = function(){
 									if(doc.isSemiEmbedded(semiEmbeddedPath)){
 										semiEmbeddedDoc = doc.get(semiEmbeddedPath);
 									}
-									else if(doc.isSemiEmbeddedArray(semiEmbeddedPath)){
-										semiEmbeddedDoc = doc.get(semiEmbeddedPath).remove(me._id);
-									}
+									// else if(doc.isSemiEmbeddedArray(semiEmbeddedPath)){
+									// 	semiEmbeddedDoc = doc.get(semiEmbeddedPath).id(me._id);
+									// }
 									if(semiEmbeddedDoc){
 										var changed = false;
-										me.keys().forEach(function(key){
-											if(me[key] != semiEmbeddedDoc[key]){
-												semiEmbeddedDoc[key] = me[key];
+										doc.schema.paths.keys().forEach(function(key){
+											var semiEmbeddedKey = key.substring(semiEmbeddedPath.length+1, key.length);
+											if(semiEmbeddedKey && !key.endsWith("_id") && key.startsWith(semiEmbeddedPath) && me.get(semiEmbeddedKey) != semiEmbeddedDoc._get(semiEmbeddedKey)){
+												doc.set(key, me.get(semiEmbeddedKey));
+												//semiEmbeddedDoc[key] = me[key];
 												changed = true;
 											}
-											if(changed){
-												doc.save();
-											}
 										});
+										if(changed){
+											doc.save();
+										}
 									}
 								});
 							}
