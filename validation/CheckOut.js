@@ -24,9 +24,6 @@ module.exports = function (app) {
 	var BearerAuth = require('../../app/auth-middlewares/authenticate_token.js');
 
 	function expressMethodWrapper (methodName, uri, options, callback) {
-		if(typeof callback !== "function"){
-			callback = new routeHandler(callback).handle();
-		}
 		apiRecorder.addRoute(methodName, uri, options);
 
 		var auth = ('auth' in options) ? options.auth : authState;
@@ -76,13 +73,16 @@ module.exports = function (app) {
 
 			options.validation = specialValidation;
 
+			if((typeof callback !== "function") || (callback.name === 'autoGenerate')){
+				callback = new routeHandler(callback).handle();
+			}
+
 			//The cloneToObject() method is needed because FUCK VISION-MEDIA !
 			// --> https://github.com/visionmedia/express/issues/1742
 			req.mixin = req.params.cloneToObject().merge(req.body).merge(mixin_options);
 			SGMixinValidation(callback, options.validation || {}, caja, req, res, next);
 		});
 	}
-
 
 	var _get = function (uri, options, callback) {
 		var argsToArray = Array.apply(null, arguments);
