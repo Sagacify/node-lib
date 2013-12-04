@@ -10,12 +10,13 @@ var CheckoutPrimitiveArray = require('./checkout_primitivearray');
 var CheckoutAction = require('./checkout_action');
 var CheckoutVirtual = require('./checkout_virtual');
 
-function RouteHandler(options){
-	this.options = options||{};
+function RouteHandler (options) {
+	this.options = options || {};
 };
+
 RouteHandler.prototype.handle = function(){
 	var me = this;
-	return function (req, res) {
+	return function autoGenerate (req, res) {
 		me.buildContext(req, res);
 		me.buildRoute(function(err){
 			if(!err){
@@ -59,50 +60,58 @@ RouteHandler.prototype.buildContext = function(req){
 	this.context = {req:req, user:req.user, scope:scope, cache:this.options.cache};
 };
 
-RouteHandler.prototype.buildRoute = function(callback){
+RouteHandler.prototype.buildRoute = function(callback) {
+	function seriesHandler (context, route) {
+		return function (index, callback) {
+			var routeState = new RouteState(context, route, index);
+			routeState.build(callback);
+		};
+	}
 	var splitPath = this.context.req.route.path.split('/');
 	splitPath.popFirst();
-	if(!splitPath.last())
+	if(!splitPath.last()) {
 		splitPath.pop();
+	}
 	var splitUrl = this.context.req.url.split('?')[0].split('/');
 	splitUrl.popFirst();
 	if(!splitUrl.last())
 		splitUrl.pop();
-	this.route = {splitPath:splitPath, splitUrl:splitUrl, states:[], length:splitPath.length};
-	var me = this;
-	async.eachSeries(splitPath.keys(), function(index, callback){
-		var routeState = new RouteState(me.context, me.route, index);
-		routeState.build(callback);
-	}, function(err){
+	this.route = {
+		splitPath: splitPath,
+		splitUrl:splitUrl,
+		states:[],
+		length:splitPath.length
+	};
+	async.eachSeries(splitPath.keys(), seriesHandler(this.context, this.route), function (err) {
 		callback(err);
 	});
 };
 
 RouteHandler.prototype.checkout = function(callback){
 	var checkoutClass;
-	switch(this.route.states.last().type()){
+	switch(this.route.states.last().type()) {
 		case "Model":
-		checkoutClass = CheckoutModel;
-		break;
+			checkoutClass = CheckoutModel;
+			break;
 		case "Document":
-		checkoutClass = CheckoutDocument;
-		break;
+			checkoutClass = CheckoutDocument;
+			break;
 		case "DocumentArray":
-		checkoutClass = CheckoutDocumentArray;
-		break;
+			checkoutClass = CheckoutDocumentArray;
+			break;
 		case "Primitive":
-		checkoutClass = CheckoutPrimitive;
-		break;
+			checkoutClass = CheckoutPrimitive;
+			break;
 		case "PrimitiveArray":
-		checkoutClass = CheckoutPrimitiveArray;
-		break;
+			checkoutClass = CheckoutPrimitiveArray;
+			break;
 		case "Action":
-		checkoutClass = CheckoutAction;
-		break;
+			checkoutClass = CheckoutAction;
+			break;
 		case "Virtual":
-		checkoutClass = CheckoutVirtual;
-		break;
-	};
+			checkoutClass = CheckoutVirtual;
+			break;
+	}
 
 	if(checkoutClass) {
 		new checkoutClass(this.context, this.route)[this.context.req.method.toLowerCase()](callback);

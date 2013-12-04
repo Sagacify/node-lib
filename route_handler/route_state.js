@@ -14,7 +14,7 @@ RouteState.prototype.nextState = function(){
 	return this.route.states[this.index+1];
 };
 
-RouteState.prototype.parentState = function(){
+RouteState.prototype.parentState = function () {
 	if(this._parentState){
 		return this._parentState;
 	}
@@ -25,7 +25,7 @@ RouteState.prototype.parentState = function(){
 			path = previousState.urlPart()+"."+path;
 			previousState = previousState.previousState();
 		}	
-		else{
+		else {
 			this._parentState = {state:previousState, path:path};
 			return this._parentState;
 		}
@@ -77,22 +77,22 @@ RouteState.prototype.getObject = function(callback){
 	//console.log("getObject")
 	var nbPartsToSkip = 1;
 	//skip first (api)
-	if(this.index < nbPartsToSkip){
+	if(this.index < nbPartsToSkip) {
 		return callback(null)
 	}
 	//get model to start
-	if(this.index == nbPartsToSkip){
+	if(this.index == nbPartsToSkip) {
 		//get current user
-		if(this.pathPart()=="user"){
+		if(this.pathPart() === 'user') {
 			callback(null, this.context.user);
 		}
-		else{
+		else {
 			callback(null, mongoose.model(mongoose.modelNameFromCollectionName(this.pathPart())));
 		}
 	}
 	else {
 		//variable part
-		if(this.pathPart().startsWith(":")){
+		if(this.pathPart().startsWith(":")) {
 			this.getObjectFromVariablePath(callback);
 		}
 		//fix part
@@ -133,7 +133,6 @@ RouteState.prototype.getObjectFromFixPath = function(callback){
 	if(!parentState || !parentState.state.caller){
 		return callback();
 	}
-	
 	//take me from normal dictionary or do not execute function if last route part (action or virtual)
 	if(!parentState.state.caller.get || parentState.state.obj.schema && (parentState.state.obj.schema.hasVirtual(parentState.path)||parentState.state.obj.schema.hasAction(parentState.path)) && this.index == this.route.length-1){
 		var path = parentState.path;
@@ -187,7 +186,7 @@ RouteState.prototype.attachCaller = function(){
 			if(parentState.state.obj instanceof mongoose.Document && parentState.state.obj.schema.tree._get(parentState.path)){
 				caller = model(parentState.state.obj.schema.tree._get(parentState.path)[0].ref).schema;
 			}
-			if(parentState.state.caller instanceof mongoose.Schema){
+			if(parentState.state.caller instanceof mongoose.Schema) {
 				var collectionName = parentState.state.caller.statics[parentState.path].name.split('_')[1];
 				var modelName = mongoose.modelNameFromCollectionName(collectionName);
 				if(modelName)
@@ -209,15 +208,14 @@ RouteState.prototype.attachContext = function(){
 
 RouteState.prototype.build = function(callback){
 	var me = this;
-	this.getObject(function(err, obj){
+	this.getObject(function (err, obj){
 		if(!err){
 			me.obj = obj;
-			me.populateObject(function(err, popObj){
+			me.populateObject(function (err, popObj){
 				if(popObj){
 					me.populated = obj;
 					me.obj = popObj;
 				}
-				console.log(me.obj)
 				me.attachCaller();
 				me.attachContext();
 				callback(err);
@@ -228,8 +226,5 @@ RouteState.prototype.build = function(callback){
 		}
 	});
 };
-
-
-
 
 module.exports = RouteState;

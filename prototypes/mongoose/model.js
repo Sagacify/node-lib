@@ -273,7 +273,8 @@ mongoose.Model.prototype._save = mongoose.Model.prototype.save;
 
 mongoose.Model.prototype.save = function save(fn){
 	if(this.modifiedPaths().length==0){
-		fn(null);
+		if(fn)
+			fn(null);
 	}
 	else{
 		return this._save.apply(this, arguments);
