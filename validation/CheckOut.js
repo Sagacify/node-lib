@@ -48,7 +48,7 @@ module.exports = function (app) {
 			});
 
 			var sort = {};
-			if('sort' in req.query) {
+			if('sort_by' in req.query) {
 				sort[req.query.sort_by] = req.query.sort_how || 'asc';
 			}
 
