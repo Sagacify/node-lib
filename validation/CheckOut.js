@@ -48,7 +48,7 @@ module.exports = function (app) {
 			});
 
 			var sort = {};
-			if('sort' in req.query) {
+			if('sort_by' in req.query) {
 				sort[req.query.sort_by] = req.query.sort_how || 'asc';
 			}
 
@@ -60,6 +60,9 @@ module.exports = function (app) {
 				};
 				specialValidation['paginate.offset'] = ['isOptional', 'String', 'notNull', 'notEmpty'];
 				specialValidation['paginate.limit'] = ['isOptional', 'String', 'notNull', 'notEmpty'];
+			}
+			else{
+				mixin_options.paginate = {};
 			}
 
 			if(Object.keys(sort).length) {

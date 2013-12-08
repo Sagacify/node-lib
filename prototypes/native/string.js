@@ -14,7 +14,7 @@ String.prototype.capitalize = function() {
 	var capitalized = "";
 	var split = this.split('.');
 	split.forEach(function(part){
-		capitalized += part.charAt(0).toUpperCase()+part.slice(1)
+		capitalized += part.charAt(0).toUpperCase()+part.slice(1);
 	});
     return capitalized;
 };
