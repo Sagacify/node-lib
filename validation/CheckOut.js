@@ -61,6 +61,9 @@ module.exports = function (app) {
 				specialValidation['paginate.offset'] = ['isOptional', 'String', 'notNull', 'notEmpty'];
 				specialValidation['paginate.limit'] = ['isOptional', 'String', 'notNull', 'notEmpty'];
 			}
+			else{
+				mixin_options.paginate = {};
+			}
 
 			if(Object.keys(sort).length) {
 				mixin_options.sort = sort;
