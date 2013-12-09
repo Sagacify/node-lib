@@ -1,5 +1,3 @@
-var verbose_errors = require('./verbose_errors');
-
 var FrostyBug = require('./FrostyBug');
 
 module.exports = function SGError (type, code, verbose) {

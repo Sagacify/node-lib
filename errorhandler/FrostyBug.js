@@ -11,7 +11,7 @@ function emitEvent(event, data) {
 	EventEmitter.emit(event, data);
 }
 
-EventEmitter.on('FrostyBug', function(args) {
+EventEmitter.on('FrostyBug', function (args) {
 	if(config.errorLog) {
 		if(args && (args.length > 0)) {
 			var bug = model('Bug')({
@@ -21,38 +21,10 @@ EventEmitter.on('FrostyBug', function(args) {
 			});
 		}
 	}
-	else {
-		consoleError(args.stack || args.msg);
-	}
+	consoleError(args.stack || args.msg);
 });
 
-// var NativeError = Error;
-
-// Error = function Error (arg) {
-// 	//EventEmitter.emit('FrostyBug', { msg: arguments });
-// 	err = new NativeError(arg);
-// 	return err;
-// };
-
-
-
-// for(var key in NativeError){
-// 	Error[key] = NativeError[key];
-// }
-
-// var NativeFunction = Function;
-// Function = function Function(){
-// 	console.log("fun")
-// 	return new NativeFunction(arguments);
-// };
-
-
-// Error = function Error (arg) {
-// 	EventEmitter.emit('FrostyBug', { msg: arguments });
-// 	return new NativeError();
-// };
-
-process.on('uncaughtException', function(err) {
+process.on('uncaughtException', function (err) {
 	emitEvent('FrostyBug', { msg: err });
 });
 

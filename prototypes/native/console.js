@@ -14,27 +14,27 @@ Object.defineProperty(global, '__stack', {
 
 Object.defineProperty(global, '__line', {
 	get: function () {
-		var stack = __stack[1];
+		var stack = __stack[2];
 		return stack && stack.getLineNumber() || '';
 	}
 });
 
 Object.defineProperty(global, '__function', {
 	get: function () {
-		var stack = __stack[1];
+		var stack = __stack[2];
 		return stack && stack.getFunctionName() || 'anonymous';
 	}
 });
 
 Object.defineProperty(global, '__script', {
 	get: function () {
-		var stack = __stack[1];
+		var stack = __stack[2];
 		return stack && stack.getFileName() || '';
 	}
 });
 
 // console._log = console.log;
 // console.log = function(text){
-// 	console._log(__script +' : ' + __line);
-// 	console._log(text+'\n');
+// 	console._log(__script + ' : ' + __line);
+// 	console._log(text + '\n');
 // };

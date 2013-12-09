@@ -1,12 +1,10 @@
 var colors = require('./colors').codes;
 
-exports.deprecatedAlert = function (modulename, methodename, trace) {
+exports.deprecatedAlert = function () {
 	var red = colors.red;
-	var blue = colors.blue;
 	var reset = colors.reset;
-	var message = 'DEPRECATED METHOD in ';
-	console.log(red + message + modulename + reset + ' -> ' + blue + methodename + reset);
-	console.log(trace);
+	var message = 'DEPRECATED METHOD ';
+	console._log('\n' + red + message + __function + ' in ' + __script + ' : ' + __line + reset);
 	process.exit(1);
 };
 
