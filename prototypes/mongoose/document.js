@@ -401,8 +401,6 @@ mongoose.Document.prototype.doUpdate = function(args, callback){
 	});
 };
 
-console.log(mongoose.Document.prototype.didUpdate)
-
 mongoose.Document.prototype.didUpdate = function(args){
 
 };

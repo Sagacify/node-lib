@@ -11,7 +11,7 @@ function emitEvent(event, data) {
 	EventEmitter.emit(event, data);
 }
 
-EventEmitter.on('FrostyBug', function(args) {
+EventEmitter.on('FrostyBug', function (args) {
 	if(config.errorLog) {
 		if(args && (args.length > 0)) {
 			var bug = model('Bug')({
