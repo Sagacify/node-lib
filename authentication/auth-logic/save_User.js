@@ -3,8 +3,6 @@ var UserModel = model('User');
 module.exports = function (mixin, callback) {
 	mixin.user.save(function (e, user) {
 		if(e) {
-			console.log("here??")
-			console.log(e);
 			callback('COULDNT_SAVE_USER');
 		}
 		else {

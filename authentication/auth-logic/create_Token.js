@@ -4,7 +4,7 @@ var generateToken = Hash.generateToken;
 module.exports = function (mixin, callback) {
 	generateToken(function (e, token) {
 		if(e) {
-			callback(e);
+			callback('COULDNT_HASH_TOKEN');
 		}
 		else {
 			mixin.token = token;

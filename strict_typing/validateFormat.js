@@ -1,3 +1,5 @@
+var is = require('./validateType');
+
 var tokenSize = (config.tokensize === '256') ? 256 : 512;
 var objectidSize = 3072;
 
@@ -270,4 +272,8 @@ exports.lenEqualTo = function (str, maxLen) {
 
 exports.lenSuperiorTo = function (str, maxLen) {
 	return str.length > maxLen;
+};
+
+exports.timeString = function (str) {
+	return is.String(str) && str.match(/^([0-1][0-9]|[0-2][0-3])\:([0-6][0-9])$/);
 };
