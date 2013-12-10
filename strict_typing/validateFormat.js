@@ -188,8 +188,25 @@ exports.notEmpty = function (str) {
 	return !str.match(/^[\s\t\r\n]*$/);
 };
 
-exports.equals = function (a, b) {
-	return a == b;
+exports.inferiorTo = function (num, value) {
+	return num < value;
+};
+
+exports.equalTo = function (num, value) {
+	return num === value;
+};
+
+exports.superiorTo = function (num, value) {
+	return num > value;
+};
+
+exports.inTitleList = function (str) {
+	return (str === 'Mr') || (str === 'Ms');
+};
+
+exports.yearRange = function (date, yearRange) {
+	yearRange = (yearRange[0] > yearRange[1]) ? [yearRange[1], yearRange[0]]: yearRange;
+	return (date >= yearRange[0]) && (date >= yearRange[1]);
 };
 
 exports.contains = function (str, elem) {
