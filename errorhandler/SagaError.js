@@ -10,9 +10,8 @@ module.exports = function SGError (type, code, verbose) {
 	}
 	else {
 		this.type = type || 'generic';
-		var error_type = verbose_errors[this.type];
-		this.code = code || (error_type ? error_type[0] : 500);
-		this.verbose = verbose || (error_type ? error_type[1] : '');
+		this.code = code || 500;
+		this.verbose = verbose || '';
 		this.stack = new Error().stack;
 	}
 	FrostyBug('FrostyBug', {

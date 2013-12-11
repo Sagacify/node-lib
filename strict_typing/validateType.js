@@ -23,17 +23,16 @@ exports.Function = function (obj) {
 };
 
 exports.Number = function (obj) {
-	return Object.prototype.toString.call(obj) === '[object Number]';
+	return (Object.prototype.toString.call(obj) === '[object Number]') && !isNaN(obj);
 };
 
 exports.Date = function (obj) {
-	return Object.prototype.toString.call(obj) === '[object Date]';
+	return (Object.prototype.toString.call(obj) === '[object Date]') && !isNaN(obj.getTime());
 };
 
 exports.Boolean = function (obj) {
 	return Object.prototype.toString.call(obj) === '[object Boolean]';
 };
-
 
 exports.NotNull = function (obj) {
 	return obj != null;

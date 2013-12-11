@@ -9,15 +9,15 @@ module.exports = function (mixin, callback) {
 	while(i--) {
 		token = mixin.user.tokens[i];
 		if((hashed_token === token.token) && (token.expiration > now)) {
-			match = i;
+			match = true;
 			break;
 		}
 	}
-	if(match !== false) {
-		mixin.token_match = match;
-		callback(null, mixin);
+	if(!match) {
+		callback('INVALID_ATTR_COMBINATION');
 	}
 	else {
-		callback('INVALID_TOKEN');
+		mixin.token_match = match;
+		callback(null, mixin);
 	}
 };

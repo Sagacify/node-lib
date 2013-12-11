@@ -1,13 +1,70 @@
 var is = require('./validateType');
 var isValid = require('./validateFormat');
 
+var HalloweenSkelleton = require('../../lib/dataskelleton/HalloweenSkelleton');
 var models = mongoose.models;
 
 var escape_default = config.escapeDefault;
 var sanitize_default = config.sanitizeDefault;
 
-function get_FieldValidation (field, schema) {
-	var schema_field = schema.path(field);
+function remodel_DataSkelleton (parentModel) {
+	function set_Modelname (fieldname) {
+		var obj = {};
+		return (obj[fieldname] = modelname) && obj;
+	}
+	var skelleton = HalloweenSkelleton.getSkelleton()[parentModel.modelName];
+	var modLinked = [];
+	var submodel;
+	var modelname;
+	for(modelname in skelleton) {
+		modLinked = modLinked.concat(skelleton[modelname].map(set_Modelname));
+	}
+	var modSkelleton = {};
+	var prop;
+	for(var i = 0, len = modLinked.length; i < len; i++) {
+		prop = Object.keys(modLinked[i])[0];
+		modSkelleton[prop] = modLinked[i][prop];
+	}
+	return modSkelleton;
+}
+
+function is_Embedded (fieldname, schema) {
+	schema = (schema instanceof Schema) ? schema : schema.schema; // if model
+	var field = schema.path(fieldname);
+	if(field && field.options) {
+		if(field.options.type[0] instanceof Schema) {
+			return field.options.type[0];
+		}
+		// else if(field.options.type[0] && field.options.type[0].options && field.options.type[0].options.ref) {
+		// 	return field.options.type[0].options.ref;
+		// }
+	}
+	return false;
+}
+
+function relative_Field (fieldName, parentModel) {
+	var properties = fieldName.split('.');
+	var pathFromParent = '';
+	var newParent;
+	var skelleton;
+	for(var i = 0, len = properties.length; i < len; i++) {
+		pathFromParent += pathFromParent.length ? '.' + properties[i] : properties[i];
+		skelleton = (parentModel.name === 'model') ? remodel_DataSkelleton(parentModel) : {};
+		if(pathFromParent in skelleton) {
+			parentModel = model(skelleton[pathFromParent]);
+			pathFromParent = '';
+		}
+		else if(newParent = is_Embedded(pathFromParent, parentModel)) {
+			parentModel = newParent || parentModel;
+			pathFromParent = '';
+		}
+	}
+	return ((parentModel.name === 'model') ? parentModel.schema : parentModel).path(pathFromParent);
+}
+
+function get_FieldValidation (fieldname, model) {
+	var schema = model.schema;
+	var schema_field = schema.path(fieldname) || relative_Field(fieldname, model);
 	var validation_rules = false;
 	if((schema_field != null) && is.Array(schema_field.options.validation)) {
 		validation_rules = schema_field.options.validation;
@@ -34,13 +91,20 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			method = method_list[i];
 			if(is.String(method)) {
 				valid = isValid[method](obj);
+				// For development only, in case we forgot a method
+				if(!is.Boolean(valid)) consoleError('In StrickTyping, format validation result for ' + method + ' is not a Boolean.')
 			}
 			else if(is.Object(method)) {
 				validation_method = Object.keys(method)[0];
 				validation_args = [obj].concat(method[validation_method]);
 				valid = isValid[validation_method].apply(this, validation_args);
+				// For development only, in case we forgot a method
+				if(!is.Boolean(valid)) consoleError('In StrickTyping, format validation result for ' + validation_method + ' is not a Boolean.')
 			}
 			else {
+				valid = false;
+			}
+			if(valid !== true) {
 				valid = false;
 				break;
 			}
@@ -56,10 +120,10 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		var first_condition = conditions[0];
 		var inherited_validation = false;
 		if(is.String(first_condition) && first_condition.startsWith('inherits:')) {
-			var modelname = first_condition.split(':')[1];
+			var modelname = first_condition.replace(/inherits\:/g, '');
 			if(modelname in models) {
-				var schema = models[modelname].schema;
-				inherited_validation = get_FieldValidation(field, schema);
+				var model = models[modelname];
+				inherited_validation = get_FieldValidation(field, model);
 			}
 		}
 		return inherited_validation;
@@ -100,14 +164,15 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	this.import_from_Scope = function (scope) {
 		var scope_validation = {};
 		if((scope in models)) {
-			var schema = models[scope].schema;
+			var model = models[scope];
+			var schema = model.schema;
 			var scope_fields = schema.developOptions().fields;
 			var i = scope_fields.length;
 			var field_validation;
 			var field;
 			while(i--) {
 				field = scope_fields[i];
-				field_validation = get_FieldValidation(field, schema);
+				field_validation = get_FieldValidation(field, model);
 				if(field_validation !== false) {
 					scope_validation[field] = field_validation;
 				}
@@ -117,11 +182,10 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	};
 
 	this.setCustom = function (obj) {
-		const __TRUE__ = true;
 		Object.defineProperty(obj, 'custom', {
 			configurable: true,
 			get: function () {
-				return __TRUE__ && (delete this.custom);
+				return true && (delete this.custom);
 			}
 		});
 	};
@@ -174,6 +238,8 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			if(is.String(expected_Type) && is.Array(expected_methods)) {
 				var has_ValidType = this.validate_Type(ele, expected_Type);
 				var has_ValidFormat = this.validate_Format(ele, expected_methods);
+				// For development only, in case we forgot a method
+				if(!is.Boolean(has_ValidType)) consoleError('In StrickTyping, type validation result for ' + expected_Type + '() is not a Boolean.')
 				return !!(has_ValidType && has_ValidFormat);
 			}
 		}
@@ -199,9 +265,6 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 	this.apply_to_Args = function (args, args_config, callback) {
 		args_config = this.develop_ValidationConfig(args_config);
 		var args_buffer = {};
-		// console.log('\nARGS :');
-		// console.log(args);
-		// console.log(args_config);
 		if(is.Object(args) && is.Object(args_config)) {
 			var keys = Object.keys(args_config);
 			var len = keys.length;
@@ -214,7 +277,6 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 				ele_config = args_config[i];
 				//ele_config = args_config[i].clone();
 				console.log('\n --> ' + i);
-				// console.log(ele);
 				if(this.validate_Config(ele_config)) {
 					if(this.apply_to_Array(ele, i, ele_config)) {
 					//if(this.apply_to_Ele(ele, ele_config)) {

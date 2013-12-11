@@ -4,17 +4,19 @@ module.exports = function (app) {
 
 	app.SGget('/api/app_models', {
 		auth: false
-	}, function(req, res){
+	}, function (req, res){
 		var routes = apiRecorder.routes;
 		var schemas = {};
-		mongoose.models.keys().forEach(function(model){
-			if(model != 'Bug'){
+		mongoose.models.keys().forEach(function (model) {
+			if(model !== 'Bug') {
 				schemas[model] = mongoose.models[model].schema.publicFormat();
 				schemas[model].collection.name = mongoose.collectionNameFromModelName(model);
 			}
 		});
-		var structure = {routes: routes, schemas:schemas};
-		res.SGsend(structure);
+		res.SGsend({
+			routes: routes,
+			schemas: schemas
+		});
 	});
 
 };
