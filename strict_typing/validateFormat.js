@@ -70,7 +70,7 @@ function tokenLen(base) {
 }
 
 function isLowerHexadecimal (str) {
-	return str.match(/^[0-9a-f]+$/);
+	return !!str.match(/^[0-9a-f]+$/);
 }
 
 function isBase64 (str, isWeb) {
@@ -137,11 +137,11 @@ exports.isIPNet = function (str) {
 };
 
 exports.isAlpha = function (str) {
-	return str.match(/^[a-zA-Z]+$/);
+	return !!str.match(/^[a-zA-Z]+$/);
 };
 
 exports.isAlphanumeric = function (str) {
-	return str.match(/^[a-zA-Z0-9]+$/);
+	return !!str.match(/^[a-zA-Z0-9]+$/);
 };
 
 exports.isTrue = function (bool) {
@@ -149,15 +149,15 @@ exports.isTrue = function (bool) {
 };
 
 exports.isNumeric = function (str) {
-	return str.match(/^-?[0-9]+$/);
+	return !!str.match(/^-?[0-9]+$/);
 };
 
 exports.isHexadecimal = function (str) {
-	return str.match(/^[0-9a-fA-F]+$/);
+	return !!str.match(/^[0-9a-fA-F]+$/);
 };
 
 exports.isHexColor = function (str) {
-	return str.match(/^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/);
+	return !!str.match(/^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/);
 };
 
 exports.isLowercase = function (str) {
@@ -169,7 +169,7 @@ exports.isUppercase = function (str) {
 };
 
 exports.isInt = function (str) {
-	return str.match(/^(?:-?(?:0|[1-9][0-9]*))$/);
+	return !!str.match(/^(?:-?(?:0|[1-9][0-9]*))$/);
 };
 
 exports.isDecimal = function (str) {
@@ -225,7 +225,8 @@ exports.contains = function (str, elem) {
 };
 
 exports.supportedLang = function (str) {
-	return config && config.supported_langs && !!~config.supported_langs.indexOf(str.toLowerCase());
+	return true;
+	//return config && config.supported_langs && !!~config.supported_langs.indexOf(str.toLowerCase());
 };
 
 exports.notContains = function (str, elem) {
@@ -233,7 +234,7 @@ exports.notContains = function (str, elem) {
 };
 
 exports.isPhoneNumber = function (str) {
-	return str.match(/^[0-9\s\+]+$/);
+	return !!str.match(/^[0-9\s\+]+$/);
 };
 
 exports.isUUID = function (str, version) {
@@ -303,5 +304,5 @@ exports.lenSuperiorTo = function (str, maxLen) {
 };
 
 exports.timeString = function (str) {
-	return is.String(str) && str.match(/^([0-1][0-9]|[0-2][0-3])\:([0-6][0-9])$/);
+	return is.String(str) && !!str.match(/^([0-1][0-9]|[0-2][0-3])\:([0-6][0-9])$/);
 };
