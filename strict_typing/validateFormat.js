@@ -28,56 +28,45 @@ function bitSize_to_nthSize (bitsize, nthsize) {
 
 function mongo_ObjectId (str, base, isWeb) {
 	var len = str.length;
-	if((base === 16) && (len === objectidLen(16)) && isLowerHexadecimal(str)) {
+	if((base === 16) && (len === 24) && isLowerHexadecimal(str)) {
 		return true;
 	}
-	else if((base === 64) && (len === objectidLen(64)) && isBase64(str, isWeb)) {
+	else if((base === 64) && (len === 16) && isBase64(str, isWeb)) {
 		return true;
-	}
-	else if((base !== 16) && (base !== 64)) {
-		return false;
-		//this.error(base + ' is not a valid encoding format (16 for hex / 64 for base64)');
 	}
 	else {
 		return false;
-		//this.error(str + ' is not a valid MongoDB ObjectId of length ' + objectidSize + ' in base ' + base);
 	}
 }
 
 function isSha2_Hash (str, base, isWeb) {
 	var len = str.length;
-	if((base === 16) && (len === tokenLen(16)) && isLowerHexadecimal(str)) {
+	if((base === 16) && (len === 64) && isLowerHexadecimal(str)) {
 		return true;
 	}
-	else if((base === 64) && (len === tokenLen(64)) && isBase64(str, isWeb)) {
+	else if((base === 64) && (len === 44) && isBase64(str, isWeb)) {
 		return true;
-	}
-	else if((base !== 16) && (base !== 64)) {
-		return false;
-		//this.error(base + ' is not a valid encoding format (16 for hex / 64 for base64)');
 	}
 	else {
 		return false;
-		//this.error(str + ' is not a valid sha' + tokenSize + ' ' + base + ' token');
 	}
 }
 
-function isToken (str, base){
+function isToken (str, base, isWeb){
 	var len = str.length;
 	if((base === 16) && (len === 256) && isLowerHexadecimal(str)) {
 		return true;
 	}
-	else{
+	else if((base === 64) && (len === 172) && isBase64(str, isWeb)) {
+		return true;
+	}
+	else {
 		return false;
 	}
 }
 
 function tokenLen(base) {
 	return bitSize_to_nthSize(tokenSize, base);
-}
-
-function objectidLen(base) {
-	return bitSize_to_nthSize(objectidSize, base);
 }
 
 function isLowerHexadecimal (str) {
@@ -93,7 +82,7 @@ function isBase64 (str, isWeb) {
 */
 
 exports.isEmail = function (str) {
-	return str.match(/^(?:[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+\.)*[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+@(?:(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!\.)){0,61}[a-zA-Z0-9]?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!$)){0,61}[a-zA-Z0-9]?)|(?:\[(?:(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\]))$/);
+	return !!str.match(/^(?:[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+\.)*[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+@(?:(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!\.)){0,61}[a-zA-Z0-9]?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!$)){0,61}[a-zA-Z0-9]?)|(?:\[(?:(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\]))$/);
 };
 
 exports.isUrl = function (str) {
@@ -122,6 +111,25 @@ exports.isIPv6 = function (str) {
 		return true;
 	}
 	return false;
+};
+
+exports.isBelgianVat = function (str) {
+	return !!str.match(/^BE0[0-9]{9}$/i);
+};
+
+exports.inFuture = function (date) {
+	var now = new Date();
+	// compare to the previous day to make sure that the validation
+	// doensn't invalidate dates that were created a few hours ago
+	return date > now.setDate(now.getDate() - 1);
+};
+
+exports.superiorOrEqualTo = function (num, min) {
+	return num >= min;
+};
+
+exports.inferiorOrEqualTo = function (num, max) {
+	return num <= max;
 };
 
 exports.isIPNet = function (str) {
@@ -204,17 +212,28 @@ exports.inTitleList = function (str) {
 	return (str === 'Mr') || (str === 'Ms');
 };
 
-exports.yearRange = function (date, yearRange) {
-	yearRange = (yearRange[0] > yearRange[1]) ? [yearRange[1], yearRange[0]]: yearRange;
-	return (date >= yearRange[0]) && (date >= yearRange[1]);
+exports.minDate = function (date, minDate) {
+	return date >= min;
+};
+
+exports.maxDate = function (date, maxDate) {
+	return date <= maxDate;
 };
 
 exports.contains = function (str, elem) {
 	return str.indexOf(elem) >= 0 && !!elem;
 };
 
+exports.supportedLang = function (str) {
+	return config && config.supported_langs && !!~config.supported_langs.indexOf(str.toLowerCase());
+};
+
 exports.notContains = function (str, elem) {
 	return !exports.contains(str, elem);
+};
+
+exports.isPhoneNumber = function (str) {
+	return str.match(/^[0-9\s\+]+$/);
 };
 
 exports.isUUID = function (str, version) {
@@ -251,10 +270,6 @@ exports.isSha2_Hash_base64 = function (str) {
 	return exports.isSha2_Hash(str, 64, false);
 };
 
-exports.isSha2_Hash_hexWeb = function (str) {
-	return exports.isSha2_Hash(str, 16, true);
-};
-
 exports.isSha2_Hash_hex = function (str) {
 	return isSha2_Hash(str, 16, false);
 };
@@ -269,10 +284,6 @@ exports.mongo_ObjectId_base64Web = function (str) {
 
 exports.mongo_ObjectId_base64 = function (str) {
 	return mongo_ObjectId(str, 64, false);
-};
-
-exports.mongo_ObjectId_hexWeb = function (str) {
-	return mongo_ObjectId(str, 16, true);
 };
 
 exports.mongo_ObjectId_hex = function (str) {

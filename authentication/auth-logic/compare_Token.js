@@ -13,11 +13,11 @@ module.exports = function (mixin, callback) {
 			break;
 		}
 	}
-	if(match !== false) {
-		mixin.token_match = match;
-		callback(null, mixin);
+	if(!match) {
+		callback('INVALID_ATTR_COMBINATION');
 	}
 	else {
-		callback('INVALID_ATTR_COMBINATION');
+		mixin.token_match = match;
+		callback(null, mixin);
 	}
 };
