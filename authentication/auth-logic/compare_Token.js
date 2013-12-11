@@ -9,7 +9,7 @@ module.exports = function (mixin, callback) {
 	while(i--) {
 		token = mixin.user.tokens[i];
 		if((hashed_token === token.token) && (token.expiration > now)) {
-			match = i;
+			match = true;
 			break;
 		}
 	}
