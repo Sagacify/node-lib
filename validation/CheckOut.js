@@ -30,7 +30,7 @@ module.exports = function (app) {
 		var caja = ('sanitize' in options) ? options.sanitize : sanitizeState;
 
 		app[methodName](uri, function (req, res, next) {
-			return auth ? BearerAuth(req, res, next) : next();
+			return (auth === true) || (auth === 'optional') ? BearerAuth(auth, req, res, next) : next();
 		}, function (req, res, next) {
 			if(req.query._scope){
 				req.clientScope = req.query._scope;
