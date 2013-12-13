@@ -92,14 +92,14 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			if(is.String(method)) {
 				valid = isValid[method](obj);
 				// For development only, in case we forgot a method
-				if(!is.Boolean(valid)) consoleError('In StrickTyping, format validation result for ' + method + ' is not a Boolean.')
+				if(!is.Boolean(valid)) consoleError('In StrictTyping, format validation result for ' + method + ' is not a Boolean.')
 			}
 			else if(is.Object(method)) {
 				validation_method = Object.keys(method)[0];
 				validation_args = [obj].concat(method[validation_method]);
 				valid = isValid[validation_method].apply(this, validation_args);
 				// For development only, in case we forgot a method
-				if(!is.Boolean(valid)) consoleError('In StrickTyping, format validation result for ' + validation_method + ' is not a Boolean.')
+				if(!is.Boolean(valid)) consoleError('In StrictTyping, format validation result for ' + validation_method + ' is not a Boolean.')
 			}
 			else {
 				valid = false;
