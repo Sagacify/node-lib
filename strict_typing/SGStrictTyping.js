@@ -276,11 +276,11 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 				ele = (args[i] != null) ? args[i] : this.disassemble_Object(args, i);
 				ele_config = args_config[i];
 				//ele_config = args_config[i].clone();
-				console.log('\n --> ' + i);
+				//console.log('\n --> ' + i);
 				if(this.validate_Config(ele_config)) {
 					if(this.apply_to_Array(ele, i, ele_config)) {
 					//if(this.apply_to_Ele(ele, ele_config)) {
-						console.log(' --> [X] OK');
+						//console.log(' --> [X] OK');
 						if(this.strict_mode) {
 							this.assemble_Object(args_buffer, i, is.DateString(ele) ? new Date(ele) : ele);
 						}
