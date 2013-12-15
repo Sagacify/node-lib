@@ -51,7 +51,7 @@ function generateMail (data, mailTemplate, callback){
 				from: fromEmail,
 				to: data.to,
 				subject: subject,
-				generateTextFromHTML: true
+				generateTextFromHTML: true,
 				attachments:attachments
 			};
 			message.text = text || undefined;
