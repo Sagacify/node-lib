@@ -21,7 +21,18 @@ CheckoutDocument.prototype.put = function(callback){
 CheckoutDocument.prototype.delete = function(callback){
 	var me = this;
 	if(this.doc instanceof mongoose.Model){
-		this.doc.sgRemove(callback);
+		if(this.doc.sgRemove.hasCallback()){
+			this.doc.sgRemove(callback);
+		}
+		else{
+			var ret = this.doc.sgRemove();
+			if(ret instanceof Error || ret instanceof SGError){
+				callback(ret);
+			}
+			else{
+				callback();
+			}
+		}
 	}
 	else if(this.parentState.state.obj instanceof mongoose.Types.DocumentArray){
 		this.parentState.state.obj.removeFromArray(this.parentState.path, this.doc, function(err){
