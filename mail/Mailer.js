@@ -52,10 +52,10 @@ function generateMail (data, mailTemplate, callback){
 				to: data.to,
 				subject: subject,
 				generateTextFromHTML: true
-				//attachments:attachments
+				attachments:attachments
 			};
 			message.text = text || undefined;
-			//message.html = html || undefined;
+			message.html = html || undefined;
 			callback(null, message);
 		}
 	});
