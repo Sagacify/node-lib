@@ -7,7 +7,7 @@ var languageMapper = {
 	"Français" : "fr",
 	"English" : "en",
 	"Nederlandse" : "nl"
-}
+};
 
 module.exports = function (mixin, callback) {
 	var typeof_email = false;

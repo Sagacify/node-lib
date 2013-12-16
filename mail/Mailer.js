@@ -81,7 +81,7 @@ function getDirname (mailTemplate) {
 
 
 function generateHTML (mailTemplate, data, callback) {
-	var dirname = __dirname + '/../../views/emails/templates/'+lang;
+	var dirname = __dirname + '/../../views/emails/templates/' + lang;
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
 			console.log(e);
