@@ -1,3 +1,4 @@
+
 var client = require('twilio')(config.sms.accountSid, config.sms.authToken);
  
 var templatePath = '../../views/sms/templates';
@@ -22,6 +23,16 @@ exports.send_SMS = function (type, to, parameters, callback) {
 		}
 	});
 };
+
+// function sendSMS(to, body, callback){
+// 	client.sms.messages.create({
+// 		to:to, // The phone numver we want to deliver the message to
+// 		from: config.sms.from || "+32496961218", // A number bought from Twilio that is used for outbound communication
+// 		body: body // body of the SMS message
+// 		}, callback);
+// }
+
+//sendSMS("+32496961218", "Hello World");
 
 //ERROR CODE :
 //This phone number is invalid.	21211

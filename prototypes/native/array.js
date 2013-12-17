@@ -1,40 +1,52 @@
 
 Array.prototype.contains = function(item){
 	
-	return !!~this.robustIndexOf(item);
+	// var founded =  !!~this.robustIndexOf(item);
+	// console.log("founded " +founded);
 
-	// if(this[0] instanceof Object){
-	// 	var _id = item instanceof Object?item._id:item;
-	// 	for(var i = 0; i < this.length; i++){
-	// 		if(this[i]._id && this[i]._id.equals(item))
-	// 			return true;
-	// 	}
-	// 	return false;
-	// }
-	// else{
-	// 	this.indexOf(item) != -1
-	// 	return !!~this.indexOf(item);
-	// }
-};
-
-Array.prototype.robustIndexOf = function(item){
-	if (!item) {
-		return -1;
-	};
+	// return founded;
 
 	if (item.isMongooseDocument()) {
-		for (var i = 0; i < self.length; i++) {
+		for (var i = 0; i < this.length; i++) {
 			if (this[i].isMongooseDocument() && this[i]._id.toString() == item._id.toString()) {
-				return i;
+				return !!~i;
 			};
 		};
-		return -1;
+		return !!~-1;
 	}
+	else{
+		this.indexOf(item) != -1
+		return !!~this.indexOf(item);
+	}
+};
+
+// Array.prototype.robustIndexOf = function(item){
+// 	console.log('PROCESSSING');
+// 	console.log(item);
+// 	console.log(this);
+// 	if (!item) {
+// 		return -1;
+// 	};
+
+// 	// if (item.isMongooseDocument()) {
+// 	// 	console.log('is a isMongooseDocument');
+// 	// 	for (var i = 0; i < this.length; i++) {
+// 	// 		if (this[i].isMongooseDocument() && this[i]._id.equals(item._id)) {
+// 	// 			return i;
+// 	// 		};
+// 	// 	};
+// 	// 	return -1;
+// 	// }
+
+// 	//Add other specific comparators
+// 	var index = this.indexOf(item);
+// 	console.log("index "+ index);
+// 	return index;
+// }
 
 	//Add other specific comparators
-
-	return this.indexOf(item);
-}
+// 	return this.indexOf(item);
+// }
 
 
 Array.prototype.merge = function(array){
@@ -60,7 +72,7 @@ Array.prototype.remove = function(item){
 	if (!item) {
 		return;
 	};
-	var index = this.robustIndexOf(item);
+	var index = this.indexOf(item);
 	if(index != -1)
 		this.splice(index, 1);
 };

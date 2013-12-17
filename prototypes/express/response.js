@@ -28,6 +28,8 @@ express.response.SGsend = function(object) {
 	}
 
 	if(code == 200){
+		// console.log('bef send')
+		// console.log(response.toString())
 		this.send(response);
 	}
 	else{

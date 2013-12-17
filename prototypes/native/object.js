@@ -130,11 +130,15 @@ obj_proto.disassemble_Object = function (key) {
 obj_proto.pathsKeys = function() {
 	var me = this;
 	return this.isObject() ? this.keys().reduce(function (base, ele) {
+// <<<<<<< HEAD
+// 		var children = me[ele]?me[ele].pathsKeys():[''];
+// =======
 		//to be fixed
 		if(!me[ele]){
 			return base;
 		}
 		var children = me[ele].pathsKeys();
+// >>>>>>> dev
 		return base.concat(children.map(function (child) {
 			return ele + (child ? '.' + child : '');
 		}));
