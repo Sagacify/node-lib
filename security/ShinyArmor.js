@@ -8,7 +8,7 @@ var helmet = require('helmet');
 exports.security = function(app) {
 
 	// Redirect non-HTTP requests
-	app.use(function(req, res, next) {
+	app.use(function (req, res, next) {
 		var isSecure = config.https && (!req.secure || (req.get('X-Forwarded-Proto') !== 'https'));
 		return isSecure ? next() : res.redirect('https://' + req.get('Host') + req.url);
 	});
@@ -17,9 +17,9 @@ exports.security = function(app) {
 	app.use(helmet.iexss());
 
 	// Cache-Control header which sets the no-cache, no-store properties
-	if(_NODE_ENV !== 'production') {
-		app.use(helmet.cacheControl());
-	}
+	// if(_NODE_ENV !== 'production') {
+	// 	app.use(helmet.cacheControl());
+	// }
 
 	// Setup Content Policy Security (CSP)
 	//app.use(app.use(helmet.csp()));
