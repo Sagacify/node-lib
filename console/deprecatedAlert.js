@@ -1,10 +1,15 @@
-var colors = require('./colors').codes;
+var colors = {
+	red		: '\u001b[31m',
+	blue	: '\u001b[34m',
+	reset	: '\u001b[0m',
+	green	: '\x1B[32m'
+};
 
 exports.deprecatedAlert = function () {
 	var red = colors.red;
 	var reset = colors.reset;
 	var message = 'DEPRECATED METHOD ';
-	console._log('\n' + red + message + __function + ' in ' + __script + ' : ' + __line + reset);
+	console.log('\n' + red + message + __function + ' in ' + __script + ' : ' + __line + reset);
 	process.exit(1);
 };
 

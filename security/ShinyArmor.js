@@ -17,7 +17,7 @@ exports.security = function(app) {
 	app.use(helmet.iexss());
 
 	// Cache-Control header which sets the no-cache, no-store properties
-	// if(_NODE_ENV !== 'production') {
+	// if(NODE_ENV !== 'production') {
 	// 	app.use(helmet.cacheControl());
 	// }
 
