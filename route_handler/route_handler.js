@@ -12,7 +12,7 @@ var CheckoutVirtual = require('./checkout_virtual');
 
 function RouteHandler (options) {
 	this.options = options || {};
-};
+}
 
 RouteHandler.prototype.handle = function(){
 	var me = this;
@@ -24,8 +24,8 @@ RouteHandler.prototype.handle = function(){
 					if(!err){
 						me.clientFormat(checkout, function(err, clientFormat){
 							if(err){
-								console.log(err);
-								console.log(err.stack)
+								// console.log(err);
+								// console.log(err.stack)
 							}
 							res.SGsend(err||clientFormat);
 						});
