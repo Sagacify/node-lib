@@ -504,7 +504,7 @@ var generateMeth = function(meth){
 				if(!err) {
 					me[doMeth](
 						(path != null) ? path : doCallback,
-						args /*(args != null) ? args : doCallback*/,
+						(args !== null) ? args : doCallback,
 						doCallback
 					);
 				}
@@ -514,7 +514,7 @@ var generateMeth = function(meth){
 			};
 			this[willMeth](
 				(path != null) ? path : willCallback,
-				args /*(args != null) ? args : willCallback*/,
+				(args !== null) ? args : willCallback,
 				willCallback
 			);
 		}
