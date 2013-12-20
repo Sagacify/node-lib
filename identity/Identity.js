@@ -3,11 +3,12 @@
 * For security reasons, this can only be run in development mode. 
 */
 
-exports.me = function(app) {
+exports.me = function (app) {
 
-	app.get('/me/identity', function(req, res) {
-		console.log(app.routes.get);
-		res.send({ me: app.routes.get });
+	app.get('/me/identity', function (req, res) {
+		res.send({
+			me: app.routes.get
+		});
 	});
 
 };

@@ -1,5 +1,3 @@
-var UserModel = model('User');
-
 var expiration = config.expiration;
 
 module.exports = function (mixin, callback) {

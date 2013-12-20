@@ -2,7 +2,6 @@ var Mailer = require('../../mail/Mailer');
 var send_VerficationMail = Mailer.send_VerficationMail;
 var send_PasswordResetMail = Mailer.send_PasswordResetMail;
 
-
 var languageMapper = {
 	"Français" : "fr",
 	"English" : "en",

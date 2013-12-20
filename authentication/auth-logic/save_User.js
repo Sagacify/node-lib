@@ -1,5 +1,3 @@
-var UserModel = model('User');
-
 module.exports = function (mixin, callback) {
 	mixin.user.save(function (e, user) {
 		if(e) {
