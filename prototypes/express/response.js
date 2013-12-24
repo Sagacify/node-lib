@@ -21,15 +21,13 @@ express.response.SGsend = function(object) {
 			verbose: 'Oops, something bad happened.'
 		};
 	}
-	else{
+	else {
 		code = 200;
 		response = object;
-		length = object instanceof Array?object.length:1;
+		length = object instanceof Array ? object.length : 1;
 	}
 
 	if(code == 200){
-		// console.log('bef send')
-		// console.log(response.toString())
 		this.send(response);
 	}
 	else{

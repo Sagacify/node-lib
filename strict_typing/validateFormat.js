@@ -213,7 +213,7 @@ exports.inTitleList = function (str) {
 };
 
 exports.minDate = function (date, minDate) {
-	return date >= min;
+	return date >= minDate;
 };
 
 exports.maxDate = function (date, maxDate) {
