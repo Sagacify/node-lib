@@ -142,6 +142,19 @@ mongoose.Model.sgCreate = function(raw, callback){
 		value: this.context
 	});
 
+	//auto set logged user
+	for(var path in this.schema.paths){
+		if(this.schema.paths[path].options.loggedUser){
+			if(path.endsWith('._id')){
+				var userPath = path.substring(0, path.length-4);
+				raw[userPath] = this.context.user;
+			}
+			else{
+				raw[path] = this.context.user._id;
+			}
+		}
+	}
+
 	doc.sgUpdate(raw, callback);
 };
 
