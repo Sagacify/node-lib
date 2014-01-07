@@ -281,6 +281,16 @@ mongoose.Model.prototype.save = function save(fn){
 	}
 };
 
+mongoose.Model.prototype.sgSave = function(callback){
+	var me = this;
+	this.save(function(err){
+		callback(err);
+		if(!err){
+			me.ensureUpdateConsistency();
+		}
+	});
+};
+
 mongoose.Model.prototype._remove = mongoose.Model.prototype.remove;
 
 // mongoose.Model.prototype.remove = function(){
@@ -428,6 +438,18 @@ mongoose.Model.didFindById = function(doc){
 
 };
 
+mongoose.Document.prototype.willCreate = function(args, callback){
+	return this.willUpdate(args, callback);
+};
+
+mongoose.Document.prototype.doCreate = function(args, callback){
+	this.doUpdate(args, callback);
+};
+
+mongoose.Document.prototype.didCreate = function(args){
+	this.didUpdate(args);
+};
+
 mongoose.Model.sgCreate = function(raw, callback){
 	var model = this;
 	var doc = new model();
@@ -438,6 +460,19 @@ mongoose.Model.sgCreate = function(raw, callback){
 	});
 
 	doc.sgUpdate(raw, callback);
+	// doc.willCreate(raw, function(err){
+	// 	if(!err){
+	// 		doc.doCreate(function(err){
+	// 			if(!err){
+	// 				doc.didCreate(raw);
+	// 			}
+	// 			callback(err);
+	// 		});
+	// 	}
+	// 	else{
+	// 		callback(err);
+	// 	}
+	// });
 };
 
 mongoose.Model.get = function(path, args, callback){
