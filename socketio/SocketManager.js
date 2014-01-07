@@ -1,4 +1,6 @@
-io = require('socket.io').listen(app, {log:config.socket.debugMode});
+io = require('socket.io').listen(app, {
+	log: config.socket.debugMode
+});
 
 io.configure(function () {
 	io.enable('browser client minification');
@@ -28,4 +30,4 @@ io.configure(function () {
 	});
 });
 
-io.sockets.on('connection', function (socket) {}
+io.sockets.on('connection', function (socket) {});

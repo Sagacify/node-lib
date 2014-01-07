@@ -8,16 +8,31 @@ var helmet = require('helmet');
 exports.security = function(app) {
 
 	// Redirect non-HTTP requests
-	app.use(function (req, res, next) {
-		var isSecure = config.https && (!req.secure || (req.get('X-Forwarded-Proto') !== 'https'));
-		return isSecure ? next() : res.redirect('https://' + req.get('Host') + req.url);
+	// app.use(function (req, res, next) {
+
+	// 	var isSecure = config.https && (!req.secure || (req.get('X-Forwarded-Proto') !== 'https'));
+	// 	console.log("isSecure");
+	// 	//console.log('https://' + req.get('Host'));
+		
+	// 	return isSecure ? next() : res.redirect('https://' + req.get('Host') /*+ req.url*/);
+	// });
+
+	app.use(function(req, res, next) {
+		return (config.https && (req.get('X-Forwarded-Proto') !== 'https')) ?
+				res.redirect('https://' + req.get('Host') + req.url)
+				: next();
+		// if((config.https) && (!req.secure) && (req.get('X-Forwarded-Proto') !== 'https')) {
+		// 	res.redirect('https://' + req.get('Host') + req.url);
+		// }
+		// else
+		// 	next();
 	});
 
 	// XSS protection
 	app.use(helmet.iexss());
 
 	// Cache-Control header which sets the no-cache, no-store properties
-	// if(_NODE_ENV !== 'production') {
+	// if(NODE_ENV !== 'production') {
 	// 	app.use(helmet.cacheControl());
 	// }
 
