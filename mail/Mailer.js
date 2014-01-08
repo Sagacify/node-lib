@@ -132,7 +132,7 @@ exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 exports.sendMail = function (emailTo, type, prefLang, parameters, callback){
 	
 	/*Checking type*/
-	var types = ['validation', 'reset_password', 'cancellation_appointment_by_user', 'cancellation_appointment_by_pro', 'appointment_reminder'];
+	var types = ['validation', 'reset_password', 'cancellation_appointment_by_user', 'cancellation_appointment_by_pro', 'appointment_reminder', 'appointment_booking_confirmation'];
 	
 	if(prefLang && types.indexOf(type) !== -1) {
 		console.log(emailTo);
