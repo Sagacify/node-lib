@@ -22,3 +22,10 @@ exports.execute = function (command, callback) {
 		// do something with data
 	});
 };
+
+exports.executor = function (commands, callback) {
+
+	commands.forEach(function (command) {
+		this.execute(command, callback);
+	});
+};
