@@ -9,25 +9,12 @@ module.exports = function (mixin, callback) {
 		state: user.state
 	});
 	delete user.state;
-	if(typeof mixin.user.firstSet == "function"){
-		mixin.user.firstSet(user, function (e) {
-			if(e) {
-				callback(e);
-			}
-			else {
-				callback(null, mixin);
-			}
-		});
-	}
-	else{
-		mixin.user.set(user, function (e) {
-			if(e) {
-				callback(e);
-			}
-			else {
-				callback(null, mixin);
-			}
-		});
-	}
-
+	mixin.user[mixin.user.firstSet ? 'firstSet' : 'set'](user, function (e) {
+		if(e) {
+			callback(e);
+		}
+		else {
+			callback(null, mixin);
+		}
+	});
 };
