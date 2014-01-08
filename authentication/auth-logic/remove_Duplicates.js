@@ -1,5 +1,4 @@
-var async = require('async');
-var each = async.each;
+var each = require('async').each;
 
 module.exports = function (mixin, callback) {
 	each(mixin.users, function (user, cb) {

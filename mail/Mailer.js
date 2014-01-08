@@ -13,10 +13,10 @@ var transport = nodemailer.createTransport('SES', {
 
 setupInfo('SES Configured');
 
-var lang = 'en';
+//var lang = 'en';
 
-function sendMessage (data, template, callback) {
-	generateMail(data, template, function (e, message) {
+function sendMessage (to, data, template, prefLang, callback) {
+	generateMail(to, data, template, prefLang, function (e, message) {
 		if(e) {
 			console.log(e);
 			callback(e);
@@ -36,20 +36,20 @@ function sendMessage (data, template, callback) {
 }
 
 
-function generateMail (data, mailTemplate, callback){
+function generateMail (to, data, mailTemplate, prefLang, callback){
 	console.log("EMAIL DATA");
 	console.log(data);
-	generateHTML(mailTemplate, data, function (e, html, text){
+	generateHTML(mailTemplate, data, prefLang, function (e, html, text){
 		if(e) {
 			console.log(e);
 			callback(e);
 		}
 		else {
-			var attachments = getAttachments(mailTemplate);
-			var subject = getSubject(mailTemplate);
+			var attachments = getAttachments(mailTemplate, prefLang);
+			var subject = getSubject(mailTemplate, prefLang);
 			var message = {
 				from: fromEmail,
-				to: data.to,
+				to: to,
 				subject: subject,
 				generateTextFromHTML: true,
 				attachments:attachments
@@ -61,9 +61,9 @@ function generateMail (data, mailTemplate, callback){
 	});
 }
 
-function getAttachments (mailTemplate) {
+function getAttachments (mailTemplate, prefLang) {
 	var attachments = [];
-	var dirname = getDirname(mailTemplate);
+	var dirname = getDirname(mailTemplate, prefLang);
 	var attachmentsFilesPath = dirname + '/attachments';
 	var attachmentsFiles = fs.readdirSync(attachmentsFilesPath);
 	attachmentsFiles.forEach(function (anAttachment) {
@@ -75,13 +75,16 @@ function getAttachments (mailTemplate) {
 	return attachments;
 }
 
-function getDirname (mailTemplate) {
-	return __dirname + '/../../views/emails/templates/' + lang +'/' + mailTemplate;
+function getDirname (mailTemplate, prefLang) {
+	return __dirname + '/../../views/emails/templates/' + prefLang +'/' + mailTemplate;
 }
 
 
-function generateHTML (mailTemplate, data, callback) {
-	var dirname = __dirname + '/../../views/emails/templates/' + lang;
+function generateHTML (mailTemplate, data, prefLang, callback) {
+	var dirname = __dirname + '/../../views/emails/templates/' + prefLang;
+	console.log("email template");
+	console.log(dirname);
+
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
 			console.log(e);
@@ -101,28 +104,43 @@ function generateHTML (mailTemplate, data, callback) {
 	});
 }
 
-function getSubject (mailTemplate) {
-	var dirname = getDirname(mailTemplate);
+function getSubject (mailTemplate, prefLang) {
+	var dirname = getDirname(mailTemplate, prefLang);
 	return fs.readFileSync(dirname + '/subject.txt', 'utf8');
 }
 
 exports.send_Mail = function (type, email, name, prefLang, token, callback) {
-	var types = ['validation', 'reset_password'];
-	if (prefLang)
-		lang = prefLang;
+	var types = ['validation', 'reset_password', 'cancellation_appointment_by_user', 'cancellation_appointment_by_pro'];
 
-	if(types.indexOf(type) !== -1) {
+	if(prefLang && types.indexOf(type) !== -1) {
+		console.log("Ready to send email");
 		var base_uri = '/auth';
 		var uri = base_uri + '/' + type;
 		var unique_uri = config.hostname + uri + '/' + token;
-		sendMessage({
+		sendMessage(to, {
 			to: email,
 			link: unique_uri, 
 			name: name
-		}, type, callback);
+		}, type, prefLang, callback);
 	}
 	else {
 		callback('INVALID_EMAIL_TYPE');
 	}
 };
+
+
+exports.sendMail = function (emailTo, type, prefLang, parameters, callback){
+	
+	/*Checking type*/
+	var types = ['validation', 'reset_password', 'cancellation_appointment_by_user', 'cancellation_appointment_by_pro'];
+	
+	if(prefLang && types.indexOf(type) !== -1) {
+		console.log(emailTo);
+		console.log(parameters);
+		sendMessage(emailTo, parameters, type, prefLang, callback);
+	}
+	else {
+		callback('INVALID_EMAIL_TYPE');
+	}
+}
 
