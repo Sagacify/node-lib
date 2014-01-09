@@ -2,12 +2,6 @@ var Mailer = require('../../mail/Mailer');
 var send_VerficationMail = Mailer.send_VerficationMail;
 var send_PasswordResetMail = Mailer.send_PasswordResetMail;
 
-var languageMapper = {
-	"Français" : "fr",
-	"English" : "en",
-	"Nederlandse" : "nl"
-};
-
 module.exports = function (mixin, callback) {
 	var typeof_email = false;
 	if(mixin.action === 'Register') {
@@ -20,7 +14,7 @@ module.exports = function (mixin, callback) {
 		console.log('Email is -> ' + mixin.email);
 		console.log(mixin);
 		var name = mixin.user.firstname + ' ' + mixin.user.lastname;
-		Mailer.send_Mail(typeof_email, mixin.email, name, languageMapper[mixin.prefLang], mixin.token, function (e) {
+		Mailer.send_Mail(typeof_email, mixin.email, name, mixin.prefLang, mixin.token, function (e) {
 			//TODO resend mail if fail
 			// if(e) {
 			// 	callback('COULDNT_SEND_EMAIL');

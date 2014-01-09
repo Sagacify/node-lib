@@ -117,9 +117,9 @@ exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 		var base_uri = '/auth';
 		var uri = base_uri + '/' + type;
 		var unique_uri = config.hostname + uri + '/' + token;
-		sendMessage(to, {
+		sendMessage(email, {
 			to: email,
-			link: unique_uri, 
+			link: unique_uri,
 			name: name
 		}, type, prefLang, callback);
 	}
@@ -127,7 +127,6 @@ exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 		callback('INVALID_EMAIL_TYPE');
 	}
 };
-
 
 exports.sendMail = function (emailTo, type, prefLang, parameters, callback){
 	
@@ -142,5 +141,4 @@ exports.sendMail = function (emailTo, type, prefLang, parameters, callback){
 	else {
 		callback('INVALID_EMAIL_TYPE');
 	}
-}
-
+};
