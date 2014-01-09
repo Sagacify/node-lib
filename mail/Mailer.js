@@ -18,23 +18,14 @@ setupInfo('SES Configured');
 function sendMessage (to, data, template, prefLang, callback) {
 	generateMail(to, data, template, prefLang, function (e, message) {
 		if(e) {
-			console.log('++1');
-			console.log(to, data, template, prefLang);
-			console.log(e);
 			callback(e);
 		}
 		else {
-			console.log('++2');
-			console.log(message);
 			transport.sendMail(message, function (e) {
 				if(e) {
-					console.log('++3');
-					console.log(to, data, template, prefLang);
-					console.log(e);
 					callback(e);
 				}
 				else {
-					console.log('++4');
 					callback(null);
 				}
 			});
