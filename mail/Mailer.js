@@ -44,8 +44,6 @@ function sendMessage (to, data, template, prefLang, callback) {
 
 
 function generateMail (to, data, mailTemplate, prefLang, callback){
-	console.log("EMAIL DATA");
-	console.log(data);
 	generateHTML(mailTemplate, data, prefLang, function (e, html, text){
 		if(e) {
 			console.log(e);
