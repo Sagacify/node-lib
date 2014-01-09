@@ -145,6 +145,13 @@ obj_proto.pathsKeys = function() {
 	}, []) : [''];
 };
 
+obj_proto.setHidden = function(path, val){
+	Object.defineProperty(this, path, {
+		writable: true,
+		value: val
+	});
+};
+
 for(var key in obj_proto){
 	Object.defineProperty(Object.prototype, key, {
 		writable: true,
