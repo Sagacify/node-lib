@@ -18,16 +18,23 @@ setupInfo('SES Configured');
 function sendMessage (to, data, template, prefLang, callback) {
 	generateMail(to, data, template, prefLang, function (e, message) {
 		if(e) {
+			console.log('++1');
+			console.log(to, data, template, prefLang);
 			console.log(e);
 			callback(e);
 		}
 		else {
+			console.log('++2');
+			console.log(message);
 			transport.sendMail(message, function (e) {
 				if(e) {
+					console.log('++3');
+					console.log(to, data, template, prefLang);
 					console.log(e);
 					callback(e);
 				}
 				else {
+					console.log('++4');
 					callback(null);
 				}
 			});
@@ -37,8 +44,6 @@ function sendMessage (to, data, template, prefLang, callback) {
 
 
 function generateMail (to, data, mailTemplate, prefLang, callback){
-	console.log("EMAIL DATA");
-	console.log(data);
 	generateHTML(mailTemplate, data, prefLang, function (e, html, text){
 		if(e) {
 			console.log(e);
@@ -82,8 +87,6 @@ function getDirname (mailTemplate, prefLang) {
 
 function generateHTML (mailTemplate, data, prefLang, callback) {
 	var dirname = __dirname + '/../../views/emails/templates/' + prefLang;
-	console.log("email template");
-	console.log(dirname);
 
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
@@ -113,13 +116,12 @@ exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 	var types = ['validation', 'reset_password', 'cancellation_appointment_by_user', 'cancellation_appointment_by_pro'];
 
 	if(prefLang && types.indexOf(type) !== -1) {
-		console.log("Ready to send email");
 		var base_uri = '/auth';
 		var uri = base_uri + '/' + type;
 		var unique_uri = config.hostname + uri + '/' + token;
-		sendMessage(to, {
+		sendMessage(email, {
 			to: email,
-			link: unique_uri, 
+			link: unique_uri,
 			name: name
 		}, type, prefLang, callback);
 	}
@@ -127,7 +129,6 @@ exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 		callback('INVALID_EMAIL_TYPE');
 	}
 };
-
 
 exports.sendMail = function (emailTo, type, prefLang, parameters, callback){
 	
@@ -142,5 +143,4 @@ exports.sendMail = function (emailTo, type, prefLang, parameters, callback){
 	else {
 		callback('INVALID_EMAIL_TYPE');
 	}
-}
-
+};
