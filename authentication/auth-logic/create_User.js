@@ -8,6 +8,12 @@ module.exports = function (mixin, callback) {
 	mixin.user = UserModel({
 		state: user.state
 	});
+	if(mixin.req) {
+		mixin.user.buildContext(mixin.req);
+		console.log(mixin.req);
+		console.log(mixin.user);
+		console.log(mixin.context);
+	}
 	delete user.state;
 	mixin.user[mixin.user.firstSet ? 'firstSet' : 'set'](user, function (e) {
 		if(e) {
