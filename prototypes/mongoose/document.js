@@ -195,6 +195,11 @@ var base64File = function(args, callback){
 };
 
 mongoose.Document.prototype.setBase64File = function(path, val, callback){
+	if(!val){
+		if(callback)
+			callback();
+		return;
+	}
 	if(!val || typeof val == "string" && val.startsWith('http')){
 		this._set(path, val);
 		if(callback)
@@ -275,8 +280,12 @@ mongoose.Document.prototype.willAddInArray = function(path, val, callback){
 };
 
 mongoose.Document.prototype.doAddInArray = function(path, val, callback){
+	console.log('doAddInArray')
+	console.log(path)
+	console.log(val)
 	var addPath = "addIn"+path.capitalize();
 	if(typeof this[addPath] == "function"){
+		console.log(1)
 		if(this[addPath].hasCallback()){
 			this[addPath](val, callback);
 		}
@@ -293,7 +302,9 @@ mongoose.Document.prototype.doAddInArray = function(path, val, callback){
 		this.addInRefArray(path, val, callback);
 	}
 	else{
+		console.log(2)
 		this.get(path).push(val);
+		console.log(this.get(path).last())
 		if(callback)
 			callback(null, this.get(path).last());
 	}
@@ -301,7 +312,7 @@ mongoose.Document.prototype.doAddInArray = function(path, val, callback){
 
 mongoose.Document.prototype.didAddInArray = function(path, val){
 	if(typeof path == "string" && typeof this["didAddIn"+path.capitalize()] == "function")
-		return this["didAddIn"+path.capitalize()](this, val);
+		return this["didAddIn"+path.capitalize()](val);
 };
 
 mongoose.Document.prototype.willRemoveFromArray = function(path, val, callback){

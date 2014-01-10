@@ -6,7 +6,7 @@ Array.prototype.contains = function(item){
 
 	// return founded;
 
-	if (item.isMongooseDocument()) {
+	if (item && typeof item.isMongooseDocument == "function" && item.isMongooseDocument()) {
 		for (var i = 0; i < this.length; i++) {
 			if (this[i].isMongooseDocument() && this[i]._id.toString() == item._id.toString()) {
 				return !!~i;
