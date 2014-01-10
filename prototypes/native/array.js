@@ -15,7 +15,7 @@ Array.prototype.contains = function(item){
 		return !!~-1;
 	}
 	else{
-		this.indexOf(item) != -1
+		// this.indexOf(item) != -1
 		return !!~this.indexOf(item);
 	}
 };
