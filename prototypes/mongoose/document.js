@@ -195,7 +195,12 @@ var base64File = function(args, callback){
 };
 
 mongoose.Document.prototype.setBase64File = function(path, val, callback){
-	if(!val || typeof val == "string" && val.startsWith('http')){
+	if(!val){
+		if(callback)
+			callback();
+		return;
+	}
+	if(typeof val == "string" && val.startsWith('http')){
 		this._set(path, val);
 		if(callback)
 			callback();
