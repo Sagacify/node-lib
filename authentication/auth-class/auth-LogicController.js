@@ -38,7 +38,8 @@ var Auth_LogicController = {
 			user_attr		:	['Object'],
 			expectedState	:	['Number'],
 			resultingState	:	['Number'],
-			action			:	['String', 'notNull', 'notEmpty']
+			action			:	['String', 'notNull', 'notEmpty'],
+			req				:	['isOptional', 'Object']
 		},
 		// the method itself
 		function (input, callback) {

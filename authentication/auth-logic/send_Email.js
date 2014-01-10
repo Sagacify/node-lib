@@ -11,10 +11,8 @@ module.exports = function (mixin, callback) {
 		typeof_email = 'reset_password';
 	}
 	if(typeof_email) {
-		console.log('Email is -> ' + mixin.email);
-		console.log(mixin);
 		var name = mixin.user.firstname + ' ' + mixin.user.lastname;
-		Mailer.send_Mail(typeof_email, mixin.email, name, mixin.prefLang, mixin.token, function (e) {
+		Mailer.send_Mail(typeof_email, mixin.email, name, mixin.user.prefLang, mixin.token, function (e) {
 			//TODO resend mail if fail
 			// if(e) {
 			// 	callback('COULDNT_SEND_EMAIL');

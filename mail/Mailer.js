@@ -18,13 +18,11 @@ setupInfo('SES Configured');
 function sendMessage (to, data, template, prefLang, callback) {
 	generateMail(to, data, template, prefLang, function (e, message) {
 		if(e) {
-			console.log(e);
 			callback(e);
 		}
 		else {
 			transport.sendMail(message, function (e) {
 				if(e) {
-					console.log(e);
 					callback(e);
 				}
 				else {
@@ -37,8 +35,6 @@ function sendMessage (to, data, template, prefLang, callback) {
 
 
 function generateMail (to, data, mailTemplate, prefLang, callback){
-	console.log("EMAIL DATA");
-	console.log(data);
 	generateHTML(mailTemplate, data, prefLang, function (e, html, text){
 		if(e) {
 			console.log(e);
@@ -82,8 +78,6 @@ function getDirname (mailTemplate, prefLang) {
 
 function generateHTML (mailTemplate, data, prefLang, callback) {
 	var dirname = __dirname + '/../../views/emails/templates/' + prefLang;
-	console.log("email template");
-	console.log(dirname);
 
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
@@ -111,9 +105,9 @@ function getSubject (mailTemplate, prefLang) {
 
 exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 	var types = ['validation', 'reset_password', 'cancellation_appointment_by_user', 'cancellation_appointment_by_pro'];
-
+	console.log("SEND MAIL TO", email);
+	console.log(type, email, name, prefLang, token);
 	if(prefLang && types.indexOf(type) !== -1) {
-		console.log("Ready to send email");
 		var base_uri = '/auth';
 		var uri = base_uri + '/' + type;
 		var unique_uri = config.hostname + uri + '/' + token;
