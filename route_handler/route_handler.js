@@ -46,7 +46,7 @@ RouteHandler.prototype.handle = function(){
 	}
 };
 
-RouteHandler.prototype.buildContext = function(req){
+RouteHandler.prototype.buildContext = function (req) {
 	var scope;
 	if(this.options.scope == "clientScope"){
 		scope = req.clientScope;

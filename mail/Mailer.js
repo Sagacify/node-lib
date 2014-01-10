@@ -105,7 +105,8 @@ function getSubject (mailTemplate, prefLang) {
 
 exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 	var types = ['validation', 'reset_password', 'cancellation_appointment_by_user', 'cancellation_appointment_by_pro'];
-
+	console.log("SEND MAIL TO", email);
+	console.log(type, email, name, prefLang, token);
 	if(prefLang && types.indexOf(type) !== -1) {
 		var base_uri = '/auth';
 		var uri = base_uri + '/' + type;
