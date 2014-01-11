@@ -277,12 +277,12 @@ mongoose.Document.prototype.willAddInArray = function(path, val, callback){
 };
 
 mongoose.Document.prototype.doAddInArray = function(path, val, callback){
-	console.log('doAddInArray')
-	console.log(path)
-	console.log(val)
+	// console.log('doAddInArray')
+	// console.log(path)
+	// console.log(val)
 	var addPath = "addIn"+path.capitalize();
 	if(typeof this[addPath] == "function"){
-		console.log(1)
+		// console.log(1)
 		if(this[addPath].hasCallback()){
 			this[addPath](val, callback);
 		}
@@ -299,9 +299,9 @@ mongoose.Document.prototype.doAddInArray = function(path, val, callback){
 		this.addInRefArray(path, val, callback);
 	}
 	else{
-		console.log(2)
+		// console.log(2)
 		this.get(path).push(val);
-		console.log(this.get(path).last())
+		// console.log(this.get(path).last())
 		if(callback)
 			callback(null, this.get(path).last());
 	}
