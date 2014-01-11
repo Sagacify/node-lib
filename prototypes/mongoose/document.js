@@ -183,6 +183,8 @@ var base64File = function(args, callback){
 			extension: 'png'
 		}
 	}
+	console.log('args')
+	console.log(args)
 	if(!args.base64data){
 		return callback(null, {_id:null});
 	}
@@ -195,12 +197,7 @@ var base64File = function(args, callback){
 };
 
 mongoose.Document.prototype.setBase64File = function(path, val, callback){
-	if(!val){
-		if(callback)
-			callback();
-		return;
-	}
-	if(!val || typeof val == "string" && val.startsWith('http')){
+	if(!val || typeof val == "string" && val.startsWith('http')){
 		this._set(path, val);
 		if(callback)
 			callback();
