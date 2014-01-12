@@ -105,8 +105,8 @@ Object.defineProperty(global, '__script', {
 	}
 });
 
-console._log = console.log;
-console.log = function(text){
-	console._log(__script + ' : ' + __line);
-	console._log.apply(this, arguments);
-};
+// console._log = console.log;
+// console.log = function(text){
+// 	console._log(__script + ' : ' + __line);
+// 	console._log.apply(this, arguments);
+// };
