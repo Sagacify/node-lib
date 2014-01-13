@@ -19,7 +19,7 @@ var Auth_StateController = {
 	ChangePassword: 2,
 
 	// 2 means "VALIDATED" state
-	ForgotPassword: 1,
+	ForgotPassword: [1, 2],
 
 	// 2 means "VALIDATED" state
 	TokenStrategy: 2,

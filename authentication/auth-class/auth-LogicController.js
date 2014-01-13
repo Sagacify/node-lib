@@ -189,7 +189,7 @@ var Auth_LogicController = {
 		{
 			search			:	['Array', { lenEqualTo: [2] }],
 			email			:	['String', 'notNull', 'notEmpty','isEmail'],
-			expectedState	:	['Number'],
+			expectedState	:	['Array'],
 			resultingState	:	['Number'],
 			action			:	['String', 'notNull', 'notEmpty']
 		},
