@@ -1,7 +1,7 @@
 var async = require('async');
 
 //save, update proto to fire updateCache for this, parents and possibly childs
-mongoose.Document.prototype.populateDevelop = function(callback){
+mongoose.Document.prototype.icDevelop = function(callback){
 	var me = this;
 	var context = this.context;
 	this.populateFromContext(function(err){

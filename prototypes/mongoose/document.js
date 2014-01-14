@@ -21,11 +21,6 @@ mongoose.Document.prototype.created_at = function() {
  		return null;
 };
 
-mongoose.Document.prototype.didDo = function(action, params){
-	if(typeof this["did"+action.capitalize()] == "function")
-		return this["did"+action.capitalize()]._apply(this, params);
-};
-
 mongoose.Document.prototype.isSemiEmbedded = function(path){
 	var schema = this.schema.tree._get(path);
 	return schema&&schema._id&&schema._id.ref;
@@ -235,7 +230,7 @@ mongoose.Document.prototype.setBase64Files = function(path, vals, callback){
 };
 
 mongoose.Document.prototype.willDo = function(action, params, callback){
-	if(typeof this["will"+action.capitalize()] == "function"){
+	if(typeof this["will"+action.capitalize()] == "function" && this.schema.documentActions[action]){
 		return this["will"+action.capitalize()]._apply(this, params, callback);
 	}
 	else{
@@ -246,11 +241,17 @@ mongoose.Document.prototype.willDo = function(action, params, callback){
 mongoose.Document.prototype.doDo = function(action, params, callback){
 	if(typeof this[action] == "function" && this.schema.documentActions[action]){
 		this[action]._apply(this, params, callback);
-    }
-    else{
+    } else{
 		callback(new SGError());
     }
 };
+
+
+mongoose.Document.prototype.didDo = function(action, params){
+	if(typeof this["did"+action.capitalize()] == "function"  && this.schema.documentActions[action])
+		return this["did"+action.capitalize()]._apply(this, params);
+};
+
 
 mongoose.Document.prototype.willAddInArray = function(path, val, callback){
 	var willAddPath = "willAddIn"+path.capitalize();
@@ -468,12 +469,12 @@ mongoose.Document.prototype.ensureUpdateConsistency = function(){
 	}
 };
 
-
 var generateMeth = function(meth){
 	var Meth = meth.capitalize();
 	var willMeth = 'will' + Meth;
 	var doMeth = 'do' + Meth;
 	var didMeth = 'did' + Meth;
+
 	if((meth === 'update') || (meth === 'remove')){
 		meth = 'sg' + meth.capitalize();
 	}
