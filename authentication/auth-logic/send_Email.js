@@ -1,6 +1,7 @@
 var Mailer = require('../../mail/Mailer');
 var send_VerficationMail = Mailer.send_VerficationMail;
 var send_PasswordResetMail = Mailer.send_PasswordResetMail;
+var LanguageManager = require('../../languages/Language');
 
 module.exports = function (mixin, callback) {
 	var typeof_email = false;
@@ -12,15 +13,18 @@ module.exports = function (mixin, callback) {
 	}
 	if(typeof_email) {
 		var name = mixin.user.firstname + ' ' + mixin.user.lastname;
-		Mailer.send_Mail(typeof_email, mixin.email, name, mixin.user.prefLang, mixin.token, function (e) {
-			//TODO resend mail if fail
-			// if(e) {
-			// 	callback('COULDNT_SEND_EMAIL');
-			// }
-			// else {
-			// 	callback(null, mixin);
-			// }
-		});
+
+
+
+		Mailer.send_Mail(
+			typeof_email, 
+			mixin.email, 
+			name, 
+			LanguageManager.getPreferedLanguage(mixin.user.prefLang), 
+			mixin.token, 
+			function (e) {
+			}
+		);
 		callback(null, mixin);
 	}
 	else {
