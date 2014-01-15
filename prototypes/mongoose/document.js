@@ -21,6 +21,39 @@ mongoose.Document.prototype.created_at = function() {
  		return null;
 };
 
+mongoose.Document.prototype.generateSlug = function(baseString, callback){
+	if(!baseString){
+		this.slug = this._id;
+		return callback();
+	}
+
+	var modelName = this.getModelName();
+
+	baseString = baseString
+		//.replace(/[\s\t]+/g, '_');
+		.replace(/[^a-zA-Z0-9]+/g, '_')
+		.toLowerCase();
+
+	//var regexSearch = baseString.replace(/\-/, '\\-');
+	var regexSearch = new RegExp('^'+baseString+'\-[0-9]+$');
+
+	var me = this;
+	model(modelName).find({slug:{$regex:regexSearch}}, {slug: 1, _id: 0}, function(err, docs){
+		if(err){
+			me.slug = me._id;
+		}
+		else{
+			if(!docs.length){
+				me.slug = baseString;
+			}
+			else{
+				me.slug = baseString + '-' + (docs.length+1);
+			}
+		}
+		callback();
+	});
+};
+
 mongoose.Document.prototype.didDo = function(action, params){
 	if(typeof this["did"+action.capitalize()] == "function")
 		return this["did"+action.capitalize()]._apply(this, params);

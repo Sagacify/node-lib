@@ -3,11 +3,12 @@ exports.getPreferedLanguage = function(navigatorLanguage){
 	var absoluteDefaultLng = "en";
 
 	if (!navigatorLanguage) {
-		return;
+		return config.supported_langs
 	};
 
 	if (!config.supported_langs || !config.supported_langs.length) {
 		config.supported_langs = [absoluteDefaultLng];
+		return absoluteDefaultLng;
 	};
 
 	var supported_langs = config.supported_langs;

@@ -20,9 +20,9 @@ RouteHandler.prototype.handle = function(){
 		me.buildContext(req, res);
 		me.buildRoute(function(err){
 			if(!err){
-				me.checkout(function(err, checkout){
+				me.checkout(function(err, checkoutHandler){
 					if(!err){
-						me.clientFormat(checkout, function(err, clientFormat){
+						me.generateClientFormat(checkoutHandler, function(err, clientFormat){
 							if(err){
 								// console.log(err);
 								// console.log(err.stack)
@@ -76,6 +76,7 @@ RouteHandler.prototype.buildRoute = function(callback) {
 	splitUrl.popFirst();
 	if(!splitUrl.last())
 		splitUrl.pop();
+
 	this.route = {
 		splitPath: splitPath,
 		splitUrl:splitUrl,
@@ -121,7 +122,7 @@ RouteHandler.prototype.checkout = function(callback){
 	}
 };
 
-RouteHandler.prototype.clientFormat = function(checkout, callback){
+RouteHandler.prototype.generateClientFormat = function(checkout, callback){
 	if(checkout && typeof checkout.populateDevelop == "function"){
 		Object.defineProperty(checkout, "context", {
 			writable: true,

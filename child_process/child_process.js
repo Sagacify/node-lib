@@ -19,7 +19,7 @@ exports.execute = function (command, callback) {
 	});
 
 	child.stdout.on('data', function (data) {
-		// do something with data
+		console.log("data: " + data);
 	});
 };
 

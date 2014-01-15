@@ -1,4 +1,3 @@
-
 var UserModel = model('User');
 var expiration = config.expiration;
 
