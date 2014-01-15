@@ -1,7 +1,7 @@
 var async = require('async');
 
 //save, update proto to fire updateCache for this, parents and possibly childs
-mongoose.Document.prototype.icDevelop = function(callback){
+mongoose.Document.prototype.populateDevelop = function(callback){
 	var me = this;
 	var context = this.context;
 	this.populateFromContext(function(err){
@@ -52,6 +52,7 @@ mongoose.Document.prototype.populateFromContext = function(callback){
 		for(var i = 0; i < fieldsToPopulate.length-1; i++){
 			this.populate(fieldsToPopulate[i]);
 		}
+		console.log(fieldsToPopulate[i])
 		this.populate(fieldsToPopulate[i], callback);
 	}
 };

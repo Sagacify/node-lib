@@ -100,17 +100,17 @@ Array.prototype.diff = function(a) {
 };
 
 Array.prototype.populateDevelop = function(callback){
-	if(this.length == 0 || !(this[0] instanceof mongoose.Document)){
-		callback(null, this);
-	}
-	else{
-		Object.defineProperty(this, "schema", {
-			writable: true,
-			value: this[0].schema
-		});
-		this[0].schema.populateDevelop.apply(this, [callback]);
-	}
+        if(this.length == 0 || !(this[0] instanceof mongoose.Document)){
+                callback(null, this);
+        } else {
+                Object.defineProperty(this, "schema", {
+                        writable: true,
+                        value: this[0].schema
+                });
+                this[0].schema.populateDevelop.apply(this, [callback]);
+        }
 };
+
 
 Array.prototype.sgRemove = function(item){
 	for(var i = this.length-1; i >= 0; i--){
