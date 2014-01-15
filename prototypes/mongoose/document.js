@@ -180,7 +180,7 @@ var base64File = function(args, callback){
 	if(typeof args == "string"){
 		args = {
 			base64data: args,
-			extension: 'png'
+			extension: 'jpg'
 		}
 	}
 	console.log('args')
