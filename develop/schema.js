@@ -15,62 +15,38 @@ mongoose.Schema.prototype.populateDevelop = function(callback){
 		callback(null, this);
 	} else {
 		var schema = this.schema||this;
-		console.log(this);
-		console.log("Function");
-		console.log(this.schema.toString());
-
-		console.log('Searching fieldsToPopulate');
-
-		if (schema.populateOptions) {
-			console.log(schema.populateOptions.toString());	
-		};
-		
-		if (this[0].populateOptions) {
-			console.log(this[0].populateOptions.toString());	
-		};
-		
-
 
 		var fieldsToPopulate = schema.populateOptions(context.scope).fields;
+
 		var fieldsToPopulateString = "";
 		fieldsToPopulate.forEach(function(fieldToPopulate){
 			fieldsToPopulateString += fieldToPopulate + " ";
 		});
 
+		console.log('Fields');
+		console.log(fieldsToPopulateString);
+
+
+
 		var me = this;
 		var populateDevelopDocs = function(){
 
-			async.each(me, function(doc, callback){
-				console.log("Process doc");
+			async.each(me.indexes(), function(index, callback){
 
-				Object.defineProperty(doc, "context", {
+				Object.defineProperty(me[index], "context", {
 					writable: true,
 					value: context
 				});
 
-				doc.populateDevelop(function(err, popDevObj){
+				me[index].populateDevelop(function(err, popDevObj){
 					if(!err){
-						doc = popDevObj;
+						me[index] = popDevObj;
 					}
 					callback(err);
 				});				
-			}, callback);
-
-			// async.each(me.indexes(), function(index, callback){
-			// 	Object.defineProperty(me[index], "context", {
-			// 		writable: true,
-			// 		value: context
-			// 	});
-
-			// 	me[index].populateDevelop(function(err, popDevObj){
-			// 		if(!err){
-			// 			me[index] = popDevObj;
-			// 		}
-			// 		callback(err);
-			// 	});
-			// }, function(err){
-			// 	callback(err, me);
-			// });
+			}, function(err){
+				callback(err, me);
+			});
 		};
 
 		if(fieldsToPopulateString && typeof this.getModel == "function"){
