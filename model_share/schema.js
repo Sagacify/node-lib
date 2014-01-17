@@ -29,7 +29,13 @@ mongoose.Schema.prototype.publicFormat = function(){
 	}
 
 	var publicVirtualActionSpec = function(virtualActionSpec){
-		var publicSpec = {type: virtualActionSpec.type};
+		var publicSpec;
+		if(virtualActionSpec instanceof Array){
+			publicSpec = [{type: virtualActionSpec[0].type}];
+		}
+		else{
+			publicSpec = {type: virtualActionSpec.type};
+		}
 		return publicSpec;
 	}
 
@@ -51,22 +57,26 @@ mongoose.Schema.prototype.publicFormat = function(){
 	}
 
 	for(var path in this.documentVirtuals){
-		if(this.documentVirtuals[path].public)
+		var publicCheck = this.documentVirtuals[path] instanceof Array?this.documentVirtuals[path][0]:this.documentVirtuals[path];
+		if(publicCheck.public)
 			publicFormat.doc.virtuals[path] = publicVirtualActionSpec(this.documentVirtuals[path]);
 	}
 
 	for(var path in this.documentActions){
-		if(this.documentActions[path].public)
+		var publicCheck = this.documentActions[path] instanceof Array?this.documentActions[path][0]:this.documentActions[path];
+		if(publicCheck.public)
 			publicFormat.doc.actions[path] = publicVirtualActionSpec(this.documentActions[path]);
 	}
 
 	for(var path in this.collectionVirtuals){
-		if(this.collectionVirtuals[path].public)
+		var publicCheck = this.collectionVirtuals[path] instanceof Array?this.collectionVirtuals[path][0]:this.collectionVirtuals[path];
+		if(publicCheck.public)
 			publicFormat.collection.virtuals[path] = publicVirtualActionSpec(this.collectionVirtuals[path]);
 	}
 
 	for(var path in this.collectionActions){
-		if(this.collectionActions[path].public)
+		var publicCheck = this.collectionActions[path] instanceof Array?this.collectionActions[path][0]:this.collectionActions[path];
+		if(publicCheck.public)
 			publicFormat.collection.actions[path] = publicVirtualActionSpec(this.collectionActions[path]);
 	}
 
