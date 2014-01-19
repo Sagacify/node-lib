@@ -38,7 +38,8 @@ var Auth_LogicController = {
 			user_attr		:	['Object'],
 			expectedState	:	['Number'],
 			resultingState	:	['Number'],
-			action			:	['String', 'notNull', 'notEmpty']
+			action			:	['String', 'notNull', 'notEmpty'],
+			req				:	['isOptional', 'Object']
 		},
 		// the method itself
 		function (input, callback) {
@@ -188,7 +189,7 @@ var Auth_LogicController = {
 		{
 			search			:	['Array', { lenEqualTo: [2] }],
 			email			:	['String', 'notNull', 'notEmpty','isEmail'],
-			expectedState	:	['Number'],
+			expectedState	:	['Array'],
 			resultingState	:	['Number'],
 			action			:	['String', 'notNull', 'notEmpty']
 		},

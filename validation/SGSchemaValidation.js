@@ -20,7 +20,6 @@ mongoose.Schema.prototype.prepareSchemaValidation = function (model_name) {
 		path = paths[i];
 		conditions = path.options.validation;
 		if((conditions != null) && is.Array(conditions) && conditions.length) {
-			console.log('-- Validation for ' + model_name + '.' + i + ' added !');
 			generic_validator(this.path(i), conditions);
 		}
 		else if(path.schema) {

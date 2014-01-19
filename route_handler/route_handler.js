@@ -12,7 +12,7 @@ var CheckoutVirtual = require('./checkout_virtual');
 
 function RouteHandler (options) {
 	this.options = options || {};
-};
+}
 
 RouteHandler.prototype.handle = function(){
 	var me = this;
@@ -20,12 +20,12 @@ RouteHandler.prototype.handle = function(){
 		me.buildContext(req, res);
 		me.buildRoute(function(err){
 			if(!err){
-				me.checkout(function(err, checkout){
+				me.checkout(function(err, checkoutHandler){
 					if(!err){
-						me.clientFormat(checkout, function(err, clientFormat){
+						me.generateClientFormat(checkoutHandler, function(err, clientFormat){
 							if(err){
-								console.log(err);
-								console.log(err.stack)
+								// console.log(err);
+								// console.log(err.stack)
 							}
 							res.SGsend(err||clientFormat);
 						});
@@ -46,7 +46,7 @@ RouteHandler.prototype.handle = function(){
 	}
 };
 
-RouteHandler.prototype.buildContext = function(req){
+RouteHandler.prototype.buildContext = function (req) {
 	var scope;
 	if(this.options.scope == "clientScope"){
 		scope = req.clientScope;
@@ -76,6 +76,7 @@ RouteHandler.prototype.buildRoute = function(callback) {
 	splitUrl.popFirst();
 	if(!splitUrl.last())
 		splitUrl.pop();
+
 	this.route = {
 		splitPath: splitPath,
 		splitUrl:splitUrl,
@@ -121,7 +122,7 @@ RouteHandler.prototype.checkout = function(callback){
 	}
 };
 
-RouteHandler.prototype.clientFormat = function(checkout, callback){
+RouteHandler.prototype.generateClientFormat = function(checkout, callback){
 	if(checkout && typeof checkout.populateDevelop == "function"){
 		Object.defineProperty(checkout, "context", {
 			writable: true,

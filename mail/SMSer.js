@@ -1,25 +1,36 @@
-
+var fs = require('fs');
 var client = require('twilio')(config.sms.accountSid, config.sms.authToken);
- 
-var templatePath = '../../views/sms/templates';
+
+var templatePath = __dirname + '/../../views/sms/templates';
 
 
 //Send an SMS text message
 //@callback(err, responseData)
-exports.send_SMS = function (type, to, parameters, callback) {
-	fs.readFile(templatePath + '/' + parameters.lang + '/' + type + '.txt', function (e, template) {
+exports.send_SMS = function (to, type, prefLang, parameters, callback) {
+	console.log("SMS path");
+	console.log(templatePath);
+	fs.readFile(templatePath + '/' + prefLang + '/' + type + '.txt', {encoding:'utf8'}, function (e, template) {
 		if(e) {
 			console.log(new SGError(e));
 		}
 		else {
+
 			for(var parameterName in parameters) {
 				template = template.replace('{{ '  + parameterName + ' }}', parameters[parameterName]);
 			}
+			console.log({
+				to:to, // The phone numver we want to deliver the message to
+				from: config.sms.from, // A number bought from Twilio that is used for outbound communication
+				body: template // body of the SMS message
+			});
 			client.sms.messages.create({
 				to:to, // The phone numver we want to deliver the message to
 				from: config.sms.from, // A number bought from Twilio that is used for outbound communication
 				body: template // body of the SMS message
-			}, callback);
+			}, function(err, message){
+				console.log(err);
+				console.log(message.sid);
+			});
 		}
 	});
 };

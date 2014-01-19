@@ -6,6 +6,7 @@ function CheckoutPrimitive(context, route){
 	this.primitive = this.state.obj;
 };
 
+
 CheckoutPrimitive.prototype.get = function(callback){
 	if(this.parentState.state.obj.isRef(this.parentState.path)){
 		this.parentState.state.obj.populate(this.parentState.path, function(err){

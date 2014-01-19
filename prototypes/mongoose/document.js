@@ -21,10 +21,43 @@ mongoose.Document.prototype.created_at = function() {
  		return null;
 };
 
-mongoose.Document.prototype.didDo = function(action, params){
-	if(typeof this["did"+action.capitalize()] == "function")
-		return this["did"+action.capitalize()]._apply(this, params);
+mongoose.Document.prototype.generateSlug = function(baseString, callback){
+	if(!baseString){
+		this.slug = this._id;
+		return callback();
+	}
+
+	var modelName = this.getModelName();
+
+	baseString = baseString
+		//.replace(/[\s\t]+/g, '_');
+		.replace(/[^a-zA-Z0-9]+/g, '_')
+		.toLowerCase();
+
+	//var regexSearch = baseString.replace(/\-/, '\\-');
+	var regexSearch = new RegExp('^'+baseString+'\-[0-9]+$');
+
+	var me = this;
+	model(modelName).find({slug:{$regex:regexSearch}}, {slug: 1, _id: 0}, function(err, docs){
+		if(err){
+			me.slug = me._id;
+		}
+		else{
+			if(!docs.length){
+				me.slug = baseString;
+			}
+			else{
+				me.slug = baseString + '-' + (docs.length+1);
+			}
+		}
+		callback();
+	});
 };
+
+// mongoose.Document.prototype.didDo = function(action, params){
+// 	if(typeof this["did"+action.capitalize()] == "function")
+// 		return this["did"+action.capitalize()]._apply(this, params);
+// };
 
 mongoose.Document.prototype.isSemiEmbedded = function(path){
 	var schema = this.schema.tree._get(path);
@@ -180,9 +213,11 @@ var base64File = function(args, callback){
 	if(typeof args == "string"){
 		args = {
 			base64data: args,
-			extension: 'png'
+			extension: 'jpg'
 		}
 	}
+	console.log('args')
+	console.log(args)
 	if(!args.base64data){
 		return callback(null, {_id:null});
 	}
@@ -195,7 +230,7 @@ var base64File = function(args, callback){
 };
 
 mongoose.Document.prototype.setBase64File = function(path, val, callback){
-	if(!val || typeof val == "string" && val.startsWith('http')){
+	if(!val || typeof val == "string" && val.startsWith('http')){
 		this._set(path, val);
 		if(callback)
 			callback();
@@ -233,7 +268,7 @@ mongoose.Document.prototype.setBase64Files = function(path, vals, callback){
 };
 
 mongoose.Document.prototype.willDo = function(action, params, callback){
-	if(typeof this["will"+action.capitalize()] == "function"){
+	if(typeof this["will"+action.capitalize()] == "function" && this.schema.documentActions[action]){
 		return this["will"+action.capitalize()]._apply(this, params, callback);
 	}
 	else{
@@ -244,11 +279,17 @@ mongoose.Document.prototype.willDo = function(action, params, callback){
 mongoose.Document.prototype.doDo = function(action, params, callback){
 	if(typeof this[action] == "function" && this.schema.documentActions[action]){
 		this[action]._apply(this, params, callback);
-    }
-    else{
+    } else{
 		callback(new SGError());
     }
 };
+
+
+mongoose.Document.prototype.didDo = function(action, params){
+	if(typeof this["did"+action.capitalize()] == "function"  && this.schema.documentActions[action])
+		return this["did"+action.capitalize()]._apply(this, params);
+};
+
 
 mongoose.Document.prototype.willAddInArray = function(path, val, callback){
 	var willAddPath = "willAddIn"+path.capitalize();
@@ -275,8 +316,12 @@ mongoose.Document.prototype.willAddInArray = function(path, val, callback){
 };
 
 mongoose.Document.prototype.doAddInArray = function(path, val, callback){
+	// console.log('doAddInArray')
+	// console.log(path)
+	// console.log(val)
 	var addPath = "addIn"+path.capitalize();
 	if(typeof this[addPath] == "function"){
+		// console.log(1)
 		if(this[addPath].hasCallback()){
 			this[addPath](val, callback);
 		}
@@ -293,7 +338,9 @@ mongoose.Document.prototype.doAddInArray = function(path, val, callback){
 		this.addInRefArray(path, val, callback);
 	}
 	else{
+		// console.log(2)
 		this.get(path).push(val);
+		// console.log(this.get(path).last())
 		if(callback)
 			callback(null, this.get(path).last());
 	}
@@ -301,7 +348,7 @@ mongoose.Document.prototype.doAddInArray = function(path, val, callback){
 
 mongoose.Document.prototype.didAddInArray = function(path, val){
 	if(typeof path == "string" && typeof this["didAddIn"+path.capitalize()] == "function")
-		return this["didAddIn"+path.capitalize()](this, val);
+		return this["didAddIn"+path.capitalize()](val);
 };
 
 mongoose.Document.prototype.willRemoveFromArray = function(path, val, callback){
@@ -458,25 +505,25 @@ mongoose.Document.prototype.ensureUpdateConsistency = function(){
 			}
 		});
 	}
-}
-
+};
 
 var generateMeth = function(meth){
 	var Meth = meth.capitalize();
-	var willMeth = "will"+Meth;
-	var doMeth = "do"+Meth;
-	var didMeth = "did"+Meth;
-	if(meth == "update" || meth == "remove"){
-		meth = "sg"+meth.capitalize();
+	var willMeth = 'will' + Meth;
+	var doMeth = 'do' + Meth;
+	var didMeth = 'did' + Meth;
+
+	if((meth === 'update') || (meth === 'remove')){
+		meth = 'sg' + meth.capitalize();
 	}
 	var Class = meth=="sgRemove"?mongoose.Model:mongoose.Document;
-	Class.prototype[meth] = function(path, args, callback){
+	Class.prototype[meth] = function (path, args, callback) {
 		if(typeof args == "function"){
 			callback = args;
 			args = {};
 		}
 
-		if(!(typeof callback == "function")){
+		if(!(typeof callback === 'function')) {
 			var willRes = this[willMeth](path, args);
 			if(willRes instanceof Error || willRes instanceof SGError){
 				return willRes;
@@ -485,11 +532,11 @@ var generateMeth = function(meth){
 			this[didMeth](path, args);
 			return val;
 		}
-		else{
-			if(meth == "sgUpdate"){
+		else {
+			if(meth == 'sgUpdate') {
 				args = null;
 			}
-			if(meth == "sgRemove"){
+			if(meth == 'sgRemove') {
 				path = null;
 				args = null;
 			}
@@ -499,16 +546,24 @@ var generateMeth = function(meth){
 					me[didMeth](path, args);
 				}
 				callback(err, res);
-			}
-			var willCallback = function(err){
-				if(!err){
-					me[doMeth]((path != null) ? path : doCallback, (args != null) ? args : doCallback, doCallback);
+			};
+			var willCallback = function(err) {
+				if(!err) {
+					me[doMeth](
+						(path != null) ? path : doCallback,
+						(args !== null) ? args : doCallback,
+						doCallback
+					);
 				}
-				else{
+				else {
 					callback(err);
 				}
-			}
-			this[willMeth]((path != null) ? path : willCallback, (args != null) ? args : willCallback, willCallback);
+			};
+			this[willMeth](
+				(path != null) ? path : willCallback,
+				(args !== null) ? args : willCallback,
+				willCallback
+			);
 		}
 	};
 };

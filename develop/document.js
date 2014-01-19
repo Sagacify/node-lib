@@ -52,6 +52,8 @@ mongoose.Document.prototype.populateFromContext = function(callback){
 		for(var i = 0; i < fieldsToPopulate.length-1; i++){
 			this.populate(fieldsToPopulate[i]);
 		}
+		
+		console.log(fieldsToPopulate[i])
 		this.populate(fieldsToPopulate[i], callback);
 	}
 };
@@ -62,9 +64,7 @@ mongoose.Document.prototype.develop = function(callback){
 	var context = this.context;
 	var developedDoc = this.toObject();
 
-
 	var formattedSchema = this.schema.formattedSchema;
-
 	if(!formattedSchema){
 		return callback(null, developedDoc);
 	}
@@ -84,24 +84,16 @@ mongoose.Document.prototype.develop = function(callback){
 			fields = fields.concat(this.schema.documentVirtuals.keys());	
 		};
 	}
-	// console.log("develo")
-	// console.log(fields)
-	// console.log(this)
-	// console.log(developedDoc)
-
+	
 	//var fsKeys = formattedSchema.keys();
 	var fsKeys = this.schema.paths.keys();
 	//delete non wanted fields
 	var fieldsToDelete = !fields || (fields.length === 0) ? [] : developedDoc.pathsKeys().diff(fields);
-	console.log(developedDoc.pathsKeys())
-	console.log(fieldsToDelete)
 	fieldsToDelete.forEach(function(fieldToDelete){
 		delete developedDoc[fieldToDelete];
 	});
 	//add views
 	var fieldsToAdd = fields.diff(fsKeys);
-	console.log(fieldsToAdd)
-	console.log(fsKeys)
 	var cbFields = [];
 	var cbFunctions = [];
 	fieldsToAdd.forEach(function(fieldToAdd){
