@@ -101,6 +101,7 @@ mongoose.Model.sgFindById = function(id, callback){
 				if(doc){
 					doc.setHidden('context', me.context);
 					me.didFindById(doc);
+					callback(null, doc)
 				}
 				else{
 					callback(new SGError('NO_RESULT'))
