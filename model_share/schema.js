@@ -18,6 +18,7 @@ mongoose.Schema.prototype.publicFormat = function(){
 	var publicFormat = {doc:{tree:{}, virtuals:{}, actions:{}}, collection:{virtuals:{}, actions:{}}};
 
 	var publicSpec = function(spec){
+		console.log(spec)
 		if(spec.options.geoindex){
 			return [{type:'Number'}];
 		}
@@ -40,6 +41,9 @@ mongoose.Schema.prototype.publicFormat = function(){
 	}
 
 	for(var path in this.paths){
+		console.log("Path");
+		console.log(path
+			);
 		if(path == "_id" || this.isPublic(path)){
 			var spec = this.paths[path];
 			if(spec.schema){

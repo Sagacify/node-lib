@@ -97,15 +97,17 @@ mongoose.Model.sgFindById = function(id, callback){
 	var me = this;	
 	var find = function(){
 		me.findById(id, function(err, doc){
-			callback(err, doc);
 			if(!err){
 				if(doc){
-					Object.defineProperty(doc, "context", {
-						writable: true,
-						value: me.context
-					});
-				}	
-				me.didFindById(doc);
+					doc.setHidden('context', me.context);
+					me.didFindById(doc);
+				}
+				else{
+					callback(new SGError('NO_RESULT'))
+				}
+			}
+			else{
+				callback(err);
 			}
 		});
 	}
