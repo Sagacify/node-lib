@@ -2,7 +2,6 @@ var async = require('async');
 
 mongoose.Schema.prototype.populateDevelop = function(callback){
 
-	console.log("Call populate develop");
 
 	var context = this.context;
 
@@ -22,10 +21,6 @@ mongoose.Schema.prototype.populateDevelop = function(callback){
 		fieldsToPopulate.forEach(function(fieldToPopulate){
 			fieldsToPopulateString += fieldToPopulate + " ";
 		});
-
-		console.log('Fields');
-		console.log(fieldsToPopulateString);
-
 
 
 		var me = this;
