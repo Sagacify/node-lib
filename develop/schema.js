@@ -1,9 +1,7 @@
 var async = require('async');
 
 mongoose.Schema.prototype.populateDevelop = function(callback){
-
-	console.log("Call populate develop");
-
+	
 	var context = this.context;
 
 	if (!this.length) {
@@ -16,17 +14,15 @@ mongoose.Schema.prototype.populateDevelop = function(callback){
 	} else {
 		var schema = this.schema||this;
 
-		var fieldsToPopulate = schema.populateOptions(context.scope).fields;
+		var fieldsToPopulate = schema.populateOptions(context.scope);
+		if(!(fieldsToPopulate instanceof Array)){
+			fieldsToPopulate = fieldsToPopulate.fields;
+		}
 
 		var fieldsToPopulateString = "";
 		fieldsToPopulate.forEach(function(fieldToPopulate){
 			fieldsToPopulateString += fieldToPopulate + " ";
 		});
-
-		console.log('Fields');
-		console.log(fieldsToPopulateString);
-
-
 
 		var me = this;
 		var populateDevelopDocs = function(){

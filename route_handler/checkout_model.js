@@ -5,10 +5,6 @@ function CheckoutModel(context, route){
 };
 
 CheckoutModel.prototype.get = function(callback){
-	// var me = this;
-	// setInterval(function(){
-	// 	me.model.process._apply(me.model, me.context.req.mixin, callback);
-	// }, 3000);
 	this.model.getRoot._apply(this.model, this.context.req.mixin, callback);
 };
 

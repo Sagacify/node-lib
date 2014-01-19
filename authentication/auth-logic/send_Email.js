@@ -13,18 +13,16 @@ module.exports = function (mixin, callback) {
 	}
 	if(typeof_email) {
 		var name = mixin.user.firstname + ' ' + mixin.user.lastname;
-
-
-
 		Mailer.send_Mail(
 			typeof_email, 
 			mixin.email, 
 			name, 
 			LanguageManager.getPreferedLanguage(mixin.user.prefLang), 
 			mixin.token, 
-			function (e) {
-			}
-		);
+		function (e) {
+			console.log('Email Error');
+			console.log(e);
+		});
 		callback(null, mixin);
 	}
 	else {
