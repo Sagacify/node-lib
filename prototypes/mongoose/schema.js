@@ -110,11 +110,11 @@ mongoose.Schema.prepareSchemas = function () {
 };
 
 mongoose.Schema.prototype.hasVirtual = function (name) {
-	return this.documentVirtuals[name]||this.collectionVirtuals[name];
+	return this.documentVirtuals&&this.documentVirtuals[name]||this.collectionVirtuals&&this.collectionVirtuals[name];
 };
 
 mongoose.Schema.prototype.hasAction = function (name) {
-	return this.documentActions[name]||this.collectionActions[name];
+	return this.documentActions&&this.documentActions[name]||this.collectionActions&&this.collectionActions[name];
 };
 
 mongoose.Schema.prototype.setDefaultVirtualsActions = function () {
