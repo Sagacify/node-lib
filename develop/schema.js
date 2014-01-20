@@ -1,7 +1,6 @@
 var async = require('async');
 
 mongoose.Schema.prototype.populateDevelop = function(callback){
-	
 	var context = this.context;
 
 	if (!this.length) {

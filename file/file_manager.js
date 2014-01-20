@@ -1,6 +1,7 @@
 var AWS = require('aws-sdk');
 var ct = require('../mimetypes/content_type');
 var uuid = require('node-uuid');
+var fs = require('fs');
 
 /* Create AWS environement */
 /* *********************** */
@@ -70,4 +71,12 @@ exports.getSecuredFilepath = function (filename) {
 	var expires = new Date();
 	expires.setMinutes(expires.getMinutes() + 30);
 	return s3Client.signedUrl(filename, expires);
+};
+
+exports.getFilesizeInBytes = function(filepath) {
+	fs.watch(filepath, function (curr, prev) {
+		fs.stat(filepath, function (err, stats) {
+			return stats.size;
+		});
+	});
 };
