@@ -1,4 +1,50 @@
 
+
+
+
+Array.prototype.merge = function(array){
+	var me = this;
+	array.forEach(function(item){
+		me.push(item);
+	});
+};
+
+Array.prototype.popFirst= function(){
+	return this.splice(0, 1)[0];
+};
+
+Array.prototype.last = function(){
+	return this[this.length-1];
+};
+
+//In an ids array
+Array.prototype.containsId = function(anId){
+	return this.containsWithEqualFunction(anId, function(id){
+		return id.equals(anId);
+	});
+}
+
+//In an docs array
+Array.prototype.containsDoc = function(docToSearchFor){
+	return this.containsWithEqualFunction(doc, function(id){
+		return doc._id.equals(docToSearchFor._id);
+	});
+}
+
+Array.prototype.containsWithEqualFunction = function(el, equalFunction){
+	return this.filter(equalFunction).length > 0;
+}
+
+
+//Deprecated see containsWithEqualFunction
+Array.prototype.containsObject = function(_id){
+	return this.filter(
+		function(item){
+			return item._id.equals(_id);
+		}).length > 0;
+};
+
+//Deprecated see containsWithEqualFunction
 Array.prototype.contains = function(item){
 	
 	// var founded =  !!~this.robustIndexOf(item);
@@ -18,54 +64,6 @@ Array.prototype.contains = function(item){
 		// this.indexOf(item) != -1
 		return !!~this.indexOf(item);
 	}
-};
-
-// Array.prototype.robustIndexOf = function(item){
-// 	console.log('PROCESSSING');
-// 	console.log(item);
-// 	console.log(this);
-// 	if (!item) {
-// 		return -1;
-// 	};
-
-// 	// if (item.isMongooseDocument()) {
-// 	// 	console.log('is a isMongooseDocument');
-// 	// 	for (var i = 0; i < this.length; i++) {
-// 	// 		if (this[i].isMongooseDocument() && this[i]._id.equals(item._id)) {
-// 	// 			return i;
-// 	// 		};
-// 	// 	};
-// 	// 	return -1;
-// 	// }
-
-// 	//Add other specific comparators
-// 	var index = this.indexOf(item);
-// 	console.log("index "+ index);
-// 	return index;
-// }
-
-	//Add other specific comparators
-// 	return this.indexOf(item);
-// }
-
-
-Array.prototype.merge = function(array){
-	var me = this;
-	array.forEach(function(item){
-		me.push(item);
-	});
-};
-
-Array.prototype.popFirst= function(){
-	return this.splice(0, 1)[0];
-};
-
-Array.prototype.last = function(){
-	return this[this.length-1];
-};
-
-Array.prototype.containsObject = function(_id){
-	return this.filter(function(item){return item._id == _id;}).length > 0;
 };
 
 Array.prototype.remove = function(item){

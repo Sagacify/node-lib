@@ -26,7 +26,7 @@ mongoose.Schema.prototype.publicFormat = function(){
 		else
 			var publicSpec = {type:spec.options.type.name, ref:spec.options.ref};
 		return publicSpec;
-	}
+	};
 
 	var publicVirtualActionSpec = function(virtualActionSpec){
 		var publicSpec;
@@ -37,7 +37,7 @@ mongoose.Schema.prototype.publicFormat = function(){
 			publicSpec = {type: virtualActionSpec.type};
 		}
 		return publicSpec;
-	}
+	};
 
 	for(var path in this.paths){
 		if(path == "_id" || this.isPublic(path)){
