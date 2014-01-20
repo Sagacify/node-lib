@@ -7,7 +7,7 @@ exports.execute = function (command, callback) {
 			console.log('exec error: ' + error);
 		}
 		if (is.Function(callback)) {
-			callback.call(this, stderr, stdout);
+			callback(this, stderr, stdout);
 		} else {
 			if (stdout && stdout.length) {
 				console.log('stdout: ' + stdout);
@@ -18,9 +18,9 @@ exports.execute = function (command, callback) {
 		}
 	});
 
-	child.stdout.on('data', function (data) {
-		console.log("data: " + data);
-	});
+	// child.stdout.on('data', function (data) {
+	// 	console.log("data: " + data);
+	// });
 };
 
 exports.executor = function (commands, callback) {
