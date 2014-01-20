@@ -1,6 +1,7 @@
 var async = require('async');
 var HalloweenSkelleton = require('../../dataskelleton/HalloweenSkelleton');
 require('../../validation/SGSchemaValidation');
+var utils = require('./utils');
 
 mongoose.Schema.prototype.getFormattedSchema = function (options, callback) {
 	//this.paths[key].validators[0][0]
@@ -176,7 +177,7 @@ mongoose.Schema.prototype.doDo = function (action, params, callback) {
 		var me = this;
 		var responses = [];
 		async.each(this.keys(), function (docIndex, callback) {
-			this[docIndex].do(action, params, function (err, response) {
+			me[docIndex].do(action, params, function (err, response) {
 				responses[docIndex] = response;
 				callback(err);
 			});
@@ -193,6 +194,8 @@ mongoose.Schema.prototype.didDo = function(action, params){
 	if(typeof this.statics["did"+action.capitalize()] == "function")
 		return this.statics["did"+action.capitalize()]._apply(this, params);
 };
+
+utils.generateMeth('do', mongoose.Schema);
 
 mongoose.Schema.prototype.sgUpdate = function (args, callback) {
 	var me = this;

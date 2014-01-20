@@ -1,4 +1,5 @@
 var async = require('async');
+var utils = require('./utils');
 
 mongoose.Document.prototype._toObject2 = mongoose.Document.prototype.toObject;
 
@@ -570,5 +571,5 @@ var generateMeth = function(meth){
 };
 
 ['get', 'set', 'do', 'addInArray', 'removeFromArray', 'update', 'remove'].forEach(function(meth){
-	generateMeth(meth);
+	utils.generateMeth(meth);
 });
