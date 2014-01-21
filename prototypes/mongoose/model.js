@@ -158,7 +158,7 @@ mongoose.Model.sgCreate = function(raw, callback){
 		}
 	}
 
-	doc.sgUpdate(raw, callback);
+	doc.sgCreate(raw, callback);
 };
 
 mongoose.Model.get = function(path, args, callback){

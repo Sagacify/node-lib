@@ -49,7 +49,7 @@ RouteHandler.prototype.handle = function(){
 RouteHandler.prototype.buildContext = function (req) {
 	var scope;
 	if(this.options.scope == "clientScope"){
-		scope = req.clientScope;
+		scope = req.query.scope;
 	}
 	else if(typeof this.options.scope == "function"){
 		scope = this.options.scope(req.clientScope, req.user);

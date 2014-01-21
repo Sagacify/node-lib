@@ -31,10 +31,10 @@ mongoose.Schema.prototype.publicFormat = function(){
 	var publicVirtualActionSpec = function(virtualActionSpec){
 		var publicSpec;
 		if(virtualActionSpec instanceof Array){
-			publicSpec = [{type: virtualActionSpec[0].type}];
+			publicSpec = [{type: virtualActionSpec[0].type, ref: virtualActionSpec[0].ref}];
 		}
 		else{
-			publicSpec = {type: virtualActionSpec.type};
+			publicSpec = {type: virtualActionSpec.type, ref: virtualActionSpec.ref};
 		}
 		return publicSpec;
 	};
