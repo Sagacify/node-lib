@@ -99,11 +99,11 @@ mongoose.Document.prototype.develop = function(callback){
 	var cbFunctions = [];
 	fieldsToAdd.forEach(function(fieldToAdd){
 		fieldToAddGetter = 'get'+fieldToAdd.capitalize();
-		if(false && me[fieldToAdd] && me[fieldToAdd] in me.schema.virtuals){
+		if(me[fieldToAdd] && me[fieldToAdd] in me.schema.virtuals){
 			developedDoc._set(fieldToAdd, me[fieldToAdd]);
 		}
-		else if(true || me[fieldToAddGetter] && me[fieldToAddGetter].isFunction() && fieldToAdd in me.schema.documentVirtuals){
-			if(false && me[fieldToAddGetter].hasCallback()){
+		else if(me[fieldToAddGetter] && me[fieldToAddGetter].isFunction() && fieldToAdd in me.schema.documentVirtuals){
+			if(me[fieldToAddGetter].hasCallback()){
 				cbFields.push(fieldToAdd);
 				cbFunctions.push(me[fieldToAddGetter].bind(me));
 			}
