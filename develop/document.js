@@ -2,7 +2,6 @@ var async = require('async');
 
 //save, update proto to fire updateCache for this, parents and possibly childs
 mongoose.Document.prototype.populateDevelop = function(callback){
-
 	var me = this;
 	var context = this.context;
 	this.populateFromContext(function(err){
@@ -54,7 +53,6 @@ mongoose.Document.prototype.populateFromContext = function(callback){
 			this.populate(fieldsToPopulate[i]);
 		}
 		
-		console.log(fieldsToPopulate[i])
 		this.populate(fieldsToPopulate[i], callback);
 	}
 };
@@ -124,6 +122,7 @@ mongoose.Document.prototype.develop = function(callback){
 };
 
 //populateDevelop children
+//TODO handle virtuals and actions results
 mongoose.Document.prototype.populateDevelopChildren = function(devObject, callback){
 	var me = this;
 	var context = this.context;
