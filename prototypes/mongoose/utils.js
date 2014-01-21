@@ -4,7 +4,7 @@ exports.generateMeth = function(meth, Class){
 	var doMeth = 'do' + Meth;
 	var didMeth = 'did' + Meth;
 
-	if((meth === 'update') || (meth === 'remove')){
+	if((meth === 'update') || (meth === 'remove') || (meth === 'create')){
 		meth = 'sg' + meth.capitalize();
 	}
 	if(!Class)
@@ -25,7 +25,7 @@ exports.generateMeth = function(meth, Class){
 			return val;
 		}
 		else {
-			if(meth == 'sgUpdate') {
+			if(meth == 'sgUpdate' || meth == 'sgCreate') {
 				args = null;
 			}
 			if(meth == 'sgRemove') {
