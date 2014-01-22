@@ -76,14 +76,15 @@ module.exports = function (app) {
 
 			options.validation = specialValidation;
 
-			if((typeof callback !== "function") || (callback.name === 'autoGenerate')){
-				callback = new routeHandler(callback).handle();
+			var cb = callback;
+			if((typeof cb !== "function") || (cb.name === 'autoGenerate')){
+				cb = new routeHandler(callback).handle();
 			}
 
 			//The cloneToObject() method is needed because FUCK VISION-MEDIA !
 			// --> https://github.com/visionmedia/express/issues/1742
 			req.mixin = req.params.cloneToObject().merge(req.body).merge(mixin_options);
-			SGMixinValidation(callback, options.validation || {}, caja, req, res, next);
+			SGMixinValidation(cb, options.validation || {}, caja, req, res, next);
 		});
 	}
 

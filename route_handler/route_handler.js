@@ -11,6 +11,8 @@ var CheckoutAction = require('./checkout_action');
 var CheckoutVirtual = require('./checkout_virtual');
 
 function RouteHandler (options) {
+	console.log('RouteHandler')
+	console.log(options)
 	this.options = options || {};
 }
 
@@ -48,6 +50,9 @@ RouteHandler.prototype.handle = function(){
 
 RouteHandler.prototype.buildContext = function (req) {
 	var scope;
+	console.log('buildContext')
+	console.log(this.options.scope)
+	console.log(req.query.scope)
 	if(this.options.scope == "clientScope"){
 		scope = req.query.scope;
 	}
