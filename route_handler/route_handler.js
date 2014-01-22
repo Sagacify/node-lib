@@ -50,9 +50,6 @@ RouteHandler.prototype.handle = function(){
 
 RouteHandler.prototype.buildContext = function (req) {
 	var scope;
-	console.log('buildContext')
-	console.log(this.options.scope)
-	console.log(req.query.scope)
 	if(this.options.scope == "clientScope"){
 		scope = req.query.scope;
 	}
