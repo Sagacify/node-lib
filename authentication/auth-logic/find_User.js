@@ -8,7 +8,6 @@ module.exports = function (mixin, callback) {
 		
 
 		model('User').find(search, function (e, users) {
-			console.log(users);
 
 			if(e) {
 				callback('COULDNT_FIND_USER');
