@@ -1,15 +1,9 @@
 module.exports = function (mixin, callback) {
 	var search = {};
 	var qs = mixin.search[1];
-
-	console.log(mixin);
 	if((typeof qs === 'string') && qs.length) {
 		search[mixin.search[0]] = qs.toLowerCase();
-		
-
 		model('User').find(search, function (e, users) {
-			console.log(users);
-
 			if(e) {
 				callback('COULDNT_FIND_USER');
 			}

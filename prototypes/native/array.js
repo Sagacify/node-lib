@@ -109,7 +109,6 @@ Array.prototype.populateDevelop = function(callback){
         }
 };
 
-
 Array.prototype.sgRemove = function(item){
 	for(var i = this.length-1; i >= 0; i--){
 		if((this[i] && this[i] instanceof mongoose.Types.ObjectId && this[i].equals(item)) || (item && item instanceof mongoose.Types.ObjectId && item.equals(this[i])) || (this[i] == item)){
@@ -129,4 +128,11 @@ Array.prototype.pairs = function(){
 		pairArray.push([valueA, valueB]);
 	}
 	return pairArray;
-}
+};
+
+Array.prototype.removeDuplicates = function () {
+	var arr = this;
+	return arr.filter(function (item, pos) {
+		return arr.indexOf(item) === pos;
+	});
+};
