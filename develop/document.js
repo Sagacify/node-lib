@@ -33,6 +33,7 @@ mongoose.Document.prototype.populateFromContext = function(callback){
 	var me = this;
 	var context = this.context;
 	var populateOptions = typeof this.populateOptions == "function"? this.populateOptions(context.scope) : this.schema.populateOptions(context.scope);
+	populateOptions = populateOptions||[];
 	var fieldsToPopulate = [];
 
 	if(populateOptions.isArray()){
@@ -127,6 +128,7 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 	var me = this;
 	var context = this.context;
 	var populateDevelopChildrenOptions = typeof this.populateDevelopChildrenOptions == "function"? this.populateDevelopChildrenOptions(context.scope) : this.schema.populateDevelopChildrenOptions(context.scope);
+	populateDevelopChildrenOptions = populateDevelopChildrenOptions||[];
 	populateDevelopChildrenOptions = populateDevelopChildrenOptions.childrenScopes||populateDevelopChildrenOptions;
 
 	var docsByPath = {};
