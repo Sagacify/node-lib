@@ -93,15 +93,15 @@ mongoose.Document.prototype.develop = function(callback){
 		delete developedDoc[fieldToDelete];
 	});
 	//add views
-	var fieldsToAdd = fields.diff(fsKeys);
+	//var fieldsToAdd = fields.diff(fsKeys);
 	var cbFields = [];
 	var cbFunctions = [];
-	fieldsToAdd.forEach(function(fieldToAdd){
+	/*fieldsToAdd*/fields.forEach(function(fieldToAdd){
 		fieldToAddGetter = 'get'+fieldToAdd.capitalize();
 		if(me[fieldToAdd] && me[fieldToAdd] in me.schema.virtuals){
 			developedDoc._set(fieldToAdd, me[fieldToAdd]);
 		}
-		else if(me[fieldToAddGetter] && me[fieldToAddGetter].isFunction() && fieldToAdd in me.schema.documentVirtuals){
+		else if(me[fieldToAddGetter] && me[fieldToAddGetter].isFunction()/* && me.schema.documentVirtuals && fieldToAdd in me.schema.documentVirtuals*/){
 			if(me[fieldToAddGetter].hasCallback()){
 				cbFields.push(fieldToAdd);
 				cbFunctions.push(me[fieldToAddGetter].bind(me));

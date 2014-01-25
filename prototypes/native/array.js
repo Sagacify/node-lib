@@ -97,6 +97,12 @@ Array.prototype.diff = function(a) {
 	});
 };
 
+Array.prototype.intersect = function(a){
+	return this.filter(function (i) {
+		return (a.indexOf(i) > -1);
+	});
+};
+
 Array.prototype.populateDevelop = function(callback){
         if(this.length == 0 || !(this[0] instanceof mongoose.Document)){
                 callback(null, this);
