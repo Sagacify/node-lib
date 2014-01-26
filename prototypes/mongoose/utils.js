@@ -8,7 +8,7 @@ exports.generateMeth = function(meth, Class){
 		meth = 'sg' + meth.capitalize();
 	}
 	if(!Class)
-		Class = meth=="sgRemove"?mongoose.Model:mongoose.Document;
+		Class = meth=="sgRemove" ? mongoose.Model : mongoose.Document;
 	Class.prototype[meth] = function (path, args, callback) {
 		if(typeof args == "function"){
 			callback = args;
