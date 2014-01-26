@@ -1,6 +1,8 @@
-var AWS = require('aws-sdk');
 var ct = require('../mimetypes/content_type');
+
+var AWS = require('aws-sdk');
 var uuid = require('node-uuid');
+var fs = require('fs');
 
 /* Create AWS environement */
 /* *********************** */
@@ -70,4 +72,24 @@ exports.getSecuredFilepath = function (filename) {
 	var expires = new Date();
 	expires.setMinutes(expires.getMinutes() + 30);
 	return s3Client.signedUrl(filename, expires);
+};
+
+exports.uploadThenDeleteLocalFile = function(filepath, extension, callback) {
+    fs.readFile(filepath, function (err, data) {
+        fs.unlink(filepath, function (err) {
+            if (!err) {
+                console.log("successfully deleted " + filepath);
+            }
+        });
+        if (err) {
+            return callback(err, null);
+        }
+        fileManager.writeFileToS3(new Buffer(data, 'binary').toString('base64'), extension, 0, function (err, filename) {
+            if (err) {
+                return callback(err, null);
+            }
+
+            callback(err, filename);
+        });
+    });
 };
