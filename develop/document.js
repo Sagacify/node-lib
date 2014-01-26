@@ -64,12 +64,13 @@ mongoose.Document.prototype.develop = function(callback){
 	var context = this.context;
 	var developedDoc = this.toObject();
 
-	var formattedSchema = this.schema.formattedSchema;
-	if(!formattedSchema){
-		return callback(null, developedDoc);
-	}
+	//var formattedSchema = this.schema.formattedSchema;
+	// if(!formattedSchema){
+	// 	return callback(null, developedDoc);
+	// }
 
 	var developOptions = typeof this.developOptions == "function"? this.developOptions(context.scope) : this.schema.developOptions(context.scope);
+
 	if(developOptions){
 		if(developOptions.isArray()){
 			var fields = developOptions;

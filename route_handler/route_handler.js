@@ -11,8 +11,6 @@ var CheckoutAction = require('./checkout_action');
 var CheckoutVirtual = require('./checkout_virtual');
 
 function RouteHandler (options) {
-	console.log('RouteHandler')
-	console.log(options)
 	this.options = options || {};
 }
 
@@ -33,6 +31,7 @@ RouteHandler.prototype.handle = function(){
 						});
 					}
 					else{
+						console.log(new Error().stack)
 						console.log(err);
 						console.log(err.stack)
 						res.SGsend(err);
@@ -126,10 +125,7 @@ RouteHandler.prototype.checkout = function(callback){
 
 RouteHandler.prototype.generateClientFormat = function(checkout, callback){
 	if(checkout && typeof checkout.populateDevelop == "function"){
-		Object.defineProperty(checkout, "context", {
-			writable: true,
-			value: this.context
-		});
+		checkout.setHidden('context', this.context);
 		checkout.populateDevelop(callback);
 	}
 	else{

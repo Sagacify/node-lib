@@ -7,6 +7,7 @@ function CheckoutDocument(context, route){
 };
 
 CheckoutDocument.prototype.get = function(callback){
+	console.log('get document')
 	callback(null, this.doc);
 };
 
