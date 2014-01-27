@@ -104,7 +104,7 @@ function getSubject (mailTemplate, prefLang) {
 }
 
 exports.send_Mail = function (type, email, name, prefLang, token, callback) {
-	var types = ['validation', 'reset_password', 'cancellation_appointment_by_user', 'cancellation_appointment_by_pro'];
+	var types = ['validation', 'reset_password'];
 	console.log("SEND MAIL TO", email);
 	console.log(type, email, name, prefLang, token);
 	if(prefLang && types.indexOf(type) !== -1) {
@@ -125,7 +125,7 @@ exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 exports.sendMail = function (emailTo, type, prefLang, parameters, callback){
 	
 	/*Checking type*/
-	var types = ['validation', 'reset_password', 'cancellation_appointment_by_user', 'cancellation_appointment_by_pro', 'appointment_reminder', 'appointment_booking_confirmation', 'welcome_pro_message'];
+	var types = ['validation', 'reset_password', 'resource'];
 	
 	if(prefLang && types.indexOf(type) !== -1) {
 		console.log(emailTo);
