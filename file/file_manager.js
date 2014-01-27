@@ -75,21 +75,27 @@ exports.getSecuredFilepath = function (filename) {
 };
 
 exports.uploadThenDeleteLocalFile = function(filepath, extension, callback) {
+    exports.readThenDeleteLocalFile(filepath, function (err, data) {
+		if (err) {
+			return callback(err);
+		}
+        exports.writeFileToS3(new Buffer(data, 'binary').toString('base64'), extension, 0, function (err, filename) {
+            if (err) {
+                return callback(err, null);
+            }
+
+            callback(err, config.AWS.s3StaticURL + "/" + filename);
+        });
+    });
+};
+
+exports.readThenDeleteLocalFile = function(filepath, callback) {
     fs.readFile(filepath, function (err, data) {
         fs.unlink(filepath, function (err) {
             if (!err) {
                 console.log("successfully deleted " + filepath);
             }
         });
-        if (err) {
-            return callback(err, null);
-        }
-        fileManager.writeFileToS3(new Buffer(data, 'binary').toString('base64'), extension, 0, function (err, filename) {
-            if (err) {
-                return callback(err, null);
-            }
-
-            callback(err, filename);
-        });
+        callback(err, data);
     });
 };
