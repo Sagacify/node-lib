@@ -140,10 +140,7 @@ mongoose.Model.sgCreate = function(raw, callback){
 	var model = this;
 	var doc = new model();
 
-	Object.defineProperty(doc, "context", {
-		writable: true,
-		value: this.context
-	});
+	doc.setHidden('context', this.context);
 
 	//auto set logged user
 	for(var path in this.schema.paths){
