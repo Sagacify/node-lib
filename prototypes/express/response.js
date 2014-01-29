@@ -28,7 +28,7 @@ express.response.SGsend = function(object) {
 	}
 
 	if(code == 200){
-		this.send(response);
+		this.send(response||null);
 	}
 	else{
 		this.send(code, error);

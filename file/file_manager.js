@@ -1,4 +1,5 @@
 var ct = require('../mimetypes/content_type');
+var virusScan = require('./virusScan');
 
 var AWS = require('aws-sdk');
 var uuid = require('node-uuid');
@@ -69,6 +70,10 @@ exports.removeFileFromS3 = function (filename, callback) {
 	}, callback);
 };
 
+exports.downloadFileFromS3 = function(filename, callback){
+
+};
+
 exports.getSecuredFilepath = function (filename) {
 	var knox = require('knox');
 	var s3Client = knox.createClient({
@@ -83,18 +88,35 @@ exports.getSecuredFilepath = function (filename) {
 };
 
 exports.uploadThenDeleteLocalFile = function(filepath, extension, callback) {
-    exports.readThenDeleteLocalFile(filepath, function (err, data) {
-		if (err) {
-			return callback(err);
-		}
-        exports.writeFileToS3(new Buffer(data, 'binary').toString('base64'), extension, 0, function (err, filename) {
-            if (err) {
-                return callback(err, null);
-            }
+    
+	//Scan for viruses
+	virusScan.launchFileScan(filepath, function(err, msg){
+		if(!err){
+			//No virus detected
+		    exports.readThenDeleteLocalFile(filepath, function (err, data) {
+				if (err) {
+					return callback(err);
+				}
 
-            callback(err, config.AWS.s3StaticURL + "/" + filename);
-        });
-    });
+		        exports.writeFileToS3(new Buffer(data, 'binary').toString('base64'), extension, 0, function (err, filename) {
+		            if (err) {
+		                return callback(err, null);
+		            }
+
+		            callback(err, config.AWS.s3StaticURL + "/" + filename);
+		        });
+
+		    });
+		}
+
+		else {
+			//An error occured (might be a virus)
+			console.log(msg);
+			fs.unlink(filepath);
+			console.log('callback');
+			callback(err);
+		}
+	});
 };
 
 exports.readThenDeleteLocalFile = function(filepath, callback) {
