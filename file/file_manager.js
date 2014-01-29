@@ -54,6 +54,14 @@ exports.writeFileToS3 = function (base64data, extension, secure, callback) {
 	});
 };
 
+// http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
+exports.readFileFromS3 = function (filename, callback) {
+	s3.client.getObject({
+		Bucket: config.AWS.s3BucketName,
+		Key: filename
+	}, callback);
+};
+
 exports.removeFileFromS3 = function (filename, callback) {
 	s3.client.deleteObject({
 		Bucket: config.AWS.s3BucketName,
