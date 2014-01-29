@@ -37,11 +37,18 @@ mongoose.Document.prototype.generateSlug = function(baseString, callback){
 		.toLowerCase();
 
 	//var regexSearch = baseString.replace(/\-/, '\\-');
-	var regexSearch = new RegExp('^'+baseString+'\-[0-9]+$');
+	var regexSearch = new RegExp('^' + baseString + '\-?[0-9]*$');
 
 	var me = this;
-	model(modelName).find({slug:{$regex:regexSearch}}, {slug: 1, _id: 0}, function(err, docs){
-		if(err){
+	model(modelName).find({
+		slug: {
+			$regex: regexSearch
+		}
+	}, {
+		slug: 1,
+		_id: 0
+	}, function (e, docs) {
+		if(e){
 			me.slug = me._id;
 		}
 		else{
