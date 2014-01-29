@@ -24,14 +24,13 @@ RouteHandler.prototype.handle = function(){
 					if(!err){
 						me.generateClientFormat(checkoutHandler, function(err, clientFormat){
 							if(err){
-								// console.log(err);
-								// console.log(err.stack)
+								console.log(err);
+								console.log(err.stack)
 							}
 							res.SGsend(err||clientFormat);
 						});
 					}
 					else{
-						console.log(new Error().stack)
 						console.log(err);
 						console.log(err.stack)
 						res.SGsend(err);
