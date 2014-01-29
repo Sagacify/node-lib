@@ -1,4 +1,3 @@
-ƒ
 var ct = require('../mimetypes/content_type');
 var virusScan = require('./virusScan');
 
