@@ -26,16 +26,14 @@ RouteHandler.prototype.handle = function(){
 					if(!err){
 						me.generateClientFormat(checkoutHandler, function(err, clientFormat){
 							if(err){
-								// console.log(err);
-								// console.log(err.stack)
+								console.log(err);
+								console.log(err.stack)
 							}
 							res.SGsend(err||clientFormat);
 						});
 					}
 					else {
-						console.log(new Error().stack)
-						console.log(err);
-						console.log(err.stack)
+						res.SGsend(new Error().stack);
 						res.SGsend(err);
 					}
 				});
@@ -127,7 +125,8 @@ RouteHandler.prototype.checkout = function(callback){
 
 RouteHandler.prototype.generateClientFormat = function(checkout, callback){
 	if(checkout && typeof checkout.populateDevelop == "function"){
-		checkout.setHidden('context', this.context);
+		if(!checkout.context)
+			checkout.setHidden('context', this.context);
 		checkout.populateDevelop(callback);
 	}
 	else{
