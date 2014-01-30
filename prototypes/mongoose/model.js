@@ -154,8 +154,6 @@ mongoose.Model.sgCreate = function(raw, callback){
 			}
 		}
 	}
-	console.log("CALL SG CREATE FROM MODEL");
-	console.log(doc.sgCreate.toString());
 	doc.sgCreate(raw, callback);
 };
 
