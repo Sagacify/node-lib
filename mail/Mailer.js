@@ -18,6 +18,8 @@ setupInfo('SES Configured');
 function sendMessage (to, data, template, prefLang, callback) {
 	generateMail(to, data, template, prefLang, function (e, message) {
 		if(e) {
+			console.log("GenerateMail error");
+			console.log(e);
 			callback(e);
 		}
 		else {
@@ -26,7 +28,7 @@ function sendMessage (to, data, template, prefLang, callback) {
 					callback(e);
 				}
 				else {
-					callback(null);
+					callback(null, "Success");
 				}
 			});
 		}
@@ -37,6 +39,7 @@ function sendMessage (to, data, template, prefLang, callback) {
 function generateMail (to, data, mailTemplate, prefLang, callback){
 	generateHTML(mailTemplate, data, prefLang, function (e, html, text){
 		if(e) {
+			console.log("generateHTML error");
 			console.log(e);
 			callback(e);
 		}
@@ -81,12 +84,15 @@ function generateHTML (mailTemplate, data, prefLang, callback) {
 
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
+
+			console.log("emailTemplates error");
 			console.log(e);
 			callback(e);
 		}
 		else {
 			template(mailTemplate, data, function (e, html, text) {
 				if(e) {
+					console.log("template error");
 					console.log(e);
 					callback(e);
 				}

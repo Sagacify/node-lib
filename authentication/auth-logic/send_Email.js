@@ -20,9 +20,16 @@ module.exports = function (mixin, callback) {
 			name, 
 			LanguageManager.getPreferedLanguage(mixin.user.prefLang), 
 			mixin.token, 
-		function (e) {
-			console.log('Email Error');
-			console.log(e);
+		function (err, msg) {
+			if (err) {
+				console.log('Email Error');
+				console.log(e);
+				console.log(msg);
+			}
+			else {
+				console.log("No Error");
+				console.log(msg);
+			}
 		});
 		callback(null, mixin);
 	}
