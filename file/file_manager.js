@@ -1,4 +1,5 @@
 var ct = require('../mimetypes/content_type');
+var virusScan = require('./virusScan');
 
 var AWS = require('aws-sdk');
 var uuid = require('node-uuid');
@@ -54,11 +55,23 @@ exports.writeFileToS3 = function (base64data, extension, secure, callback) {
 	});
 };
 
+// http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
+exports.readFileFromS3 = function (filename, callback) {
+	s3.client.getObject({
+		Bucket: config.AWS.s3BucketName,
+		Key: filename
+	}, callback);
+};
+
 exports.removeFileFromS3 = function (filename, callback) {
 	s3.client.deleteObject({
 		Bucket: config.AWS.s3BucketName,
 		Key: filename
 	}, callback);
+};
+
+exports.downloadFileFromS3 = function (filename, callback) {
+
 };
 
 exports.getSecuredFilepath = function (filename) {
@@ -74,28 +87,43 @@ exports.getSecuredFilepath = function (filename) {
 	return s3Client.signedUrl(filename, expires);
 };
 
-exports.uploadThenDeleteLocalFile = function(filepath, extension, callback) {
-    exports.readThenDeleteLocalFile(filepath, function (err, data) {
-		if (err) {
-			return callback(err);
-		}
-        exports.writeFileToS3(new Buffer(data, 'binary').toString('base64'), extension, 0, function (err, filename) {
-            if (err) {
-                return callback(err, null);
-            }
+exports.uploadThenDeleteLocalFile = function (filepath, extension, callback) {
 
-            callback(err, config.AWS.s3StaticURL + "/" + filename);
-        });
-    });
+	//Scan for viruses
+	virusScan.launchFileScan(filepath, function (err, msg) {
+		if (!err) {
+			//No virus detected
+			exports.readThenDeleteLocalFile(filepath, function (err, data) {
+				if (err) {
+					return callback(err);
+				}
+
+				exports.writeFileToS3(new Buffer(data, 'binary').toString('base64'), extension, 0, function (err, filename) {
+					if (err) {
+						return callback(err, null);
+					}
+
+					callback(err, config.AWS.s3StaticURL + "/" + filename);
+				});
+
+			});
+		} else {
+			//An error occured (might be a virus)
+			console.log(msg);
+			fs.unlink(filepath);
+			console.log('callback');
+			callback(err);
+		}
+	});
 };
 
-exports.readThenDeleteLocalFile = function(filepath, callback) {
-    fs.readFile(filepath, function (err, data) {
-        fs.unlink(filepath, function (err) {
-            if (!err) {
-                console.log("successfully deleted " + filepath);
-            }
-        });
-        callback(err, data);
-    });
+exports.readThenDeleteLocalFile = function (filepath, callback) {
+	fs.readFile(filepath, function (err, data) {
+		fs.unlink(filepath, function (err) {
+			if (!err) {
+				console.log("successfully deleted " + filepath);
+			}
+		});
+		callback(err, data);
+	});
 };

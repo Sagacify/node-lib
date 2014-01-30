@@ -22,11 +22,16 @@ exports.preprocessSlug = function(text){
 };
 
 exports.generateSlug = function(doc, modelString, baseSlug, slug, counter, next){
-
 	var counter = counter + 1;
-	mongoose.model(modelString).find({slug:slug}).exec(function(err, items){
+	console.log('\nSLUGIFY -  3 : ');
+	console.log(arguments);
+	mongoose.model(modelString).find({
+		slug: slug
+	}, function (err, items) {
+		console.log('\nSLUGIFY -  4 : ');
+		console.log(arguments);
 		if (!err) {
-			if (items.length!=0){
+			if(items.length){
 				exports.generateSlug(doc, modelString, baseSlug, baseSlug+"_"+counter, counter, next);
 			}
 			else {
