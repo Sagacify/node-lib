@@ -11,6 +11,7 @@ module.exports = function (mixin, callback) {
 	else if(mixin.action === 'ForgotPassword') {
 		typeof_email = 'reset_password';
 	}
+	console.log(typeof_email, mixin.email, name, LanguageManager.getPreferedLanguage(mixin.user.prefLang), mixin.token);
 	if(typeof_email) {
 		var name = mixin.user.firstname + ' ' + mixin.user.lastname;
 		Mailer.send_Mail(

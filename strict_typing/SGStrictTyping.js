@@ -310,7 +310,6 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			//console.log('\n --> ' + acceptableValue);
 			if(this.validate_Config(ele_config)) {
 				if(this.apply_to_Array(ele, acceptableValue, ele_config)) {
-
 					//console.log(' --> [X] OK');
 					if(this.strict_mode) {
 						this.assemble_Object(args_buffer, acceptableValue, is.DateString(ele) ? new Date(ele) : ele);
