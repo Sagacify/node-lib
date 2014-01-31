@@ -4,6 +4,7 @@ var virusScan = require('./virusScan');
 var AWS = require('aws-sdk');
 var uuid = require('node-uuid');
 var fs = require('fs');
+var tmp = require('tmp');
 
 /* Create AWS environement */
 /* *********************** */
@@ -56,11 +57,28 @@ exports.writeFileToS3 = function (base64data, extension, secure, callback) {
 };
 
 // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
-exports.readFileFromS3 = function (filename, callback) {
+exports.readFileFromS3 = function (filename, secure, callback) {
 	s3.client.getObject({
-		Bucket: config.AWS.s3BucketName,
+		Bucket: secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName,
 		Key: filename
 	}, callback);
+};
+
+exports.writeDataToFileSystem = function (filename, data) {
+	tmp.tmpName(function (err, directoryPath) {
+		if (err) {
+			console.log("err: ");
+			console.log(err);
+			return callback(err);
+		}
+
+		console.log("Created temporary filename: ", directoryPath);
+
+		var filepath = directoryPath + "/" + filename;
+		fs.writeFile(filepath, data, function (err) {
+			callback(err, filepath);
+		});
+	});
 };
 
 exports.removeFileFromS3 = function (filename, callback) {
@@ -68,10 +86,6 @@ exports.removeFileFromS3 = function (filename, callback) {
 		Bucket: config.AWS.s3BucketName,
 		Key: filename
 	}, callback);
-};
-
-exports.downloadFileFromS3 = function (filename, callback) {
-
 };
 
 exports.getSecuredFilepath = function (filename) {
@@ -126,4 +140,10 @@ exports.readThenDeleteLocalFile = function (filepath, callback) {
 		});
 		callback(err, data);
 	});
+};
+
+exports.getSize = function (filepath, callback) {
+    fs.stat(filepath, function (err, stats) {
+        callback(err, stats ? stats.size : null);
+    });
 };
