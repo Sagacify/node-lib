@@ -18,16 +18,12 @@ s3 = new AWS.S3();
 
 var writeQueue = async.queue(function(params, callback){
 	s3.client.putObject(params, function (err) {
-		count--;
 		callback.apply(this, arguments);
 	});
 }, 3);
 
 var readQueue = async.queue(function(params, callback){
-	s3.client.getObject({
-		Bucket: secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName,
-		Key: filename
-	}, callback);
+	s3.client.getObject(params, callback);
 }, 3);
 
 /* Create bucket if not existing */
