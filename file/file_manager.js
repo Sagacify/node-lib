@@ -64,16 +64,15 @@ exports.readFileFromS3 = function (filename, secure, callback) {
 	}, callback);
 };
 
-exports.writeDataToFileSystem = function (filename, data) {
-	tmp.tmpName(function (err, directoryPath) {
+exports.writeDataToFileSystem = function (filename, data, callback) {
+	tmp.dir(function (err, directoryPath) {
 		if (err) {
 			console.log("err: ");
 			console.log(err);
 			return callback(err);
 		}
 
-		console.log("Created temporary filename: ", directoryPath);
-
+		// var filepath = "./tmp/" + filename;
 		var filepath = directoryPath + "/" + filename;
 		fs.writeFile(filepath, data, function (err) {
 			callback(err, filepath);
