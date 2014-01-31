@@ -110,12 +110,12 @@ exports.uploadThenDeleteLocalFile = function (filepath, extension, callback) {
 				if (err) {
 					return callback(err);
 				}
-
 				exports.writeFileToS3(new Buffer(data, 'binary').toString('base64'), extension, 0, function (err, filename) {
 					if (err) {
 						return callback(err, null);
 					}
-
+					console.log("FILENAME AFTER S3");
+					console.log(filename);
 					callback(err, config.AWS.s3StaticURL + "/" + filename);
 				});
 
