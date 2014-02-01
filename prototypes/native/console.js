@@ -105,8 +105,18 @@ Object.defineProperty(global, '__script', {
 	}
 });
 
+
+var winston = require('winston');
+winston.add(winston.transports.File, { filename: 'somefile.log' });
+
 // console._log = console.log;
 // console.log = function(text){
 // 	console._log(__script + ' : ' + __line);
 // 	console._log.apply(this, arguments);
 // };
+
+
+console._log = console.log;
+console.log = function(text){
+	winston.info(text); 
+};

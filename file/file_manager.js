@@ -96,9 +96,10 @@ exports.writeDataToFileSystem = function (filename, data, callback) {
 	// 		console.log(err);
 	// 		return callback(err);
 	// 	}
+		console.log("CONNARD!")
 
-		var filepath = "./tmp/" + filename;
-		var filepath = directoryPath + "/" + filename;
+		var filepath = "tmp/" + filename;
+		//var filepath = directoryPath + "/" + filename;
 		fs.writeFile(filepath, data, function (err) {
 			callback(err, filepath);
 		});
