@@ -2,7 +2,7 @@ var is = require('../strict_typing/validateType');
 var exec = require('child_process').exec;
 
 exports.execute = function (command, callback) {
-	var child = exec(command, {timeout:120000} function (error, stdout, stderr) {
+	var child = exec(command, {timeout:300000}, function (error, stdout, stderr) {
 		if (error) {
 			console.log('exec error: ' + error);
 		}
