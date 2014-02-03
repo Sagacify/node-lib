@@ -100,7 +100,7 @@ exports.getSecuredFilepath = function (filename) {
 	return s3Client.signedUrl(filename, expires);
 };
 
-exports.uploadThenDeleteLocalFile = function (filepath, extension, callback) {
+exports.uploadThenDeleteLocalFile = function (filepath, extension, secure, callback) {
 
 	//Scan for viruses
 	virusScan.launchFileScan(filepath, function (err, msg) {
@@ -110,7 +110,7 @@ exports.uploadThenDeleteLocalFile = function (filepath, extension, callback) {
 				if (err) {
 					return callback(err);
 				}
-				exports.writeFileToS3(new Buffer(data, 'binary').toString('base64'), extension, 0, function (err, filename) {
+				exports.writeFileToS3(new Buffer(data, 'binary').toString('base64'), extension, secure, function (err, filename) {
 					if (err) {
 						return callback(err, null);
 					}
