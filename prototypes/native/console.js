@@ -116,7 +116,7 @@ winston.add(winston.transports.File, { filename: 'somefile.log' });
 // };
 
 
-console._log = console.log;
-console.log = function(text){
-	winston.info(text); 
-};
+// console._log = console.log;
+// console.log = function(text){
+// 	winston.info(text); 
+// };
