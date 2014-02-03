@@ -57,6 +57,8 @@ exports.s3BucketInitialization = function () {
 exports.writeFileToS3 = function (base64data, extension, secure, callback) {
 	var name = uuid.v4();
 	var filename = extension ? name + "." + extension : name;
+	console.log('secure ')
+	console.log(secure)
 	writeQueue.push({
 		Bucket: secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName,
 		Key: filename,
@@ -96,7 +98,7 @@ exports.writeDataToFileSystem = function (filename, data, callback) {
 	// 		console.log(err);
 	// 		return callback(err);
 	// 	}
-		console.log("CONNARD!")
+
 
 		var filepath = "tmp/" + filename;
 		//var filepath = directoryPath + "/" + filename;
@@ -127,7 +129,7 @@ exports.getSecuredFilepath = function (filename) {
 };
 
 exports.uploadThenDeleteLocalFile = function (filepath, extension, secure, callback) {
-
+	console.log('uploadThenDeleteLocalFile')
 	//Scan for viruses
 	virusScan.launchFileScan(filepath, function (err, msg) {
 		if (!err) {
@@ -147,7 +149,7 @@ exports.uploadThenDeleteLocalFile = function (filepath, extension, secure, callb
 							console.log("FILENAME AFTER S3");
 							console.log(filename);
 							try {
-								callback(err, config.AWS.s3StaticURL + "/" + filename);	
+								callback(err, config.AWS.s3StaticURL + "/" + (secure?config.AWS.s3SecuredBucketName:config.AWS.s3BucketName) + "/" + filename);	
 							}
 							catch (e) {
 								Error.stackTraceLimit = 100;
