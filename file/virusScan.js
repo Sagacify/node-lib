@@ -71,10 +71,10 @@ function _scanFile(absFilePath, callback){
 	child = exec('clamdscan --no-summary '+absFilePath, function(error, stdout, stderr){
 		if (error !==null){
 			if (error.code == 1){
-				callback(error, "A Virus has been found!");
+				callback(null, "A Virus has been found!");
 			}
 			else {
-				callback(error, "An error occurd during file scanning");
+				callback(null, "An error occurd during file scanning");
 			}
 		}
 		else {

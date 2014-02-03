@@ -6,6 +6,8 @@ exports.execute = function (command, callback) {
 		if (error) {
 			console.log('exec error: ' + error);
 		}
+		console.log(command);
+		console.log(stdout);
 		if (is.Function(callback)) {
 			callback(this, stderr, stdout);
 		} else {
