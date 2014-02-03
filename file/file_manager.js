@@ -151,6 +151,7 @@ exports.uploadThenDeleteLocalFile = function (filepath, extension, callback) {
 							catch (e) {
 								Error.stackTraceLimit = 100;
 								console.log(new Error().stack);
+								callback(e);
 							}
 							
 						}
