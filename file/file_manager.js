@@ -57,8 +57,7 @@ exports.s3BucketInitialization = function () {
 exports.writeFileToS3 = function (base64data, extension, secure, callback) {
 	var name = uuid.v4();
 	var filename = extension ? name + "." + extension : name;
-	console.log('secure ')
-	console.log(secure)
+
 	writeQueue.push({
 		Bucket: secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName,
 		Key: filename,
@@ -129,7 +128,6 @@ exports.getSecuredFilepath = function (filename) {
 };
 
 exports.uploadThenDeleteLocalFile = function (filepath, extension, secure, callback) {
-	console.log('uploadThenDeleteLocalFile')
 	//Scan for viruses
 	virusScan.launchFileScan(filepath, function (err, msg) {
 		if (!err) {
