@@ -22,6 +22,6 @@ function escapeHTML(text) {
 	});
 }
 
-module.exports = function sanitize_Data () {
-	return escapeHTML((Caja.escape(this.str)));
+module.exports = function sanitize_Data (str) {
+	return str ? Caja.escape(str) : "";
 };
