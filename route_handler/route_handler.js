@@ -33,7 +33,7 @@ RouteHandler.prototype.handle = function(){
 						});
 					}
 					else {
-						res.SGsend(new Error().stack);
+						console.log(err);
 						res.SGsend(err);
 					}
 				});
