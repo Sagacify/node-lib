@@ -90,19 +90,18 @@ exports.readFileFromS3 = function (filename, secure, callback) {
 };
 
 exports.writeDataToFileSystem = function (filename, data, callback) {
-	// tmp.dir(function (err, directoryPath) {
-	// 	if (err) {
-	// 		console.log("err: ");
-	// 		console.log(err);
-	// 		return callback(err);
-	// 	}
+	tmp.dir(function (err, directoryPath) {
+		if (err) {
+			console.log("err: ");
+			console.log(err);
+			return callback(err);
+		}
 
-		var filepath = "tmp/" + filename;
-		//var filepath = directoryPath + "/" + filename;
+		var filepath = directoryPath + "/" + filename;
 		fs.writeFile(filepath, data, function (err) {
 			callback(err, filepath);
 		});
-	// });
+	});
 };
 
 exports.removeFileFromS3 = function (filename, callback) {
@@ -150,6 +149,7 @@ exports.uploadThenDeleteLocalFile = function (filepath, extension, secure, callb
 							catch (e) {
 								Error.stackTraceLimit = 100;
 								console.log(new Error().stack);
+								callback(e);
 							}
 							
 						}
