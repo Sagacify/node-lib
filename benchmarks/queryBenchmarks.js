@@ -30,8 +30,7 @@ function setup_QueryLogSchema () {
 		},
 		stack: {
 			type: String
-		},
-
+		}
 	});
 	model('QueryLog', QueryLogSchema);
 }

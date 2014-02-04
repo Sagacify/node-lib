@@ -1,3 +1,7 @@
+String.prototype.contains = function(str){
+	return this.indexOf(str) !== -1;
+};
+
 String.prototype.startsWith = function(str){
 	return this.slice(0, str.length) === str;
 };
