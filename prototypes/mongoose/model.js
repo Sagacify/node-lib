@@ -104,6 +104,7 @@ mongoose.Model.sgFindById = function(id, callback){
 					callback(null, doc);
 				}
 				else{
+					console.log('Bad _id?');
 					callback(new SGError('NO_RESULT'))
 				}
 			}

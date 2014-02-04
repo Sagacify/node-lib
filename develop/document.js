@@ -53,7 +53,7 @@ mongoose.Document.prototype.populateFromContext = function(callback){
 		for(var i = 0; i < fieldsToPopulate.length-1; i++){
 			this.populate(fieldsToPopulate[i]);
 		}
-		
+		console.log(fieldsToPopulate[i]);
 		this.populate(fieldsToPopulate[i], callback);
 	}
 };
@@ -147,7 +147,7 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 	};
 	scan(devObject);
 	async.each(docsByPath.keys(), function(path, callback){
-		var childContext = {req:context.req, user:context.user, scope:populateDevelopChildrenOptions[path]};
+		var childContext = {req:context.req, user:context.user, scope:populateDevelopChildrenOptions[path], parentDoc:me};
 		docsByPath[path].setHidden('context', childContext);
 		docsByPath[path].populateDevelop(function(err, popDevChild){
 			devObject._set(path, popDevChild);
