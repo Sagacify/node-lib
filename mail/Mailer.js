@@ -23,11 +23,15 @@ function sendMessage (to, data, template, prefLang, callback) {
 			callback(e);
 		}
 		else {
-			transport.sendMail(message, function (e) {
-				if(e) {
-					callback(e);
+			transport.sendMail(message, function (error, response) {
+				console.log("Mail sent ?")
+				console.log(error)
+				console.log(response)
+				if(error) {
+					callback(error);
 				}
 				else {
+					console.log("Mail successfully sent");
 					callback(null, "Success");
 				}
 			});
@@ -55,6 +59,8 @@ function generateMail (to, data, mailTemplate, prefLang, callback){
 			};
 			message.text = text || undefined;
 			message.html = html || undefined;
+			console.log("message")
+			console.log(message)
 			callback(null, message);
 		}
 	});
@@ -134,7 +140,9 @@ exports.sendMail = function (emailTo, type, prefLang, parameters, callback){
 	var types = ['validation', 'reset_password', 'resource'];
 	
 	if(prefLang && types.indexOf(type) !== -1) {
+		console.log("Email to")
 		console.log(emailTo);
+		console.log("Parameters")
 		console.log(parameters);
 		sendMessage(emailTo, parameters, type, prefLang, callback);
 	}
