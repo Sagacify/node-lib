@@ -202,7 +202,7 @@ EmailInterface.prototype.send = function (settings, data, options, callback) {
 };
 
 function InstanciateMailParser (callback) {
-	var mailparser = new MailParser({
+	var mailParser = new MailParser({
   		debug: false
 	});
 	mailParser.on('end', function (email) {
@@ -211,7 +211,7 @@ function InstanciateMailParser (callback) {
 		console.log(email.text);
 		callback(null, email);
 	});
-	return mailparser;
+	return mailParser;
 }
 
 /**
