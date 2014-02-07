@@ -35,7 +35,7 @@ function EmailReceiver (options, callback) {
 			console.log([
 				'[Success:EmailReceiver] - ',
 				'SMTP Email server listening on port ',
-				options.port
+				options.port || 25
 			].join(''));
 		}
 	});
