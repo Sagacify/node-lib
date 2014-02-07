@@ -219,12 +219,20 @@ EmailInterface.prototype.receive = function (callback) {
 	  		debug: false
 	  });
 
-	mailParser.on('end', function (email) {
-		console.log(email.text);
-		email.text = me.getCleanEmailBody(email.text);
-		console.log(email.text);
-		callback(null, email);
-	});
+	function eventHandler () {
+		mailParser.on('end', function (email) {
+			console.log(email.text);
+			email.text = me.getCleanEmailBody(email.text);
+			console.log(email.text);
+			callback(null, email);
+			mailParser = new MailParser({
+	  			debug: false
+	  		});
+	  		eventHandler();
+		});
+	}
+
+	eventHandler();
 
 	this.receiver.receive(mailParser);
 };
