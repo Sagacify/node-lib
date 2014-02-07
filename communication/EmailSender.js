@@ -22,8 +22,6 @@ if(+process.versions.node.split('.').join('') < 1000) {
  * @return {EmailSender}
  */
 function EmailSender (options) {
-	var instance = this;
-
 	this.transports = {};
 
 	if(options.ses) {
@@ -47,10 +45,6 @@ function EmailSender (options) {
 	}
 
 	this.useDKIM(options.DKIM);
-
-	EmailSender = function () {
-		return instance;
-	};
 }
 
 /**

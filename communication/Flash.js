@@ -1,61 +1,49 @@
-var sSES = require('./SES_mail-sender')
-  , sSMS = require('./SMSer_sms-sender')
-  , sEmail = require('./PostMan_mail-sender');
+var EmailInterface = require('./EmailInterface');
 
-var sEmail = require('./MailBox_mail-receiver');
-
+/**
+ * @class Flash
+ * @classdesc `Flash` class for communicating with different protocols like SMS and emails.
+ *
+ * @param {object}						[options]			- Options
+ * @param {object}						[options.email]		- {@link EmailInterface} Options for the email protocol
+ *
+ * @return {Flash}
+ */
 function Flash (options) {
 	var instance = this;
 
-	this.nextMethod = null;
+	this.protocols = {};
 
-	this.senderOptions = {
-		ses: options.sSES || {},
-		sms: options.sSMS || {},
-		email: options.sEmail || {}
-	};
+	if(options.email) {
+		this.protocols.email = new EmailInterface(options.email);
+	}
 
-	this.reiceiverOptions = {
-		email: options.rEmail || {}
-	};
+	if(options.sms) {
+		// new SMS Interface
+	}
 
-	Flash = function () {
+	return (Flash = function () {
 		return instance;
-	};
+	});
 }
 
-Flash.prototype.senders = {
-	ses: cSES.apply(cSES, this.getOptions('s', 'ses')),
-	sms: cSMS.apply(cSMS, this.getOptions('s', 'sms')),
-	email: cEmail.apply(cEmail, this.getOptions('s', 'email'))
+/**
+ * Tells `Flash` what communication protocol and transport method to use.
+ *
+ * @function with
+ * @memberof Flash.prototype
+ *
+ * @param {string} protocol			- Protocol to use (SMS or email at the moment)
+ * @param {string} [transport]		- Transport method (SES, direct, sendmail ...etc.)
+ *
+ * @return {(undefined|EmailInterface)}
+ *
+ * @api private
+ */
+Flash.prototype.with = function (protocol, transport) {
+	if(protocol in this.protocols) {
+		return this.protocols[protocol]().with(transport);
+	}
 };
 
-Flash.prototype.receivers = {
-	email: rEmail(this.getOptions('s', 'email'))
-};
-
-
-Flash.prototype.getOptions = function (type, classname) {
-	return this[type === 'c' ? 'senderOptions' : 'reiceiverOptions'][classname];
-};
-
-Flash.prototype.with = function (method) {
-	return (this.nextMethod = method) && this;
-};
-
-Flash.prototype.send = function () {
-	if(!this.nextMethod) return;
-	var method = this.senders[this.toLowerCase()];
-	method.send.apply(this.nextMethod, arguments);
-	this.nextMethod = null;
-};
-
-Flash.prototype.receive = function () {
-	var method = this.receivers[transport.toLowerCase()];
-	if(!this.nextMethod) return;
-	method.send.apply(this.nextMethod, arguments);
-	this.nextMethod = null;
-};
-
-var iFlash = new Flash();
-module.exports = iFlash;
+module.exports = Flash;

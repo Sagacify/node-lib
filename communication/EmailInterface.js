@@ -1,5 +1,6 @@
 var fs = require('fs')
   , async = require('async')
+  , MailParser = require('mailparser').MailParser
   , EmailSender = require('./EmailSender')
   , EmailReceiver = require('./EmailReceiver')
   , EmailTemplates = require('email-templates');
@@ -45,14 +46,52 @@ function EmailInterface (options) {
  * @function with
  * @memberof EmailInterface.prototype
  *
- * @param {string}	transport	- Name of the transport method (e.g: 'SES', 'direct', 'sendmail', ...etc.)
+ * @param {string}	transport	-	Name of the transport method (e.g: 'SES', 'direct', 'sendmail', ...etc.)
  *
  * @return {EmailInterface}
  *
  * @api public
  */
 EmailInterface.prototype.with = function (transport) {
-	return (this.transport = transport) && this;
+	return (this.transport = transport, this);
+};
+
+/**
+ * Chaining of some RegExps to clean up quotes and email authors.
+ *
+ * @function getCleanEmailBody
+ * @memberof EmailInterface.prototype
+ *
+ * @param {string}	email	-	The fully buffered / streamed email content
+ *
+ * @return {string}
+ *
+ * @api private
+ */
+EmailInterface.prototype.getCleanEmailBody = function (email) {
+
+	function regexpIndexOf (str, regex, startpos) {
+		var pos = startpos || 0
+		  , indexOf = str.substring(pos).search(regex);
+		return (indexOf >= 0) ? (indexOf + pos) : indexOf;
+	}
+
+	function reverseString (str) {
+		return str.split('').reverse().join('');
+	}
+
+	var regexpQuote = /\r?\n+>+/g
+	  , indexQuote = regexpIndexOf(email, regexpQuote, 0);
+	if(~indexQuote) {
+		email = email.substring(indexQuote, -1);
+		var regexpNewline = /\r?\n+/g
+		  , reverseEmail = reverseString(email)
+		  , indexAuthor = regexpIndexOf(reverseEmail, regexpNewline, 0);
+		if(~indexAuthor) {
+			email = email.substring(0, email.length - 1 - indexAuthor);
+		}
+	}
+	return email.trim().replace(/\r?\n/g, '<br>');
 };
 
 /**
@@ -99,13 +138,15 @@ EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
 	emailContents.subject = settings.subject || fs.readFileSync(basePath + '/subject.txt', 'utf8');
 
 	var attachments = settings.attachments || fs.readdirSync(attachmentsPath)
-	  , attachment;
+	  , attachment
+	  , filename;
 	for(var i = 0, len = attachments.length; i < len; i++) {
 		attachment = attachments[i];
+		filename = attachment.filename || attachment;
 		attachments[i] = {
-			fileName: attachment.filename,
-			filePath: attachment.filePath || attachmentsPath + '/' + attachment.filename,
-			cid: attachment.filePath
+			fileName: filename,
+			filePath: attachment.filePath || attachmentsPath + '/' + filename,
+			cid: this.attachmentsPath + '/' + filename
 		};
 	}
 	emailContents.attachments = attachments;
@@ -138,7 +179,7 @@ EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
  *
  * @param {object}		settings	- {@link  EmailInterface#assembleEmail} Data use to create the envelop and email body
  * @param {object}		data		- Data to feed to the templating engine
- * @param {object}		options		- {@link  EmailSender#end} Options for the sending action
+ * @param {object}		options		- {@link  EmailSender#send} Options for the sending action
  * @param {function}	callback	- Callback
  *
  * @return {undefined}
@@ -162,19 +203,24 @@ EmailInterface.prototype.send = function (settings, data, options, callback) {
  * @function receive
  * @memberof EmailInterface.prototype
  *
+ * @param {function} callback	- Callback function called after the entire email has been streamed and parsed
+ *
  * @return {undefined}
  *
  * @api public
  */
-EmailInterface.prototype.receive = function (options) {
+EmailInterface.prototype.receive = function (callback) {
 	var me = this
-	  , transportMethod = this.transportMethod;
-	this.assembleEmail(data, function (error, parameters) {
-		if(error) {
-			return callback(error);
-		}
-		this.controller.send(transportMethod, parameters, options, callback);
+	  , mailParser = new MailParser({
+	  		debug: false
+	  });
+
+	mailParser.on('end', function (email) {
+		email.text = me.getCleanEmailBody(email);
+		callback(null, email);
 	});
+
+	this.receiver.receive(mailParser);
 };
 
 module.exports = EmailInterface;
