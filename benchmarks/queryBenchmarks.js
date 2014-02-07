@@ -141,9 +141,9 @@ function set_MongoosePrototype_Find () {
 }
 
 module.exports = function () {
-	if(_NODE_ENV === 'development') {
+	// if(NODE_ENV === 'development') {
 		// setup_QueryLogSchema();
 		// set_MongoosePrototype_Find();
 		// set_MongoosePrototype_FindOne();
-	}
+	// }
 };
