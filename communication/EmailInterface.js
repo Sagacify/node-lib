@@ -219,7 +219,7 @@ EmailInterface.prototype.receive = function (callback) {
 	  });
 
 	mailParser.on('end', function (email) {
-		email.text = me.getCleanEmailBody(email);
+		email.text = me.getCleanEmailBody(email.text);
 		callback(null, email);
 	});
 
