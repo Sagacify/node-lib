@@ -13,11 +13,12 @@ if(+process.versions.node.split('.').join('') < 1000) {
  * @class EmailSender
  * @classdesc `EmailSender` class for sending and receiving emails.
  *
- * @param {object}						[options]			- Options
- * @param {object}						[options.ses]		- {@link EmailSender#addSESTransport} Options for the SES transport
- * @param {string}						[options.direct]	- {@link  EmailSender#addDirectTransport} Options for the direct transport
- * @param {object}						[options.sendmail]	- {@link  EmailSender#addSendMailTransport} Options for the sendmail transport (linux only)
- * @param {object}						[options.dkim]		- {@link  EmailSender#useDKIM} Options DKIM signing
+ * @param {object}						[options]					- Options
+ * @param {string}						[options.defaultTransport]	- Name of the default transport method
+ * @param {object}						[options.ses]				- {@link EmailSender#addSESTransport} Options for the SES transport
+ * @param {string}						[options.direct]			- {@link  EmailSender#addDirectTransport} Options for the direct transport
+ * @param {object}						[options.sendmail]			- {@link  EmailSender#addSendMailTransport} Options for the sendmail transport (linux only)
+ * @param {object}						[options.dkim]				- {@link  EmailSender#useDKIM} Options DKIM signing
  *
  * @return {EmailSender}
  */
