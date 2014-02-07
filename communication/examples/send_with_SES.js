@@ -2,12 +2,12 @@ var Flash = require('../Flash');
 
 var Flash = new Flash({
 	email: {
-		sender: {
-			ses: {
-				AWSAccessKeyID: 'AKIAIMQVLS3FLM3WQDXA',
-				AWSSecretKey: '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'
-			}
-		},
+		// sender: {
+		// 	ses: {
+		// 		AWSAccessKeyID: 'AKIAIMQVLS3FLM3WQDXA',
+		// 		AWSSecretKey: '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'
+		// 	}
+		// },
 		receiver: {
 
 		},
