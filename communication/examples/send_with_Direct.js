@@ -6,7 +6,8 @@ var Flash = new Flash({
 			direct: {}
 		},
 		templatesPath: '../../views/emails/templates',
-		attachmentsPath: 'attachments'
+		attachmentsPath: 'attachments',
+		defaultTransport: 'direct'
 	}
 });
 
