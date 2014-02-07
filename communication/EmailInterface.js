@@ -202,7 +202,8 @@ EmailInterface.prototype.send = function (settings, data, options, callback) {
 };
 
 function InstanciateMailParser (callback) {
-	var mailParser = new MailParser({
+	var me = this
+	  , mailParser = new MailParser({
   		debug: false
 	});
 	mailParser.on('end', function (email) {
@@ -227,8 +228,6 @@ function InstanciateMailParser (callback) {
  * @api public
  */
 EmailInterface.prototype.receive = function (callback) {
-	var me = this;
-
 	this.receiver.receive(InstanciateMailParser(callback));
 };
 
