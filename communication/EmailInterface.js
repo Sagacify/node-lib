@@ -93,8 +93,7 @@ EmailInterface.prototype.getCleanEmailBody = function (email) {
 	}
 	return email.trim()
 		.replace(/\r?\n/g, '<br>')
-		.replace(/\t+/g, '\t')
-		.replace(/<\/?br>/g, '<br>');
+		.replace(/\b(?!(?:.\B)*(.)(?:\B.)*\1)[\t(<\/?br>)]+\b/g, '<br>');
 };
 
 /**
