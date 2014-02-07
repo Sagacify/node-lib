@@ -91,7 +91,6 @@ EmailInterface.prototype.getCleanEmailBody = function (email) {
 			email = email.substring(0, email.length - 1 - indexAuthor);
 		}
 	}
-	\t<br>
 	return email.trim()
 		.replace(/\r?\n/g, '<br>')
 		.replace(/\t+/g, '\t')
