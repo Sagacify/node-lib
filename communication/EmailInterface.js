@@ -228,7 +228,7 @@ function InstanciateMailParser (callback) {
  * @api public
  */
 EmailInterface.prototype.receive = function (callback) {
-	this.receiver.receive(InstanciateMailParser(callback));
+	this.receiver.receive(InstanciateMailParser(callback).bind(this));
 };
 
 module.exports = EmailInterface;
