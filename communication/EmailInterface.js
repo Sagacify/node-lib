@@ -91,7 +91,11 @@ EmailInterface.prototype.getCleanEmailBody = function (email) {
 			email = email.substring(0, email.length - 1 - indexAuthor);
 		}
 	}
-	return email.trim().replace(/\r?\n/g, '<br>');
+	\t<br>
+	return email.trim()
+		.replace(/\r?\n/g, '<br>')
+		.replace(/\t+/g, '\t')
+		.replace(/<\/?br>/g, '<br>');
 };
 
 /**
@@ -137,7 +141,7 @@ EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
 	  , attachmentsPath = basePath + '/' + this.attachmentsPath;
 
 	var subject = settings.subject || fs.readFileSync(basePath + '/subject.txt', 'utf8');
-	emailContents.subject = settings.ref ? subject + '(ref:' + settings.ref + ')' : subject;
+	emailContents.subject = settings.ref ? subject + ' (ref:' + settings.ref + ')' : subject;
 
 	var attachments = settings.attachments || fs.readdirSync(attachmentsPath)
 	  , attachment
@@ -218,7 +222,9 @@ EmailInterface.prototype.receive = function (callback) {
 	  });
 
 	mailParser.on('end', function (email) {
+		console.log(email.text);
 		email.text = me.getCleanEmailBody(email.text);
+		console.log(email.text);
 		callback(null, email);
 	});
 
