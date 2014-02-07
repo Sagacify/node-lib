@@ -201,6 +201,19 @@ EmailInterface.prototype.send = function (settings, data, options, callback) {
 	});
 };
 
+function InstanciateMailParser (callback) {
+	var mailparser = new MailParser({
+  		debug: false
+	});
+	mailParser.on('end', function (email) {
+		console.log(email.text);
+		email.text = me.getCleanEmailBody(email.text);
+		console.log(email.text);
+		callback(null, email);
+	});
+	return mailparser;
+}
+
 /**
  * Receives emails on the local email server, parses and forwards them to a callback.
  *
@@ -214,27 +227,9 @@ EmailInterface.prototype.send = function (settings, data, options, callback) {
  * @api public
  */
 EmailInterface.prototype.receive = function (callback) {
-	var me = this
-	  , mailParser = new MailParser({
-	  		debug: false
-	  });
+	var me = this;
 
-	function eventHandler () {
-		mailParser.on('end', function (email) {
-			console.log(email.text);
-			email.text = me.getCleanEmailBody(email.text);
-			console.log(email.text);
-			callback(null, email);
-			mailParser = new MailParser({
-	  			debug: false
-	  		});
-	  		eventHandler();
-		});
-	}
-
-	eventHandler();
-
-	this.receiver.receive(mailParser);
+	this.receiver.receive(InstanciateMailParser(callback));
 };
 
 module.exports = EmailInterface;
