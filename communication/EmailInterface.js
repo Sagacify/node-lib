@@ -91,7 +91,9 @@ EmailInterface.prototype.getCleanEmailBody = function (email) {
 			email = email.substring(0, email.length - 1 - indexAuthor);
 		}
 	}
-	return email.trim().replace(/\r?\n/g, '<br>');
+	return email.trim()
+		.replace(/\r?\n/g, '<br>')
+		.replace(/\b(?!(?:.\B)*(.)(?:\B.)*\1)[\t(<\/?br>)]+\b/g, '<br>');
 };
 
 /**
@@ -115,6 +117,7 @@ EmailInterface.prototype.getCleanEmailBody = function (email) {
  * @param {string}			[settings.html]				- HTML body
  * @param {object}			[settings.header]			- HTTP / SMTP headers
  * @param {object}			[settings.attachments]		- Data use to create the envelop and email body
+ * @param {object}			[settings.ref]				- Reference (ObjectId) to a resource
  *
  * @param {object}			[data]						- Data to feed to the templating engine
  *
@@ -135,7 +138,8 @@ EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
 	  , basePath = path + '/' + type
 	  , attachmentsPath = basePath + '/' + this.attachmentsPath;
 
-	emailContents.subject = settings.subject || fs.readFileSync(basePath + '/subject.txt', 'utf8');
+	var subject = settings.subject || fs.readFileSync(basePath + '/subject.txt', 'utf8');
+	emailContents.subject = settings.ref ? subject + ' (ref:' + settings.ref + ')' : subject;
 
 	var attachments = settings.attachments || fs.readdirSync(attachmentsPath)
 	  , attachment
@@ -216,7 +220,9 @@ EmailInterface.prototype.receive = function (callback) {
 	  });
 
 	mailParser.on('end', function (email) {
+		console.log(email.text);
 		email.text = me.getCleanEmailBody(email.text);
+		console.log(email.text);
 		callback(null, email);
 	});
 
