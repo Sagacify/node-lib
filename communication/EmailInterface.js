@@ -70,9 +70,6 @@ EmailInterface.prototype.with = function (transport) {
  */
 EmailInterface.prototype.getCleanEmailBody = function (email) {
 
-	console.log('RAW Email :');
-	console.log(email);
-
 	function regexpIndexOf (str, regex, startpos) {
 		var pos = startpos || 0
 		  , indexOf = str.substring(pos).search(regex);
