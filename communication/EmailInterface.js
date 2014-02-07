@@ -115,6 +115,7 @@ EmailInterface.prototype.getCleanEmailBody = function (email) {
  * @param {string}			[settings.html]				- HTML body
  * @param {object}			[settings.header]			- HTTP / SMTP headers
  * @param {object}			[settings.attachments]		- Data use to create the envelop and email body
+ * @param {object}			[settings.ref]				- Reference (ObjectId) to a resource
  *
  * @param {object}			[data]						- Data to feed to the templating engine
  *
@@ -135,7 +136,8 @@ EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
 	  , basePath = path + '/' + type
 	  , attachmentsPath = basePath + '/' + this.attachmentsPath;
 
-	emailContents.subject = settings.subject || fs.readFileSync(basePath + '/subject.txt', 'utf8');
+	var subject = settings.subject || fs.readFileSync(basePath + '/subject.txt', 'utf8');
+	emailContents.subject = settings.ref ? subject + '(ref:' + settings.ref + ')' : subject;
 
 	var attachments = settings.attachments || fs.readdirSync(attachmentsPath)
 	  , attachment
