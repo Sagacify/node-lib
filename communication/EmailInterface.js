@@ -202,13 +202,12 @@ EmailInterface.prototype.send = function (settings, data, options, callback) {
 };
 
 function InstanciateMailParser (callback) {
-	var me = this
-	  , mailParser = new MailParser({
+	var mailParser = new MailParser({
   		debug: false
 	});
 	mailParser.on('end', function (email) {
 		console.log(email.text);
-		email.text = me.getCleanEmailBody(email.text);
+		email.text = this.getCleanEmailBody(email.text);
 		console.log(email.text);
 		callback(null, email);
 	});
@@ -228,7 +227,7 @@ function InstanciateMailParser (callback) {
  * @api public
  */
 EmailInterface.prototype.receive = function (callback) {
-	this.receiver.receive(InstanciateMailParser(callback).bind(this));
+	this.receiver.receive(InstanciateMailParser.bind(this)(callback));
 };
 
 module.exports = EmailInterface;
