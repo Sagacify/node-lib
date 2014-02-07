@@ -3,11 +3,11 @@ var Flash = require('../Flash');
 var Flash = new Flash({
 	email: {
 		sender: {
-			direct: {}
+			direct: {},
+			defaultTransport: 'direct'
 		},
 		templatesPath: '../../views/emails/templates',
-		attachmentsPath: 'attachments',
-		defaultTransport: 'direct'
+		attachmentsPath: 'attachments'
 	}
 });
 
