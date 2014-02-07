@@ -16,13 +16,11 @@ AWS.config.update({
 });
 s3 = new AWS.S3();
 
-var writeQueue = async.queue(function(params, callback){
-	s3.client.putObject(params, function (err) {
-		callback.apply(this, arguments);
-	});
+var writeQueue = async.queue(function (params, callback) {
+	s3.client.putObject(params, callback);
 }, 3);
 
-var readQueue = async.queue(function(params, callback){
+var readQueue = async.queue(function (params, callback) {
 	s3.client.getObject(params, callback);
 }, 3);
 
@@ -66,15 +64,6 @@ exports.writeFileToS3 = function (base64data, extension, secure, callback) {
 	}, function (err) {
 		callback(err, filename);
 	});
-
-	// s3.client.putObject({
-	// 	Bucket: secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName,
-	// 	Key: filename,
-	// 	Body: new Buffer(base64data, 'base64'),
-	// 	ContentType: ct.ext.getContentType(extension)
-	// }, function (err) {
-	// 	callback(err, filename);
-	// });
 };
 
 // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
@@ -83,10 +72,6 @@ exports.readFileFromS3 = function (filename, secure, callback) {
 		Bucket: secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName,
 		Key: filename
 	}, callback);
-	// s3.client.getObject({
-	// 	Bucket: secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName,
-	// 	Key: filename
-	// }, callback);
 };
 
 exports.writeDataToFileSystem = function (filename, data, callback) {
@@ -125,44 +110,31 @@ exports.getSecuredFilepath = function (filename) {
 };
 
 exports.uploadThenDeleteLocalFile = function (filepath, extension, secure, callback) {
+	if (!callback) console.log("WTF");
 	//Scan for viruses
 	virusScan.launchFileScan(filepath, function (err, msg) {
-		if (!err) {
-			//No virus detected
-			exports.readThenDeleteLocalFile(filepath, function (err, data) {
-				if (err) {
-					callback(err);
-				}
-				else {
-					exports.writeFileToS3(new Buffer(data, 'binary').toString('base64'), extension, secure, function (err, filename) {
-						if (err) {
-							console.log("ERROR WRITE TO S3");
-							console.log(err);
-							callback(err, null);
-						}
-						else {
-							console.log("FILENAME AFTER S3");
-							console.log(filename);
-							try {
-								callback(err, config.AWS.s3StaticURL + "/" + (secure?config.AWS.s3SecuredBucketName:config.AWS.s3BucketName) + "/" + filename);
-							}
-							catch (e) {
-								Error.stackTraceLimit = 100;
-								console.log(new Error().stack);
-								callback(e);
-							}
-							
-						}
-					});
-				}
-			});
-		} else {
+		if (err) {
 			//An error occured (might be a virus)
 			console.log(msg);
 			fs.unlink(filepath);
 			console.log('callback');
-			callback(err);
+			return callback(err);
 		}
+		//No virus detected
+		exports.readThenDeleteLocalFile(filepath, function (err, data) {
+			if (err) {
+				return callback(err);
+			}
+			exports.writeFileToS3(new Buffer(data, 'binary').toString('base64'), extension, secure, function (err, filename) {
+				if (err) {
+					console.log("ERROR WRITE TO S3");
+					console.log(err);
+					return callback(err, null);
+				}
+
+				callback(err, config.AWS.s3StaticURL + "/" + (secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName) + "/" + filename);
+			});
+		});
 	});
 };
 
@@ -178,7 +150,7 @@ exports.readThenDeleteLocalFile = function (filepath, callback) {
 };
 
 exports.getSize = function (filepath, callback) {
-    fs.stat(filepath, function (err, stats) {
-        callback(err, stats ? stats.size : null);
-    });
+	fs.stat(filepath, function (err, stats) {
+		callback(err, stats ? stats.size : null);
+	});
 };
