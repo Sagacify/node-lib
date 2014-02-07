@@ -208,7 +208,7 @@ EmailInterface.prototype.InstanciateMailParser = function (callback) {
 	});
 	mailParser.on('end', function (email) {
 		console.log(email.text);
-		email.text = this.getCleanEmailBody(email.text);
+		email.text = me.getCleanEmailBody(email.text);
 		console.log(email.text);
 		callback(null, email);
 	});
