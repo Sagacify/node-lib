@@ -113,6 +113,12 @@ mongoose.Document.prototype.develop = function(callback){
 		}
 	});
 
+	if(developedDoc.uri){
+		console.log('developedDoc')
+		console.log(developedDoc)
+		console.log(this.schema.methods.getUri)
+	}
+
 	async.parallel(cbFunctions, function(err, results){
 		if(!err){
 			for(var i = 0; i < cbFields.length; i++){

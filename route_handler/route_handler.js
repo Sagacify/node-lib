@@ -29,6 +29,12 @@ RouteHandler.prototype.handle = function(){
 								console.log(err);
 								console.log(err.stack)
 							}
+
+							if(clientFormat.__t){
+	console.log('clientFormat')
+	console.log(clientFormat)
+}
+
 							res.SGsend(err||clientFormat);
 						});
 					}
