@@ -112,12 +112,6 @@ mongoose.Document.prototype.develop = function(callback){
 		}
 	});
 
-	if(developedDoc.uri){
-		console.log('developedDoc')
-		console.log(developedDoc)
-		console.log(this.schema.methods.getUri)
-	}
-
 	async.parallel(cbFunctions, function(err, results){
 		if(!err){
 			for(var i = 0; i < cbFields.length; i++){
@@ -151,6 +145,7 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 		});
 	};
 	scan(devObject);
+
 	async.each(docsByPath.keys(), function(path, callback){
 		var childContext = {req:context.req, user:context.user, scope:populateDevelopChildrenOptions[path], parentDoc:me};
 		docsByPath[path].setHidden('context', childContext);

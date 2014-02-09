@@ -23,24 +23,19 @@ mongoose.Schema.prototype.populateDevelop = function(callback){
 			fieldsToPopulateString += fieldToPopulate + " ";
 		});
 
+		var developedArray = [];
 		var me = this;
 		var populateDevelopDocs = function(){
-
 			async.each(me.indexes(), function(index, callback){
-
-				Object.defineProperty(me[index], "context", {
-					writable: true,
-					value: context
-				});
-
+				me[index].setHidden('context', context);
 				me[index].populateDevelop(function(err, popDevObj){
 					if(!err){
-						me[index] = popDevObj;
+						developedArray[index] = popDevObj;
 					}
 					callback(err);
 				});				
 			}, function(err){
-				callback(err, me);
+				callback(err, developedArray);
 			});
 		};
 
