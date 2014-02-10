@@ -11,9 +11,10 @@ mongoose.Model.prototype.getModelName = function(){
 mongoose.Model.prototype._save = mongoose.Model.prototype.save;
 
 mongoose.Model.prototype.save = function save(fn){
-	if(this.modifiedPaths().length==0){
+	if(this.modifiedPaths().length==0 && !this.isNew){
+		console.log('modifiedPaths')
 		if(fn)
-			fn(null);
+			fn(null, this);
 	}
 	else{
 		return this._save.apply(this, arguments);
