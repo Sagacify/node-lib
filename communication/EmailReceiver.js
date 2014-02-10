@@ -110,7 +110,7 @@ EmailReceiver.prototype.validateRecipient = function (recipientValidator) {
 EmailReceiver.prototype.receive = function (stream) {
 	var emailQueueId = this.getEmailQueueId();
 	this.smtp.on('startData', function (connection) {
-		connection.saveStream = stream;
+		connection.saveStream = stream();
 	}).on('data', function (connection, chunk) {
 		connection.saveStream.write(chunk);
 	}).on('dataReady', function (connection, callback) {
