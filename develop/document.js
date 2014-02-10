@@ -53,7 +53,6 @@ mongoose.Document.prototype.populateFromContext = function(callback){
 		for(var i = 0; i < fieldsToPopulate.length-1; i++){
 			this.populate(fieldsToPopulate[i]);
 		}
-		console.log(fieldsToPopulate[i]);
 		this.populate(fieldsToPopulate[i], callback);
 	}
 };
@@ -64,10 +63,6 @@ mongoose.Document.prototype.develop = function(callback){
 	var context = this.context;
 	var developedDoc = this.toObject();
 
-	//var formattedSchema = this.schema.formattedSchema;
-	// if(!formattedSchema){
-	// 	return callback(null, developedDoc);
-	// }
 
 	var developOptions = typeof this.developOptions == "function"? this.developOptions(context.scope) : this.schema.developOptions(context.scope);
 
@@ -98,11 +93,13 @@ mongoose.Document.prototype.develop = function(callback){
 	var cbFields = [];
 	var cbFunctions = [];
 	/*fieldsToAdd*/fields.forEach(function(fieldToAdd){
+
 		fieldToAddGetter = 'get'+fieldToAdd.capitalize();
+
 		if(me[fieldToAdd] && me[fieldToAdd] in me.schema.virtuals){
 			developedDoc._set(fieldToAdd, me[fieldToAdd]);
-		}
-		else if(me[fieldToAddGetter] && me[fieldToAddGetter].isFunction()/* && me.schema.documentVirtuals && fieldToAdd in me.schema.documentVirtuals*/){
+		}else if(me[fieldToAddGetter] && me[fieldToAddGetter].isFunction()/* && me.schema.documentVirtuals && fieldToAdd in me.schema.documentVirtuals*/){
+			
 			if(me[fieldToAddGetter].hasCallback()){
 				cbFields.push(fieldToAdd);
 				cbFunctions.push(me[fieldToAddGetter].bind(me));
@@ -110,14 +107,10 @@ mongoose.Document.prototype.develop = function(callback){
 			else{
 				developedDoc._set(fieldToAdd, me.get(fieldToAdd));
 			}
+		} else {
+			// console.log('------> Unknow field '+fieldToAdd +" with getter "+fieldToAddGetter);
 		}
 	});
-
-	if(developedDoc.uri){
-		console.log('developedDoc')
-		console.log(developedDoc)
-		console.log(this.schema.methods.getUri)
-	}
 
 	async.parallel(cbFunctions, function(err, results){
 		if(!err){
@@ -152,6 +145,7 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 		});
 	};
 	scan(devObject);
+
 	async.each(docsByPath.keys(), function(path, callback){
 		var childContext = {req:context.req, user:context.user, scope:populateDevelopChildrenOptions[path], parentDoc:me};
 		docsByPath[path].setHidden('context', childContext);

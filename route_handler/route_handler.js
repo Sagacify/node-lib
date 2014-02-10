@@ -20,21 +20,15 @@ RouteHandler.prototype.handle = function(){
 		me.buildContext(req, res);
 		me.buildRoute(function(err){
 			if(!err){
-				me.checkout(function (err, checkoutHandler){
+				me.checkout(function (err, checkout){
 					//console.log('CHECKOUT :'); // BUG: returns [] on "Virtuals" !
 					//console.log(arguments);
 					if(!err){
-						me.generateClientFormat(checkoutHandler, function(err, clientFormat){
+						me.generateClientFormat(checkout, function(err, clientFormat){
 							if(err){
 								console.log(err);
 								console.log(err.stack)
 							}
-
-							if(clientFormat.__t){
-	console.log('clientFormat')
-	console.log(clientFormat)
-}
-
 							res.SGsend(err||clientFormat);
 						});
 					}

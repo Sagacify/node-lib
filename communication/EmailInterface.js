@@ -91,7 +91,9 @@ EmailInterface.prototype.getCleanEmailBody = function (email) {
 			email = email.substring(0, email.length - 1 - indexAuthor);
 		}
 	}
-	return email.trim().replace(/\r?\n/g, '<br>');
+	return email.trim()
+		.replace(/\r?\n/g, '<br>')
+		.replace(/\b(?!(?:.\B)*(.)(?:\B.)*\1)[\t(<\/?br>)]+\b/g, '<br>');
 };
 
 /**
@@ -137,7 +139,7 @@ EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
 	  , attachmentsPath = basePath + '/' + this.attachmentsPath;
 
 	var subject = settings.subject || fs.readFileSync(basePath + '/subject.txt', 'utf8');
-	emailContents.subject = settings.ref ? subject + '(ref:' + settings.ref + ')' : subject;
+	emailContents.subject = settings.ref ? subject + ' (ref:' + settings.ref + ')' : subject;
 
 	var attachments = settings.attachments || fs.readdirSync(attachmentsPath)
 	  , attachment
@@ -199,6 +201,20 @@ EmailInterface.prototype.send = function (settings, data, options, callback) {
 	});
 };
 
+EmailInterface.prototype.InstanciateMailParser = function (callback) {
+	var me = this
+	  , mailParser = new MailParser({
+  		debug: false
+	});
+	mailParser.on('end', function (email) {
+		console.log(email.text);
+		email.text = me.getCleanEmailBody(email.text);
+		console.log(email.text);
+		callback(null, email);
+	});
+	return mailParser;
+}
+
 /**
  * Receives emails on the local email server, parses and forwards them to a callback.
  *
@@ -212,17 +228,7 @@ EmailInterface.prototype.send = function (settings, data, options, callback) {
  * @api public
  */
 EmailInterface.prototype.receive = function (callback) {
-	var me = this
-	  , mailParser = new MailParser({
-	  		debug: false
-	  });
-
-	mailParser.on('end', function (email) {
-		email.text = me.getCleanEmailBody(email.text);
-		callback(null, email);
-	});
-
-	this.receiver.receive(mailParser);
+	this.receiver.receive(this.InstanciateMailParser(callback));
 };
 
 module.exports = EmailInterface;
