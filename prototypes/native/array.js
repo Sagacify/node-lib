@@ -107,10 +107,7 @@ Array.prototype.populateDevelop = function(callback){
         if(this.length == 0 || !(this[0] instanceof mongoose.Document)){
                 callback(null, this);
         } else {
-                Object.defineProperty(this, "schema", {
-                        writable: true,
-                        value: this[0].schema
-                });
+                this.setHidden('schema', this[0].schema);
                 this[0].schema.populateDevelop.apply(this, [callback]);
         }
 };
