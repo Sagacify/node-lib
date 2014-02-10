@@ -26,14 +26,26 @@ Array.prototype.containsId = function(anId){
 
 //In an docs array
 Array.prototype.containsDoc = function(docToSearchFor){
-	return this.containsWithEqualFunction(doc, function(id){
+	return this.containsWithEqualFunction(function(doc){
 		return doc._id.equals(docToSearchFor._id);
 	});
 }
 
-Array.prototype.containsWithEqualFunction = function(el, equalFunction){
+Array.prototype.containsWithEqualFunction = function(equalFunction){
 	return this.filter(equalFunction).length > 0;
 }
+
+Array.prototype.containsIdOrDoc = function(_id){
+	if(!this.length){
+		return false;
+	}
+	if(this[0].isObject()){
+		return this.containsDoc({_id:_id});
+	}
+	else{
+		return this.contains(_id);
+	}
+};
 
 
 //Deprecated see containsWithEqualFunction
