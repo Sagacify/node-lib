@@ -97,6 +97,32 @@ EmailInterface.prototype.getCleanEmailBody = function (email) {
 };
 
 /**
+ * Closure function that return new instances of a mail parser stream to which receiveid emails are piped to.
+ *
+ * @function InstanciateMailParser
+ * @memberof EmailInterface.prototype
+ *
+ * @param {function}	callback	- Callback
+ *
+ * @return {function}
+ *
+ * @api public
+ */
+EmailInterface.prototype.InstanciateMailParser = function (callback) {
+	var me = this;
+	return function () {
+		var mailParser = new MailParser({
+			debug: false
+		});
+		mailParser.on('end', function (email) {
+			email.text = me.getCleanEmailBody(email.text);
+			callback(null, email);
+		});
+		return mailParser;
+	};
+};
+
+/**
  * Assembles an object containing all the needed informations to create a valid
  * envelope and (HTML) email body.
  *
@@ -201,20 +227,6 @@ EmailInterface.prototype.send = function (settings, data, options, callback) {
 	});
 };
 
-EmailInterface.prototype.InstanciateMailParser = function (callback) {
-	var me = this
-	  , mailParser = new MailParser({
-  		debug: false
-	});
-	mailParser.on('end', function (email) {
-		console.log(email.text);
-		email.text = me.getCleanEmailBody(email.text);
-		console.log(email.text);
-		callback(null, email);
-	});
-	return mailParser;
-}
-
 /**
  * Receives emails on the local email server, parses and forwards them to a callback.
  *
@@ -228,7 +240,8 @@ EmailInterface.prototype.InstanciateMailParser = function (callback) {
  * @api public
  */
 EmailInterface.prototype.receive = function (callback) {
-	this.receiver.receive(this.InstanciateMailParser(callback));
+	var mailParserInstanciator = this.InstanciateMailParser(callback);
+	this.receiver.receive(mailParserInstanciator);
 };
 
 module.exports = EmailInterface;
