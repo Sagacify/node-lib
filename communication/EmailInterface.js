@@ -176,7 +176,7 @@ EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
 		attachments[i] = {
 			fileName: filename,
 			filePath: attachment.filePath || attachmentsPath + '/' + filename,
-			cid: this.attachmentsPath + '/' + filename
+			cid: /*this.attachmentsPath + '/' +*/ filename
 		};
 	}
 	emailContents.attachments = attachments;
@@ -219,7 +219,7 @@ EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
 EmailInterface.prototype.send = function (settings, data, options, callback) {
 	var me = this
 	  , transport = this.transport;
-	this.assembleEmail(settings, data, function (error, emailContents) {
+		this.assembleEmail(settings, data, function (error, emailContents) {
 		if(error) {
 			return callback(error);
 		}
