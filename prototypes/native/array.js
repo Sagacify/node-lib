@@ -36,6 +36,7 @@ Array.prototype.containsWithEqualFunction = function(equalFunction){
 }
 
 Array.prototype.containsIdOrDoc = function(_id){
+	
 	if(!this.length){
 		return false;
 	}
