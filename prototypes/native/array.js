@@ -37,15 +37,19 @@ Array.prototype.containsWithEqualFunction = function(equalFunction){
 
 Array.prototype.containsIdOrDoc = function(_id){
 	
-	if(!this.length){
-		return false;
-	}
-	if(this[0].isObject()){
-		return this.containsDoc({_id:_id});
-	}
-	else{
-		return this.contains(_id);
-	}
+	return this.containsWithEqualFunction(function(item){
+		return item && ((item._id || item)).equals(_id._id || _id);
+	});
+
+	// if(!this.length){
+	// 	return false;
+	// }
+	// if(this[0].isObject()){
+	// 	return this.containsDoc({_id:_id});
+	// }
+	// else{
+	// 	return this.contains(_id);
+	// }
 };
 
 

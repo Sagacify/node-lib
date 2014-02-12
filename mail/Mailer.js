@@ -60,7 +60,6 @@ function generateMail (to, data, mailTemplate, prefLang, callback){
 			message.text = text || undefined;
 			message.html = html || undefined;
 			console.log("message")
-			console.log(message)
 			callback(null, message);
 		}
 	});
