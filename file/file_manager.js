@@ -89,6 +89,19 @@ exports.writeDataToFileSystem = function (filename, data, callback) {
 	});
 };
 
+exports.writeStreamToFileSystem = function (filename, callback) {
+	tmp.dir(function (err, directoryPath) {
+		if (err) {
+			console.log("err: ");
+			console.log(err);
+			return callback(err);
+		}
+
+		var filepath = directoryPath + "/" + filename;
+		callback(null, filepath, fs.createWriteStream(filepath));
+	});
+};
+
 exports.removeFileFromS3 = function (filename, callback) {
 	s3.client.deleteObject({
 		Bucket: config.AWS.s3BucketName,

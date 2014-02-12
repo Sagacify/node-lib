@@ -218,7 +218,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		var isOptional = false;
 		if(ele_config.length) {
 			isOptional = this.hasOptionalFlag(ele_config);
-			ele_config = ele_config.clone().splice(isOptional, ele_config.length);
+			ele_config = ele_config.sgClone().splice(isOptional, ele_config.length);
 		}
 		if(isOptional && (ele == null)) {
 			return true;
