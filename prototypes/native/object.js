@@ -1,7 +1,7 @@
 var is = require('../../strict_typing/validateType');
 var obj_proto = {};
 
-obj_proto.clone = function () {
+obj_proto.sgClone = function () {
 	if ((this == null) || ((typeof this) !== 'object')) {
 		return this;
 	}
