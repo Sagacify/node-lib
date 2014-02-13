@@ -117,6 +117,8 @@ EmailReceiver.prototype.receive = function (stream) {
 		console.log(chunk)
 		connection.saveStream.write(chunk);
 	}).on('dataReady', function (connection, callback) {
+		console.log('end _________')
+		console.log(connection.saveStream.toString())
 		connection.saveStream.end();
 		callback(null, emailQueueId);
 	});
