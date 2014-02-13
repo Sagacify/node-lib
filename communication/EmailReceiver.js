@@ -113,6 +113,8 @@ EmailReceiver.prototype.receive = function (stream) {
 	}).on('data', function (connection, chunk) {
 		connection.saveStream.write(chunk);
 	}).on('dataReady', function (connection, callback) {
+		console.log('____ END _____');
+		console.log(connection.saveStream.toString('utf8'));
 		connection.saveStream.end();
 		callback(null, emailQueueId);
 	});
