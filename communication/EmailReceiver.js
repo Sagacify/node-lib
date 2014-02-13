@@ -21,8 +21,9 @@ function EmailReceiver (options, callback) {
 	this.smtp = simplesmtp.createServer({
 		disableDNSValidation: options.disableDNSValidation || true,
 		SMTPBanner: options.SMTPBanner || 'My Server',
-		debug: true
+		debug: !!options.debug
 	});
+
 	this.smtp.listen(options.port || 25, callback || function (error) {
 		if(error) {
 			console.log([
@@ -113,8 +114,6 @@ EmailReceiver.prototype.receive = function (stream) {
 	}).on('data', function (connection, chunk) {
 		connection.saveStream.write(chunk);
 	}).on('dataReady', function (connection, callback) {
-		console.log('____ END _____');
-		console.log(connection.saveStream.toString('utf8'));
 		connection.saveStream.end();
 		callback(null, emailQueueId);
 	});
