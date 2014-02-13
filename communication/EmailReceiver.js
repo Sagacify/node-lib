@@ -23,7 +23,6 @@ function EmailReceiver (options, callback) {
 		SMTPBanner: options.SMTPBanner || 'My Server',
 		debug: true
 	});
-	console.log('port:', options.port);
 	this.smtp.listen(options.port || 25, callback || function (error) {
 		if(error) {
 			console.log([
@@ -108,17 +107,12 @@ EmailReceiver.prototype.validateRecipient = function (recipientValidator) {
  * @api public
  */
 EmailReceiver.prototype.receive = function (stream) {
-	console.log('receive')
 	var emailQueueId = this.getEmailQueueId();
 	this.smtp.on('startData', function (connection) {
 		connection.saveStream = stream();
 	}).on('data', function (connection, chunk) {
-		console.log('ondata')
-		console.log(chunk)
 		connection.saveStream.write(chunk);
 	}).on('dataReady', function (connection, callback) {
-		console.log('end _________')
-		console.log(connection.saveStream.toString())
 		connection.saveStream.end();
 		callback(null, emailQueueId);
 	});

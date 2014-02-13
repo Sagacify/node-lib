@@ -240,7 +240,12 @@ EmailInterface.prototype.send = function (settings, data, options, callback) {
  * @api public
  */
 EmailInterface.prototype.receive = function (callback) {
-	var mailParserInstanciator = this.InstanciateMailParser(callback);
+	//var mailParserInstanciator = this.InstanciateMailParser(callback);
+	var mailParserInstanciator = this.InstanciateMailParser(function () {
+		console.log('PARSED');
+		console.log(arguments);
+		callback.apply(null, arguments);
+	});
 	this.receiver.receive(mailParserInstanciator);
 };
 
