@@ -89,15 +89,13 @@ exports.writeDataToFileSystem = function (filename, data, callback) {
 	});
 };
 
-exports.writeStreamToFileSystem = function (filename, callback) {
+exports.createStreamToFileSystem = function (filename, callback) {
 	tmp.dir(function (err, directoryPath) {
 		if (err) {
-			console.log("err: ");
-			console.log(err);
 			return callback(err);
 		}
 
-		var filepath = directoryPath + "/" + filename;
+		var filepath = directoryPath + "/" + (filename ? filename : "no-name");
 		callback(null, filepath, fs.createWriteStream(filepath));
 	});
 };
