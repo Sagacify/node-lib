@@ -17,7 +17,8 @@ CheckoutVirtual.prototype.get = function(callback){
 
 CheckoutVirtual.prototype.post = function(callback){
 	var me = this;
-	if(this.parentState.state.type() == "Document"){
+	var type = this.parentState.state.type();
+	if(type == "Document"){
 		this.parentState.state.obj.addInArray(this.parentState.path, this.context.req.body._item||this.context.req.body, function(err, added){
 			if(!err){
 				me.parentState.state.obj.save(function(err){
@@ -28,6 +29,9 @@ CheckoutVirtual.prototype.post = function(callback){
 				callback(err);
 			}
 		});
+	}
+	else if(type == "Model"){
+		this.parentState.state.caller.addInArray(this.parentState.path, this.context.req.body._item||this.context.req.body, callback);
 	}
 	else{
 		callback(new SGError());

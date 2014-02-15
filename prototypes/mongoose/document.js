@@ -96,8 +96,9 @@ mongoose.Document.prototype.getRef = function(path){
 mongoose.Document.prototype._get = mongoose.Document.prototype.get;
 
 mongoose.Document.prototype.willGet = function(path, params, callback){
-	if(typeof this["willGet"+path.capitalize()] == "function"){
-		return this["willGet"+path.capitalize()]._apply(this, params, callback);
+	var willGetPath = "willGet"+path.capitalize();
+	if(typeof this[willGetPath] == "function"){
+		return this[willGetPath]._apply(this, params, callback);
 	}
 	else{
 		return callback?callback(null):null;
@@ -124,8 +125,9 @@ mongoose.Document.prototype.doGet = function(path, params, callback){
 };
 
 mongoose.Document.prototype.didGet = function(path, params){
-	if(typeof this["didGet"+path.capitalize()] == "function")
-		return this["didGet"+path.capitalize()]._apply(this, params);
+	var didGetPath = "didGet"+path.capitalize();
+	if(typeof this[didGetPath] == "function")
+		return this[didGetPath]._apply(this, params);
 };
 
 mongoose.Document.prototype.willSet = function(path, val, callback){
