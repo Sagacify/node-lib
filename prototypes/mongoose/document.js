@@ -1,4 +1,5 @@
 var async = require('async');
+var utils = require('./utils');
 
 mongoose.Document.prototype._toObject2 = mongoose.Document.prototype.toObject;
 
@@ -12,11 +13,12 @@ mongoose.Document.prototype.toObject = function(opts){
 	return obj;
 };
 
-mongoose.Document.prototype.created_at = function() {
+
+mongoose.Document.prototype.getCreated_at = function() {
 	if(this.schema.tree._id.type.name == 'ObjectId')
  		return new Date(parseInt(this._id.toString().slice(0,8), 16) * 1000);
- 	else if(this.created_at)
- 		return created_at;
+ 	else if(this._get('created_at'))
+ 		return this._get('created_at');
  	else
  		return null;
 };
@@ -35,11 +37,18 @@ mongoose.Document.prototype.generateSlug = function(baseString, callback){
 		.toLowerCase();
 
 	//var regexSearch = baseString.replace(/\-/, '\\-');
-	var regexSearch = new RegExp('^'+baseString+'\-[0-9]+$');
+	var regexSearch = new RegExp('^' + baseString + '\-?[0-9]*$');
 
 	var me = this;
-	model(modelName).find({slug:{$regex:regexSearch}}, {slug: 1, _id: 0}, function(err, docs){
-		if(err){
+	model(modelName).find({
+		slug: {
+			$regex: regexSearch
+		}
+	}, {
+		slug: 1,
+		_id: 0
+	}, function (e, docs) {
+		if(e){
 			me.slug = me._id;
 		}
 		else{
@@ -87,8 +96,9 @@ mongoose.Document.prototype.getRef = function(path){
 mongoose.Document.prototype._get = mongoose.Document.prototype.get;
 
 mongoose.Document.prototype.willGet = function(path, params, callback){
-	if(typeof this["willGet"+path.capitalize()] == "function"){
-		return this["willGet"+path.capitalize()]._apply(this, params, callback);
+	var willGetPath = "willGet"+path.capitalize();
+	if(typeof this[willGetPath] == "function"){
+		return this[willGetPath]._apply(this, params, callback);
 	}
 	else{
 		return callback?callback(null):null;
@@ -115,8 +125,9 @@ mongoose.Document.prototype.doGet = function(path, params, callback){
 };
 
 mongoose.Document.prototype.didGet = function(path, params){
-	if(typeof this["didGet"+path.capitalize()] == "function")
-		return this["didGet"+path.capitalize()]._apply(this, params);
+	var didGetPath = "didGet"+path.capitalize();
+	if(typeof this[didGetPath] == "function")
+		return this[didGetPath]._apply(this, params);
 };
 
 mongoose.Document.prototype.willSet = function(path, val, callback){
@@ -449,122 +460,69 @@ mongoose.Document.prototype.didUpdate = function(args){
 
 };
 
-mongoose.Document.prototype.willCreate = function(){
-
+mongoose.Document.prototype.willCreate = function(args, callback){
+	return this.willUpdate(args, callback);
 };
 
+mongoose.Document.prototype.doCreate = function(args, callback){
+	return this.doUpdate(args, callback);
+};
 
-mongoose.Document.prototype.didCreate = function(){
-
+mongoose.Document.prototype.didCreate = function(args){
+	return this.didUpdate(args);
 };
 
 mongoose.Document.prototype.ensureUpdateConsistency = function(){
-	var me = this;
-	if(this.getModelName){
-		var myModelName = this.getModelName();
-		mongoose.models.keys().forEach(function(modelName){
-			var skelleton = mongoose.models[modelName].schema.skelleton;
-			if(skelleton[myModelName]){
-				skelleton[myModelName].forEach(function(path){
-					if(path.endsWith('._id')){
-						var findArgs = {};
-						findArgs[path] = me._id;
-						model(modelName).find(findArgs, function(err, docs){
-							if(docs){
-								docs.forEach(function(doc){
-									var semiEmbeddedPath = path.substring(0, path.length-4);
-									var semiEmbeddedDoc;
-									if(doc.isSemiEmbedded(semiEmbeddedPath)){
-										semiEmbeddedDoc = doc.get(semiEmbeddedPath);
-									}
-									// else if(doc.isSemiEmbeddedArray(semiEmbeddedPath)){
-									// 	semiEmbeddedDoc = doc.get(semiEmbeddedPath).id(me._id);
-									// }
-									if(semiEmbeddedDoc){
-										var changed = false;
-										doc.schema.paths.keys().forEach(function(key){
-											var semiEmbeddedKey = key.substring(semiEmbeddedPath.length+1, key.length);
-											if(semiEmbeddedKey && !key.endsWith("_id") && key.startsWith(semiEmbeddedPath) && me.get(semiEmbeddedKey) != semiEmbeddedDoc._get(semiEmbeddedKey)){
-												doc.set(key, me.get(semiEmbeddedKey));
-												//semiEmbeddedDoc[key] = me[key];
-												changed = true;
-											}
-										});
-										if(changed){
-											doc.save();
-										}
-									}
-								});
-							}
-						});
-					}
-				});
-			}
-		});
-	}
+
+	//Doit etre fait dans une lib en particulier.C'est un enorme block!
+
+	// var me = this;
+	// if (this.getModelName) {
+	// 	return;
+	// };
+	// var myModelName = this.getModelName();
+
+	// mongoose.models.keys().forEach(function(modelName){
+	// 	var skelleton = mongoose.models[modelName].schema.skelleton;
+	// 	if(skelleton[myModelName]){
+	// 		skelleton[myModelName].forEach(function(path){
+	// 			if(path.endsWith('._id')){
+	// 				var findArgs = {};
+	// 				findArgs[path] = me._id;
+	// 				model(modelName).find(findArgs, function(err, docs){
+	// 					if(docs){
+	// 						docs.forEach(function(doc){
+	// 							var semiEmbeddedPath = path.substring(0, path.length-4);
+	// 							var semiEmbeddedDoc;
+	// 							if(doc.isSemiEmbedded(semiEmbeddedPath)){
+	// 								semiEmbeddedDoc = doc.get(semiEmbeddedPath);
+	// 							}
+	// 							// else if(doc.isSemiEmbeddedArray(semiEmbeddedPath)){
+	// 							// 	semiEmbeddedDoc = doc.get(semiEmbeddedPath).id(me._id);
+	// 							// }
+	// 							if(semiEmbeddedDoc){
+	// 								var changed = false;
+	// 								doc.schema.paths.keys().forEach(function(key){
+	// 									var semiEmbeddedKey = key.substring(semiEmbeddedPath.length+1, key.length);
+	// 									if(semiEmbeddedKey && !key.endsWith("_id") && key.startsWith(semiEmbeddedPath) && me.get(semiEmbeddedKey) != semiEmbeddedDoc._get(semiEmbeddedKey)){
+	// 										doc.set(key, me.get(semiEmbeddedKey));
+	// 										//semiEmbeddedDoc[key] = me[key];
+	// 										changed = true;
+	// 									}
+	// 								});
+	// 								if(changed){
+	// 									doc.save();
+	// 								}
+	// 							}
+	// 						});
+	// 					}
+	// 				});
+	// 			}
+	// 		});
+	// 	}
+	// });
 };
 
-var generateMeth = function(meth){
-	var Meth = meth.capitalize();
-	var willMeth = 'will' + Meth;
-	var doMeth = 'do' + Meth;
-	var didMeth = 'did' + Meth;
-
-	if((meth === 'update') || (meth === 'remove')){
-		meth = 'sg' + meth.capitalize();
-	}
-	var Class = meth=="sgRemove"?mongoose.Model:mongoose.Document;
-	Class.prototype[meth] = function (path, args, callback) {
-		if(typeof args == "function"){
-			callback = args;
-			args = {};
-		}
-
-		if(!(typeof callback === 'function')) {
-			var willRes = this[willMeth](path, args);
-			if(willRes instanceof Error || willRes instanceof SGError){
-				return willRes;
-			}
-			var val = this[doMeth](path, args);
-			this[didMeth](path, args);
-			return val;
-		}
-		else {
-			if(meth == 'sgUpdate') {
-				args = null;
-			}
-			if(meth == 'sgRemove') {
-				path = null;
-				args = null;
-			}
-			var me = this;
-			var doCallback = function (err, res) {
-				if(!err) {
-					me[didMeth](path, args);
-				}
-				callback(err, res);
-			};
-			var willCallback = function(err) {
-				if(!err) {
-					me[doMeth](
-						(path != null) ? path : doCallback,
-						(args !== null) ? args : doCallback,
-						doCallback
-					);
-				}
-				else {
-					callback(err);
-				}
-			};
-			this[willMeth](
-				(path != null) ? path : willCallback,
-				(args !== null) ? args : willCallback,
-				willCallback
-			);
-		}
-	};
-};
-
-['get', 'set', 'do', 'addInArray', 'removeFromArray', 'update', 'remove'].forEach(function(meth){
-	generateMeth(meth);
+['get', 'set', 'do', 'addInArray', 'removeFromArray', 'create', 'update', 'remove'].forEach(function(meth){
+	utils.generateMeth(meth);
 });

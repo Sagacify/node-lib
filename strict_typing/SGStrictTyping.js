@@ -209,12 +209,6 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 			return keyArr;
 		}
 		function index(obj, i) {
-			// try {
-			// 	return is.Array(obj) ? arrIndex(obj, i) : obj[i];
-			// }
-			// catch(e) {
-			// 	return undefined;
-			// }
 			return is.Array(obj) ? arrIndex(obj, i) : obj[i];
 		}
 		return key.split('.').reduce(index, obj);
@@ -224,7 +218,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		var isOptional = false;
 		if(ele_config.length) {
 			isOptional = this.hasOptionalFlag(ele_config);
-			ele_config = ele_config.clone().splice(isOptional, ele_config.length);
+			ele_config = ele_config.sgClone().splice(isOptional, ele_config.length);
 		}
 		if(isOptional && (ele == null)) {
 			return true;
@@ -262,47 +256,79 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 		}
 	};
 
-	this.apply_to_Args = function (args, args_config, callback) {
-		args_config = this.develop_ValidationConfig(args_config);
+
+	// this.checkKeyWithValidation= function(value, validation){
+
+	// 	if(this.apply_to_Array(ele, acceptableValue, ele_config)) {
+
+	// 		console.log(' --> [X] OK');
+	// 		if(this.strict_mode) {
+	// 			this.assemble_Object(args_buffer, acceptableValue, is.DateString(ele) ? new Date(ele) : ele);
+	// 		}
+	// 	}
+	// 	else {
+	// 		console.log(' --> [ ] NOT OK !!!');
+	// 		return callback(this.base_error + '_INVALID_VALUE');
+	// 	}
+	// }
+
+	this.apply_to_Args = function (valuesToCheck, validations, callback) {
+
+		validations = this.develop_ValidationConfig(validations);
+
+		if(!is.Object(valuesToCheck) || !is.Object(validations)) {
+			return callback(this.base_error + '_INVALID_ARGS');
+		}
+
 		var args_buffer = {};
-		if(is.Object(args) && is.Object(args_config)) {
-			var keys = Object.keys(args_config);
-			var len = keys.length;
-			var ele_config;
-			var ele;
-			var i;
-			while(len--) {
-				i = keys[len];
-				ele = (args[i] != null) ? args[i] : this.disassemble_Object(args, i);
-				ele_config = args_config[i];
-				//ele_config = args_config[i].clone();
-				console.log('\n --> ' + i);
-				if(this.validate_Config(ele_config)) {
-					if(this.apply_to_Array(ele, i, ele_config)) {
-					//if(this.apply_to_Ele(ele, ele_config)) {
-						console.log(' --> [X] OK');
-						if(this.strict_mode) {
-							this.assemble_Object(args_buffer, i, is.DateString(ele) ? new Date(ele) : ele);
-						}
-					}
-					else {
-						console.log(' --> [ ] NOT OK !!!');
-						return callback(this.base_error + '_INVALID_VALUE');
+
+		// for(var acceptableValue in validations){
+		// 	valuesForKey = (valuesToCheck[acceptableValue] != null) ? valuesToCheck[acceptableValue] : this.disassemble_Object(valuesToCheck, acceptableValue);
+		// 	validationForKey = validations[acceptableValue];
+
+		// 	if (!this.validate_Config(validationForKey)) {
+		// 		//bad formatted config
+		// 		return callback(this.base_error + '_INVALID_CONFIG');				
+		// 	};
+
+		// 	this.checkKeyWithValidation(valueForKey, validationForKey);
+
+		// }
+
+		var keys = Object.keys(validations);
+		var len = keys.length;
+		var ele_config;
+		var ele;
+		var acceptableValue;
+		while(len--) {
+
+			acceptableValue = keys[len];
+			
+			ele = (valuesToCheck[acceptableValue] != null) ? valuesToCheck[acceptableValue] : this.disassemble_Object(valuesToCheck, acceptableValue);
+			ele_config = validations[acceptableValue];
+
+			//console.log('\n --> ' + acceptableValue);
+			if(this.validate_Config(ele_config)) {
+				if(this.apply_to_Array(ele, acceptableValue, ele_config)) {
+					//console.log(' --> [X] OK');
+					if(this.strict_mode) {
+						this.assemble_Object(args_buffer, acceptableValue, is.DateString(ele) ? new Date(ele) : ele);
 					}
 				}
 				else {
-					return callback(this.base_error + '_INVALID_CONFIG');
+					console.log(ele_config);
+					console.log(' --> [ ] NOT OK !!!');
+					return callback(this.base_error + '_INVALID_VALUE');
 				}
 			}
-			var array_ags = Array.apply(null, arguments);
-			var new_args = this.strict_mode ? args_buffer : array_ags;
-			return callback.apply(this, [null].concat(new_args));
+			else {
+				return callback(this.base_error + '_INVALID_CONFIG');
+			}
 		}
-		else {
-			return callback(this.base_error + '_INVALID_ARGS');
-		}
-	};
-
+		var array_ags = Array.apply(null, arguments);
+		var new_args = this.strict_mode ? args_buffer : array_ags;
+		return callback.apply(this, [null].concat(new_args));
+	}
 };
 
 var mySGStrictTyping = new SGStrictTyping(false); // ideally should be true

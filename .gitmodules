@@ -1,0 +1,9 @@
+[submodule "mongoosastic"]
+	path = mongoosastic
+	url = git@github.com:Sagacify/mongoosastic.git
+[submodule "elastic.js"]
+	path = elastic.js
+	url = git@github.com:fullscale/elastic.js.git
+[submodule "file/docsplit"]
+	path = file/docsplit
+	url = git@github.com:documentcloud/docsplit.git

@@ -28,19 +28,12 @@ express.response.SGsend = function(object) {
 	}
 
 	if(code == 200){
-		this.send(response);
+		// this.send({timestamp:new Date(), body:(response||null)});
+		this.send(response||null);
 	}
 	else{
 		this.send(code, error);
 	}
-	// this.send({
-	// 	meta: {
-	// 		code:code,
-	// 		error: error,
-	// 		length: length
-	// 	},
-	// 	response: response
-	// });
 };
 
 express.response.handle = function(){

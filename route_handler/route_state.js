@@ -86,6 +86,11 @@ RouteState.prototype.getObject = function(callback){
 		if(this.pathPart() === 'user') {
 			callback(null, this.context.user);
 		}
+		else if(this.pathPart() === 'admin') {
+			var AdminModel = mongoose.model('Admin');
+			AdminModel.setHidden('context', this.context);
+			AdminModel.getOrCreate(callback);
+		}
 		else {
 			callback(null, mongoose.model(mongoose.modelNameFromCollectionName(this.pathPart())));
 		}
@@ -187,7 +192,7 @@ RouteState.prototype.attachCaller = function(){
 	else{
 		var parentState = this.parentState();
 		if(parentState){
-			if(parentState.state.obj instanceof mongoose.Document && parentState.state.obj.schema.tree._get(parentState.path)){
+			if(parentState.state.obj instanceof mongoose.Document && parentState.state.obj.schema.tree._get(parentState.path) && parentState.state.obj.schema.tree._get(parentState.path)[0].ref){
 				caller = model(parentState.state.obj.schema.tree._get(parentState.path)[0].ref).schema;
 			}
 			if(parentState.state.caller instanceof mongoose.Schema) {
@@ -203,10 +208,10 @@ RouteState.prototype.attachCaller = function(){
 
 RouteState.prototype.attachContext = function(){
 	if(this.obj && (this.obj.isObject()||this.obj instanceof Function)){
-		Object.defineProperty(this.obj, "context", {
-			writable: true,
-			value: this.context
-		});
+		this.obj.setHidden('context', this.context);
+	}
+	if(this.caller){
+		this.caller.setHidden('context', this.context);
 	}
 };
 

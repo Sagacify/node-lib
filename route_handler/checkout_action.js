@@ -11,7 +11,7 @@ CheckoutAction.prototype.get = function(callback){
 };
 
 CheckoutAction.prototype.post = function(callback){
-	this.parentState.state.caller.do.apply(this.parentState.state.caller, [this.parentState.path, this.context.req.body, callback]);
+	this.parentState.state.caller.do.apply(this.parentState.state.caller, [this.parentState.path, this.context.req.mixin, callback]);
 };
 
 CheckoutAction.prototype.put = function(callback){

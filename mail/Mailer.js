@@ -18,15 +18,21 @@ setupInfo('SES Configured');
 function sendMessage (to, data, template, prefLang, callback) {
 	generateMail(to, data, template, prefLang, function (e, message) {
 		if(e) {
+			console.log("GenerateMail error");
+			console.log(e);
 			callback(e);
 		}
 		else {
-			transport.sendMail(message, function (e) {
-				if(e) {
-					callback(e);
+			transport.sendMail(message, function (error, response) {
+				console.log("Mail sent ?")
+				console.log(error)
+				console.log(response)
+				if(error) {
+					callback(error);
 				}
 				else {
-					callback(null);
+					console.log("Mail successfully sent");
+					callback(null, "Success");
 				}
 			});
 		}
@@ -37,6 +43,7 @@ function sendMessage (to, data, template, prefLang, callback) {
 function generateMail (to, data, mailTemplate, prefLang, callback){
 	generateHTML(mailTemplate, data, prefLang, function (e, html, text){
 		if(e) {
+			console.log("generateHTML error");
 			console.log(e);
 			callback(e);
 		}
@@ -52,6 +59,7 @@ function generateMail (to, data, mailTemplate, prefLang, callback){
 			};
 			message.text = text || undefined;
 			message.html = html || undefined;
+			console.log("message")
 			callback(null, message);
 		}
 	});
@@ -81,12 +89,15 @@ function generateHTML (mailTemplate, data, prefLang, callback) {
 
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
+
+			console.log("emailTemplates error");
 			console.log(e);
 			callback(e);
 		}
 		else {
 			template(mailTemplate, data, function (e, html, text) {
 				if(e) {
+					console.log("template error");
 					console.log(e);
 					callback(e);
 				}
@@ -104,7 +115,7 @@ function getSubject (mailTemplate, prefLang) {
 }
 
 exports.send_Mail = function (type, email, name, prefLang, token, callback) {
-	var types = ['validation', 'reset_password', 'cancellation_appointment_by_user', 'cancellation_appointment_by_pro'];
+	var types = ['validation', 'reset_password'];
 	console.log("SEND MAIL TO", email);
 	console.log(type, email, name, prefLang, token);
 	if(prefLang && types.indexOf(type) !== -1) {
@@ -125,10 +136,12 @@ exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 exports.sendMail = function (emailTo, type, prefLang, parameters, callback){
 	
 	/*Checking type*/
-	var types = ['validation', 'reset_password', 'cancellation_appointment_by_user', 'cancellation_appointment_by_pro', 'appointment_reminder', 'appointment_booking_confirmation', 'welcome_pro_message'];
+	var types = ['validation', 'reset_password', 'resource'];
 	
 	if(prefLang && types.indexOf(type) !== -1) {
+		console.log("Email to")
 		console.log(emailTo);
+		console.log("Parameters")
 		console.log(parameters);
 		sendMessage(emailTo, parameters, type, prefLang, callback);
 	}

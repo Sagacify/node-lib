@@ -11,20 +11,26 @@ module.exports = function (mixin, callback) {
 	else if(mixin.action === 'ForgotPassword') {
 		typeof_email = 'reset_password';
 	}
+	console.log(typeof_email, mixin.email, name, LanguageManager.getPreferedLanguage(mixin.user.prefLang), mixin.token);
 	if(typeof_email) {
 		var name = mixin.user.firstname + ' ' + mixin.user.lastname;
-
-
-
 		Mailer.send_Mail(
 			typeof_email, 
 			mixin.email, 
 			name, 
 			LanguageManager.getPreferedLanguage(mixin.user.prefLang), 
 			mixin.token, 
-			function (e) {
+		function (err, msg) {
+			if (err) {
+				console.log('Email Error');
+				console.log(e);
+				console.log(msg);
 			}
-		);
+			else {
+				console.log("No Error");
+				console.log(msg);
+			}
+		});
 		callback(null, mixin);
 	}
 	else {

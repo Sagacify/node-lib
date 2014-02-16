@@ -11,9 +11,10 @@ mongoose.Model.prototype.getModelName = function(){
 mongoose.Model.prototype._save = mongoose.Model.prototype.save;
 
 mongoose.Model.prototype.save = function save(fn){
-	if(this.modifiedPaths().length==0){
+	if(this.modifiedPaths().length==0 && !this.isNew){
+		console.log('modifiedPaths')
 		if(fn)
-			fn(null);
+			fn(null, this);
 	}
 	else{
 		return this._save.apply(this, arguments);
@@ -107,15 +108,19 @@ mongoose.Model.sgFindById = function(id, callback){
 	var me = this;	
 	var find = function(){
 		me.findById(id, function(err, doc){
-			callback(err, doc);
 			if(!err){
 				if(doc){
-					Object.defineProperty(doc, "context", {
-						writable: true,
-						value: me.context
-					});
-				}	
-				me.didFindById(doc);
+					doc.setHidden('context', me.context);
+					me.didFindById(doc);
+					callback(null, doc);
+				}
+				else{
+					console.log('Bad _id?');
+					callback(new SGError('NO_RESULT'))
+				}
+			}
+			else{
+				callback(err);
 			}
 		});
 	}
@@ -159,10 +164,7 @@ mongoose.Model.sgCreate = function(raw, callback){
 	var model = this;
 	var doc = new model();
 
-	Object.defineProperty(doc, "context", {
-		writable: true,
-		value: this.context
-	});
+	doc.setHidden('context', this.context);
 
 	//auto set logged user
 	for(var path in this.schema.paths){
@@ -176,6 +178,7 @@ mongoose.Model.sgCreate = function(raw, callback){
 			}
 		}
 	}
+<<<<<<< HEAD
 
 	doc.sgUpdate(raw, callback);
 	// doc.willCreate(raw, function(err){
@@ -191,6 +194,9 @@ mongoose.Model.sgCreate = function(raw, callback){
 	// 		callback(err);
 	// 	}
 	// });
+=======
+	doc.sgCreate(raw, callback);
+>>>>>>> dev
 };
 
 mongoose.Model.get = function(path, args, callback){
