@@ -67,9 +67,16 @@ exports.writeFileToS3 = function (base64data, extension, secure, callback) {
 };
 
 // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
-exports.readFileFromS3 = function (filename, secure, callback) {
+exports.readFileFromS3 = function (filename, secureOrBucket, callback) {
+	var bucket;
+	if(typeof secureOrBucket == "string"){
+		bucket = secureOrBucket;
+	}
+	else{
+		bucket = secureOrBucket ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName;
+	}
 	readQueue.push({
-		Bucket: secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName,
+		Bucket: bucket,
 		Key: filename
 	}, callback);
 };
