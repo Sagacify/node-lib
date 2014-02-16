@@ -178,25 +178,7 @@ mongoose.Model.sgCreate = function(raw, callback){
 			}
 		}
 	}
-<<<<<<< HEAD
-
-	doc.sgUpdate(raw, callback);
-	// doc.willCreate(raw, function(err){
-	// 	if(!err){
-	// 		doc.doCreate(function(err){
-	// 			if(!err){
-	// 				doc.didCreate(raw);
-	// 			}
-	// 			callback(err);
-	// 		});
-	// 	}
-	// 	else{
-	// 		callback(err);
-	// 	}
-	// });
-=======
 	doc.sgCreate(raw, callback);
->>>>>>> dev
 };
 
 mongoose.Model.get = function(path, args, callback){
