@@ -17,3 +17,6 @@ require('./mongoose/schema');
 // Express objects
 require('./express/request');
 require('./express/response');
+
+//Librairies
+require('./lib/async');

@@ -6,7 +6,7 @@ Array.prototype.contains = function(item){
 
 	// return founded;
 
-	if (item.isMongooseDocument()) {
+	if (item && typeof item.isMongooseDocument == "function" && item.isMongooseDocument()) {
 		for (var i = 0; i < this.length; i++) {
 			if (this[i].isMongooseDocument() && this[i]._id.toString() == item._id.toString()) {
 				return !!~i;
@@ -15,7 +15,7 @@ Array.prototype.contains = function(item){
 		return !!~-1;
 	}
 	else{
-		this.indexOf(item) != -1
+		// this.indexOf(item) != -1
 		return !!~this.indexOf(item);
 	}
 };
@@ -100,17 +100,17 @@ Array.prototype.diff = function(a) {
 };
 
 Array.prototype.populateDevelop = function(callback){
-	if(this.length == 0 || !(this[0] instanceof mongoose.Document)){
-		callback(null, this);
-	}
-	else{
-		Object.defineProperty(this, "schema", {
-			writable: true,
-			value: this[0].schema
-		});
-		this[0].schema.populateDevelop.apply(this, [callback]);
-	}
+        if(this.length == 0 || !(this[0] instanceof mongoose.Document)){
+                callback(null, this);
+        } else {
+                Object.defineProperty(this, "schema", {
+                        writable: true,
+                        value: this[0].schema
+                });
+                this[0].schema.populateDevelop.apply(this, [callback]);
+        }
 };
+
 
 Array.prototype.sgRemove = function(item){
 	for(var i = this.length-1; i >= 0; i--){

@@ -108,7 +108,8 @@ RouteState.prototype.getObjectFromVariablePath = function(callback){
 	if(!parentState){
 		return callback(new SGError());
 	}
-	if(this.pathPart().toLowerCase().endsWith("id")){
+	var pathPart = this.pathPart().toLowerCase();
+	if(pathPart.endsWith("id")){
 		//parentState is Model
 		if(parentState.state.type() == "Model"){
 			parentState.state.obj.sgFindById(this.urlPart(), callback);
@@ -120,6 +121,9 @@ RouteState.prototype.getObjectFromVariablePath = function(callback){
 		else{
 			callback(null, this.urlPart());
 		}
+	}
+	else if(pathPart.endsWith("slug")){
+		parentState.state.obj.findOne({slug:this.urlPart()}, callback);
 	}
 	//if urlpart is a variable but not an id, it is used as a filter on the collection
 	else{

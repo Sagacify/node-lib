@@ -52,6 +52,8 @@ mongoose.Document.prototype.populateFromContext = function(callback){
 		for(var i = 0; i < fieldsToPopulate.length-1; i++){
 			this.populate(fieldsToPopulate[i]);
 		}
+		
+		console.log(fieldsToPopulate[i])
 		this.populate(fieldsToPopulate[i], callback);
 	}
 };
