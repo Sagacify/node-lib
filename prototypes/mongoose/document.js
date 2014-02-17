@@ -147,6 +147,7 @@ mongoose.Document.prototype.doSet = function(path, val, type, options, callback)
 	if(arguments.callee.caller.caller == this._set){
 		return this._set.apply(this, arguments);
 	}
+	var myargs = arguments
 	if(!callback && typeof type == "function")
 		callback = type;
 	if(path && path.isObject()){

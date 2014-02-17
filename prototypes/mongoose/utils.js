@@ -37,6 +37,7 @@ exports.generateMeth = function(meth, Class){
 				if(!err) {
 					me[didMeth](path, args);
 				}
+
 				callback(err, res);
 			};
 			var willCallback = function(err) {
