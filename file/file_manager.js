@@ -41,7 +41,10 @@ exports.s3BucketInitialization = function () {
 					s3.client.createBucket({
 						Bucket: bucketName
 					}, function (err, data) {
-						if (err) console.log(err);
+						if (err) {
+							console.log("Bucket initialization error "+bucketName);
+							console.log(err);
+						}
 						else console.log("Successfully created S3 " + bucketName + " bucket");
 					});
 				} else {
@@ -67,9 +70,18 @@ exports.writeFileToS3 = function (base64data, extension, secure, callback) {
 };
 
 // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
-exports.readFileFromS3 = function (filename, secure, callback) {
+exports.readFileFromS3 = function (filename, secureOrBucket, callback) {
+	var bucket;
+	if(typeof secureOrBucket == "string"){
+		bucket = secureOrBucket;
+	}
+	else{
+		bucket = secureOrBucket ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName;
+	}
+	console.log("Key to read")
+	console.log(filename)
 	readQueue.push({
-		Bucket: secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName,
+		Bucket: bucket,
 		Key: filename
 	}, callback);
 };
@@ -89,15 +101,13 @@ exports.writeDataToFileSystem = function (filename, data, callback) {
 	});
 };
 
-exports.writeStreamToFileSystem = function (filename, callback) {
+exports.createStreamToFileSystem = function (filename, callback) {
 	tmp.dir(function (err, directoryPath) {
 		if (err) {
-			console.log("err: ");
-			console.log(err);
 			return callback(err);
 		}
 
-		var filepath = directoryPath + "/" + filename;
+		var filepath = directoryPath + "/" + (filename ? filename : "no-name");
 		callback(null, filepath, fs.createWriteStream(filepath));
 	});
 };

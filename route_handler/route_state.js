@@ -208,10 +208,10 @@ RouteState.prototype.attachCaller = function(){
 
 RouteState.prototype.attachContext = function(){
 	if(this.obj && (this.obj.isObject()||this.obj instanceof Function)){
-		Object.defineProperty(this.obj, "context", {
-			writable: true,
-			value: this.context
-		});
+		this.obj.setHidden('context', this.context);
+	}
+	if(this.caller){
+		this.caller.setHidden('context', this.context);
 	}
 };
 

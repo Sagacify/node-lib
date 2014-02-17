@@ -136,9 +136,9 @@ exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 exports.sendMail = function (emailTo, type, prefLang, parameters, callback){
 	
 	/*Checking type*/
-	var types = ['validation', 'reset_password', 'resource'];
+	//var types = ['validation', 'reset_password', 'resource'];
 	
-	if(prefLang && types.indexOf(type) !== -1) {
+	if(prefLang)/* && types.indexOf(type) !== -1)*/ {
 		console.log("Email to")
 		console.log(emailTo);
 		console.log("Parameters")

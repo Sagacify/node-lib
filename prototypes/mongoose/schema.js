@@ -195,7 +195,51 @@ mongoose.Schema.prototype.didDo = function(action, params){
 		return this.statics["did"+action.capitalize()]._apply(this, params);
 };
 
+mongoose.Schema.prototype.willAddInArray = function(path, val, callback){
+	var willAddPath = "willAddIn"+path.capitalize();
+	if(typeof this.statics[willAddPath] == "function"){
+		if(this.statics[willAddPath].hasCallback()){
+			this.statics[willAddPath].bind(this)(val, callback);
+		}
+		else{
+			var willRes = this.statics[willAddPath].bind(this)(val);
+			if(callback){
+				if(willRes instanceof Error||willRes instanceof SGError)
+					callback(willRes);
+				else
+					callback(null, willRes)
+			}
+			else{
+				return willRes;
+			}
+		}
+	}
+	else{
+		return callback?callback(null):null;
+	}
+};
+
+mongoose.Schema.prototype.doAddInArray = function(path, val, callback){
+	var addPath = "addIn"+path.capitalize();
+	if(typeof this.statics[addPath] == "function"){
+		if(this.statics[addPath].hasCallback()){
+			this.statics[addPath].bind(this)(val, callback);
+		}
+		else{
+			this.statics[addPath].bind(this)(val);
+			if(callback)
+				callback(null);
+		}
+	}
+};
+
+mongoose.Schema.prototype.didAddInArray = function(path, val){
+	if(typeof path == "string" && typeof this.statics["didAddIn"+path.capitalize()] == "function")
+		return this.statics["didAddIn"+path.capitalize()].bind(this)(val);
+};
+
 utils.generateMeth('do', mongoose.Schema);
+utils.generateMeth('addInArray', mongoose.Schema);
 
 mongoose.Schema.prototype.sgUpdate = function (args, callback) {
 	var me = this;
