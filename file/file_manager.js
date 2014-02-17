@@ -41,7 +41,10 @@ exports.s3BucketInitialization = function () {
 					s3.client.createBucket({
 						Bucket: bucketName
 					}, function (err, data) {
-						if (err) console.log(err);
+						if (err) {
+							console.log("Bucket initialization error "+bucketName);
+							console.log(err);
+						}
 						else console.log("Successfully created S3 " + bucketName + " bucket");
 					});
 				} else {
@@ -75,6 +78,8 @@ exports.readFileFromS3 = function (filename, secureOrBucket, callback) {
 	else{
 		bucket = secureOrBucket ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName;
 	}
+	console.log("Key to read")
+	console.log(filename)
 	readQueue.push({
 		Bucket: bucket,
 		Key: filename
