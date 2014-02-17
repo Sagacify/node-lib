@@ -65,7 +65,8 @@ function EmailSender (options) {
 EmailSender.prototype.addSESTransport = function (options) {
 	this.transports.ses = nodemailer.createTransport('SES', {
 		AWSAccessKeyID: options.AWSAccessKeyID,
-		AWSSecretKey: options.AWSSecretKey
+		AWSSecretKey: options.AWSSecretKey,
+		ServiceUrl: 'https://email.eu-west-1.amazonaws.com'
 	});
 };
 
