@@ -135,6 +135,7 @@ exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 
 exports.sendMail = function (emailTo, type, prefLang, parameters, callback){
 	
+	/* Checking type is deprecated - this should be checked on the app code, not on the lib*/ 
 	/*Checking type*/
 	//var types = ['validation', 'reset_password', 'resource'];
 	
