@@ -21,6 +21,16 @@ mongoose.Model.prototype.save = function save(fn){
 	}
 };
 
+mongoose.Model.prototype.sgSave = function(callback){
+	var me = this;
+	this.save(function(err){
+		callback(err);
+		if(!err){
+			me.ensureUpdateConsistency();
+		}
+	});
+};
+
 mongoose.Model.prototype._remove = mongoose.Model.prototype.remove;
 
 // mongoose.Model.prototype.remove = function(){
@@ -136,6 +146,18 @@ mongoose.Model.sgFindById = function(id, callback){
 
 mongoose.Model.didFindById = function(doc){
 
+};
+
+mongoose.Document.prototype.willCreate = function(args, callback){
+	return this.willUpdate(args, callback);
+};
+
+mongoose.Document.prototype.doCreate = function(args, callback){
+	this.doUpdate(args, callback);
+};
+
+mongoose.Document.prototype.didCreate = function(args){
+	this.didUpdate(args);
 };
 
 mongoose.Model.sgCreate = function(raw, callback){

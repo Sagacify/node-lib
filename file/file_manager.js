@@ -42,7 +42,6 @@ exports.s3BucketInitialization = function () {
 						Bucket: bucketName
 					}, function (err, data) {
 						if (err) {
-							console.log("Bucket initialisation error " + bucketName);
 							console.log(err);
 						}
 						else console.log("Successfully created S3 " + bucketName + " bucket");
@@ -70,11 +69,24 @@ exports.writeFileToS3 = function (base64data, extension, secure, callback) {
 };
 
 // http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
+<<<<<<< HEAD
 exports.readFileFromS3 = function (filename, secure, callback) {
 	console.log("Read file from S3")
 	console.log(secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName)
+=======
+exports.readFileFromS3 = function (filename, secureOrBucket, callback) {
+	var bucket;
+	if(typeof secureOrBucket == "string"){
+		bucket = secureOrBucket;
+	}
+	else{
+		bucket = secureOrBucket ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName;
+	}
+	console.log("Key to read")
+	console.log(filename)
+>>>>>>> dev
 	readQueue.push({
-		Bucket: secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName,
+		Bucket: bucket,
 		Key: filename
 	}, callback);
 };
