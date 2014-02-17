@@ -34,7 +34,7 @@ CheckoutVirtual.prototype.post = function(callback){
 		this.parentState.state.caller.addInArray(this.parentState.path, this.context.req.body._item||this.context.req.body, callback);
 	}
 	else{
-		callback(new SGError());
+		callback(new SGError("BOOM - Virtual not supported"));
 	}
 };
 

@@ -135,10 +135,19 @@ exports.send_Mail = function (type, email, name, prefLang, token, callback) {
 
 exports.sendMail = function (emailTo, type, prefLang, parameters, callback){
 	
+	/* Checking type is deprecated - this should be checked on the app code, not on the lib*/ 
 	/*Checking type*/
-	var types = ['validation', 'reset_password', 'resource'];
+	// var types = [
+	// 	'validation', 
+	// 	'reset_password', 
+	// 	'resource', 
+	// 	appointment_booking_confirmation,
+	// 	appointment_reminder,
+	// 	cancellation_appointment_by_pro,
+	// 	cancellation_appointment_by_user,
+	// 	invitation];
 	
-	if(prefLang && types.indexOf(type) !== -1) {
+	if(prefLang) {
 		console.log("Email to")
 		console.log(emailTo);
 		console.log("Parameters")
