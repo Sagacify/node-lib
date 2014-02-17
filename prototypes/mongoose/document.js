@@ -448,10 +448,7 @@ mongoose.Document.prototype.doUpdate = function(args, callback){
 	        docToSave = me;
 	        if(me.parent)
 	        	docToSave = me.parent();
-			docToSave.save(function(err){
-				callback(err, me);
-				me.ensureUpdateConsistency();
-			});
+			docToSave.save(callback);
 	    }
 		else{
 			callback(err);

@@ -1,0 +1,32 @@
+var special_Strings = [
+	'',
+	'`',
+	'´',
+	'_',
+	'.',
+	'_',
+	'-',
+	'+',
+	'˙',
+	'"',
+	'<',
+	'>',
+	';',
+	'&',
+	'@',
+	'\\',
+	'\n',
+	'\r',
+	'\'',
+	'\n\r',
+	'%00',
+	'\x00',
+	'\u0000',
+	'\0',
+	'null',
+	'ﬂ∂∏ı',
+	'undefined',
+	new Buffer(0xFFFD).toString()
+];
+
+module.exports = special_Strings;
