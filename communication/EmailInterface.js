@@ -167,7 +167,7 @@ EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
 	var subject = settings.subject || fs.readFileSync(basePath + '/subject.txt', 'utf8');
 	emailContents.subject = settings.ref ? subject + ' (ref:' + settings.ref + ')' : subject;
 
-	var attachments = settings.attachments || fs.readdirSync(attachmentsPath)
+	var attachments = settings.attachments || [] /*|| fs.readdirSync(attachmentsPath)*/
 	  , attachment
 	  , filename;
 	for(var i = 0, len = attachments.length; i < len; i++) {
