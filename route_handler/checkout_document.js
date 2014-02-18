@@ -16,8 +16,7 @@ CheckoutDocument.prototype.post = function(callback){
 };
 
 CheckoutDocument.prototype.put = function(callback){
-	this.doc.save(callback);
-	//this.doc.sgUpdate.apply(this.doc, [this.context.req.mixin, callback]);
+	this.doc.sgUpdate.apply(this.doc, [this.context.req.mixin, callback]);
 };
 
 CheckoutDocument.prototype.delete = function(callback){
