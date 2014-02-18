@@ -5,7 +5,7 @@ module.exports = function (mixin, callback) {
 	console.log(mixin.user.tokens)
 	while(i--) {
 		if(mixin.user.tokens[i].expiration > Date.now()) {
-			fresh_tokens.shift(mixin.user.tokens[i]);
+			fresh_tokens.splice(0, 0, mixin.user.tokens[i]);
 		}
 	}
 	console.log(fresh_tokens);
