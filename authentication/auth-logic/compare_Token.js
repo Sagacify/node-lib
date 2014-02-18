@@ -9,11 +9,13 @@ module.exports = function (mixin, callback) {
 	while(i--) {
 		token = mixin.user.tokens[i];
 		if((hashed_token === token.token) && (token.expiration > now)) {
-			match = true;
+			//match = true;
+			match = i;
 			break;
 		}
 	}
-	if(!match) {
+
+	if(match === false) {
 		callback('INVALID_ATTR_COMBINATION');
 	}
 	else {
