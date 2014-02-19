@@ -26,7 +26,6 @@ function sendMessage (to, data, template, prefLang, callback) {
 			transport.sendMail(message, function (error, response) {
 				console.log("Mail sent ?")
 				console.log(error)
-				console.log(response)
 				if(error) {
 					callback(error);
 				}
