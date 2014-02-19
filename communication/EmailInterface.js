@@ -142,7 +142,6 @@ EmailInterface.prototype.InstanciateMailParser = function (callback) {
  * @param {string}			settings.text				- Plaintext body
  * @param {string}			[settings.html]				- HTML body
  * @param {object}			[settings.header]			- HTTP / SMTP headers
- * @param {object}			[settings.attachments]		- Data use to create the envelop and email body
  * @param {object}			[settings.ref]				- Reference (ObjectId) to a resource
  *
  * @param {object}			[data]						- Data to feed to the templating engine
@@ -172,7 +171,7 @@ EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
 	  , filename;
 	for(var i = 0, len = attachments.length; i < len; i++) {
 		attachment = attachments[i];
-		filename = attachment.filename || attachment;
+		filename = attachment.filename || attachment.fileName || attachment;
 		attachments[i] = {
 			fileName: filename,
 			filePath: attachment.filePath || attachmentsPath + '/' + filename,
