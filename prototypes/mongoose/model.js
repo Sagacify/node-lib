@@ -91,10 +91,11 @@ mongoose.Model.prototype.willRemove = function(){
 
 // 	this.remove(post);
 // };
+
 mongoose.Model.prototype.doRemove = function(){
 	this.ensureRemoveConsistency();
-   	return this._remove.apply(this, arguments);
-}
+	return this._remove.apply(this, arguments);
+};
 
 mongoose.Model.prototype.didRemove = function(){
 
@@ -105,7 +106,7 @@ mongoose.Model.willFindById = function(id){
 };
 
 mongoose.Model.sgFindById = function(id, callback){
-	var me = this;	
+	var me = this;
 	var find = function(){
 		me.findById(id, function(err, doc){
 			if(!err){
@@ -114,17 +115,17 @@ mongoose.Model.sgFindById = function(id, callback){
 					me.didFindById(doc);
 					callback(null, doc);
 				}
-				else{
+				else {
 					console.log('Bad _id?');
-					callback(new SGError('NO_RESULT'))
+					callback(new SGError('NO_RESULT'));
 				}
 			}
-			else{
+			else {
 				callback(err);
 			}
 		});
-	}
-	if(!this.willFindById.hasCallback()){
+	};
+	if(!this.willFindById.hasCallback()) {
 		var willRes = this.willFindById(id);
 		if(willRes instanceof Error||willRes instanceof SGError){
 			callback(willRes);

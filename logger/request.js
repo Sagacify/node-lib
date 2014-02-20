@@ -27,4 +27,4 @@ RequestSchema.methods.saveRequest = function () {
 	});
 };
 
-model('Request', RequestSchema);
+model('SLRequest', RequestSchema);
