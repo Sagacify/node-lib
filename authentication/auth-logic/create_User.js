@@ -1,25 +1,32 @@
-var UserModel = model('User');
-var expiration = config.expiration;
 
 module.exports = function (mixin, callback) {
+	console.log('\n> CREATE USER :');
 	var user = mixin.user_attr;
+
 	user.state = mixin.resultingState;
-	mixin.user = UserModel({
+	mixin.user = model('User')({
 		state: user.state
 	});
+	delete user.state;
+
 	if(mixin.req) {
 		mixin.user.buildContext(mixin.req);
-		// console.log(mixin.req);
-		// console.log(mixin.user);
-		// console.log(mixin.context);
 	}
-	delete user.state;
+
+	var fakeUserProp = mixin.fakeUserProp;
+	if(typeof fakeUserProp === 'string' && fakeUserProp.length) {
+		mixin.user.set(fakeUserProp, true);
+		delete user[fakeUserProp];
+	}
+
 	mixin.user[mixin.user.firstSet ? 'firstSet' : 'set'](user, function (e) {
 		if(e) {
-			callback(e);
+			console.log('> CREATE USER OUT - 1 : <');
+			console.log(e.stack || e);
+			return callback(e);
 		}
-		else {
-			callback(null, mixin);
-		}
+		console.log('> CREATE USER OUT - 2 : <');
+		console.log(mixin.user);
+		callback(null, mixin);
 	});
 };

@@ -4,6 +4,7 @@ var send_PasswordResetMail = Mailer.send_PasswordResetMail;
 var LanguageManager = require('../../languages/Language');
 
 module.exports = function (mixin, callback) {
+	console.log('\n> SEND EMAIL :');
 	var typeof_email = false;
 	if(mixin.action === 'Register') {
 		typeof_email = 'validation';

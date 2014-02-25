@@ -25,7 +25,16 @@ var Auth_TransitionController = {
 	TokenStrategy: 0,
 
 	// "0" means state is unchanged
-	Logout: 0
+	Logout: 0,
+
+	// "0" means state is unchanged
+	RegisterFakeUser: 0,
+
+	// "0" means state is unchanged
+	ReverseRegister: 0,
+
+	// "+1" means state goes up one level (should be "+2" but create_User already elevates 1 step)
+	ReverseValidation: +1
 
 };
 

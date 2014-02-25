@@ -178,7 +178,7 @@ var Auth_LogicController = {
 				hash_Token,
 				replace_Token,
 				flip_State,
-				save_User,
+				save_User
 			], callback);
 		},
 		// @returns
@@ -238,7 +238,106 @@ var Auth_LogicController = {
 		},
 		// @returns
 		{}
-	]
+	],
+	RegisterFakeUser: [
+		// @params
+		{
+			search			:	['Array', { lenEqualTo: [2] }],
+			user_attr		:	['Object'],
+			fakeUserProp	:	['String', 'notNull', 'notEmpty'],
+			expectedState	:	['Number'],
+			resultingState	:	['Number'],
+			action			:	['String', 'notNull', 'notEmpty'],
+			req				:	['isOptional', 'Object'],
+			invite			:	['isOptional', 'Boolean']
+		},
+		// the method itself
+		function (input, callback) {
+			console.log('\n> RegisterFakeUser : <');
+			console.log(input.email);
+			var pipeline = [
+				echo_mixin(input)
+			];
+			console.log('\n> INPUT :');
+			console.log(input.user_attr);
+			if(input.user_attr.email) {
+				console.log('\n>> PASS 1');
+				pipeline = pipeline.concat([
+					find_User,
+					create_User
+				]);
+				if(input.invite) {
+					console.log('\n>> PASS 2');
+					pipeline = pipeline.concat([
+						create_Token,
+						hash_Token,
+						add_Token,
+						//build_Url,
+						//send_Email
+					]);
+				}
+			}
+			pipeline.push(save_User);
+			waterfall(pipeline, callback);
+		},
+		// @returns
+		{}
+	],
+	ReverseRegister: [
+		// @params
+		{
+			search			:	['Array', { lenEqualTo: [2] }],
+			token			:	['String'],
+			expectedState	:	['Number'],
+			resultingState	:	['Number'],
+			action			:	['String', 'notNull', 'notEmpty']
+		},
+		// the method itself
+		function (input, callback) {
+			waterfall([
+				echo_mixin(input),
+				find_User,
+				validate_State,
+				hash_Token,
+				compare_Token
+			], callback);
+		},
+		// @returns
+		{}
+	],
+	ReverseValidation: [
+		// @params
+		{
+			search			:	['Array', { lenEqualTo: [2] }],
+			password		:	['String'],
+			token			:	['String'],
+			user_attr		:	['Object'],
+			fakeUserId		:	['String', 'notNull', 'notEmpty'],
+			expectedState	:	['Number'],
+			resultingState	:	['Number'],
+			req				:	['isOptional', 'Object'],
+			action			:	['String', 'notNull', 'notEmpty']
+		},
+		// the method itself
+		function (input, callback) {
+			waterfall([
+				echo_mixin(input),
+				find_User,
+				remove_Duplicates,
+				hash_Token,
+				compare_Token,
+				remove_Duplicates,
+				create_User,
+				hash_Password,
+				create_Token,
+				hash_Token,
+				add_Token,
+				save_User
+			], callback);
+		},
+		// @returns
+		{}
+	],
 };
 
 module.exports = Auth_LogicController;
