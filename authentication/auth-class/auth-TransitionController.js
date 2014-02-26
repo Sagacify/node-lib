@@ -34,7 +34,9 @@ var Auth_TransitionController = {
 	ReverseRegister: 0,
 
 	// "+1" means state goes up one level (should be "+2" but create_User already elevates 1 step)
-	ReverseValidation: +1
+	ReverseValidation: +1,
+
+	//__FAKE_USER_INVITE: 0
 
 };
 

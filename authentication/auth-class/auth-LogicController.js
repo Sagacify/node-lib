@@ -338,6 +338,27 @@ var Auth_LogicController = {
 		// @returns
 		{}
 	],
+	// __FAKE_USER_INVITE: [
+	// 	// @params
+	// 	{
+	// 		user			:	['Object'],
+	// 		expectedState	:	['Number'],
+	// 		resultingState	:	['Number'],
+	// 		action			:	['String', 'notNull', 'notEmpty']
+	// 	},
+	// 	// the method itself
+	// 	function (input, callback) {
+	// 		waterfall([
+	// 			echo_mixin(input),
+	// 			create_Token,
+	// 			hash_Token,
+	// 			add_Token,
+	// 			save_User
+	// 		], callback);
+	// 	},
+	// 	// @returns
+	// 	{}
+	// ]
 };
 
 module.exports = Auth_LogicController;

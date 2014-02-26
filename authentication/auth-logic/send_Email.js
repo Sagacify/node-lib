@@ -14,11 +14,11 @@ module.exports = function (mixin, callback) {
 	if(typeof_email) {
 		var name = mixin.user.firstname + ' ' + mixin.user.lastname;
 		Mailer.send_Mail(
-			typeof_email, 
-			mixin.email, 
-			name, 
-			LanguageManager.getPreferedLanguage(mixin.user.prefLang), 
-			mixin.token, 
+			typeof_email,
+			mixin.email,
+			name,
+			LanguageManager.getPreferedLanguage(mixin.user.prefLang),
+			mixin.token,
 		function (err, msg) {
 			if (err) {
 				console.log('Email Error');
