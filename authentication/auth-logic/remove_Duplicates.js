@@ -7,25 +7,19 @@ module.exports = function (mixin, callback) {
 	var newUsers = [];
 	var newUser;
 	each(mixin.users, function (user, cb) {
-		console.log('\n> PASS - 0');
-		console.log(mixin.fakeUserId);
+		console.log('\n> DUP');
+		console.log(mixin.fakeUserProp);
+		console.log(user);
 		if(user.state > mixin.expectedState && user[mixin.fakeUserProp] !== true) {
-			console.log('\n> PASS - 1');
-			console.log(user);
 			return cb('USER_ALREADY_EXISTS');
 		}
 		if(/*(mixin.users.length > 1) && */mixin.fakeUserId && mixin.fakeUserId.toString() === user._id.toString()) {
 			newUsers.push(user);
 			newUser = user;
-			console.log('\n> PASS - 2');
-			console.log(user);
 			mixin.fakeUserId = null;
 			return cb(null);
 		}
 
-		console.log('\n> PASS - 3');
-		console.log(mixin.fakeUserId);
-		console.log(user);
 		mixin.removedUsers.push(user._id);
 		user.remove(function (e) {
 			if(e) {

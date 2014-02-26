@@ -1,6 +1,5 @@
 
 module.exports = function (mixin, callback) {
-	console.log('\n> CREATE USER :');
 	var user = mixin.user_attr;
 
 	user.state = mixin.resultingState;
