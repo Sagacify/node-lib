@@ -7,9 +7,6 @@ module.exports = function (mixin, callback) {
 	var newUsers = [];
 	var newUser;
 	each(mixin.users, function (user, cb) {
-		console.log('\n> DUP');
-		console.log(mixin.fakeUserProp);
-		console.log(user);
 		if(user.state > mixin.expectedState && user[mixin.fakeUserProp] !== true) {
 			return cb('USER_ALREADY_EXISTS');
 		}
