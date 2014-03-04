@@ -156,3 +156,9 @@ Array.prototype.removeDuplicates = function () {
 		return arr.indexOf(item) === pos;
 	});
 };
+
+Array.prototype.pushOnce = function(item){
+	if(!this.contains(item)){
+		this.push(item);
+	}
+};
