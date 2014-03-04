@@ -128,7 +128,7 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 	var me = this;
 	var context = this.context;
 	var populateDevelopChildrenOptions = typeof this.populateDevelopChildrenOptions == "function"? this.populateDevelopChildrenOptions(context.scope) : this.schema.populateDevelopChildrenOptions(context.scope);
-	populateDevelopChildrenOptions = populateDevelopChildrenOptions||[];
+	//populateDevelopChildrenOptions = populateDevelopChildrenOptions||[];
 	populateDevelopChildrenOptions = populateDevelopChildrenOptions.childrenScopes||populateDevelopChildrenOptions;
 
 	var docsByPath = {};
@@ -154,12 +154,17 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 	scan(devObject);
 	async.each(docsByPath.keys(), function(path, callback){
 		var childContext = {req:context.req, user:context.user, scope:populateDevelopChildrenOptions[path], parentDoc:me};
+		if(path == "managers"){
+			console.log('populateDevelopChildren')
+			console.log(me)
+			console.log(me.context.scope)
+			console.log(me.bouh)
+		}
+		if(me.bouh){
+			console.log('bouh')
+		}
 		docsByPath[path].setHidden('context', childContext);
 		docsByPath[path].populateDevelop(function(err, popDevChild){
-			if(path == "corporation"){
-				console.log("popDevChild")
-				console.log(popDevChild.professionals[0])
-			}
 			devObject._set(path, popDevChild);
 			callback(err);
 		});

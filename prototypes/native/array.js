@@ -158,7 +158,8 @@ Array.prototype.removeDuplicates = function () {
 };
 
 Array.prototype.pushOnce = function(item){
-	if(!this.contains(item)){
+	if(item && !this.contains(item)){
+		console.log(item)
 		this.push(item);
 	}
 };

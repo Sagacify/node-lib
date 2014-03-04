@@ -152,6 +152,11 @@ obj_proto.setHidden = function(path, val){
 	});
 };
 
+obj_proto.setContext = function(context){
+	this.setHidden('context', context);
+	return this;
+};
+
 for(var key in obj_proto){
 	Object.defineProperty(Object.prototype, key, {
 		writable: true,
