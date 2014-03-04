@@ -258,16 +258,20 @@ var Auth_LogicController = {
 			var pipeline = [
 				echo_mixin(input)
 			];
+
 			console.log('\n> INPUT :');
 			console.log(input.user_attr);
+
 			if(input.user_attr.email) {
-				console.log('\n>> PASS 1');
+				console.log('\n> PASS 1');
+
 				pipeline = pipeline.concat([
 					find_User,
 					create_User
 				]);
 				if(input.invite) {
-					console.log('\n>> PASS 2');
+					console.log('\n> PASS 2');
+
 					pipeline = pipeline.concat([
 						create_Token,
 						hash_Token,
@@ -276,6 +280,9 @@ var Auth_LogicController = {
 						//send_Email
 					]);
 				}
+			}
+			else {
+				pipeline.push(create_User);
 			}
 			pipeline.push(save_User);
 			waterfall(pipeline, callback);
