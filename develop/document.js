@@ -135,7 +135,14 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 	var scan = function(obj, path){
 		obj.keys().forEach(function(key){
 			var keyPath = path?(path+"."+key):key;
-			var val = me._get(keyPath);
+			var keyPathGetter = 'get'+keyPath.capitalize();
+			var val;
+			if(keyPath in me.schema.paths && typeof me[keyPathGetter] != "function"){
+				val = me._get(keyPath);
+			}
+			else{
+				val = obj._get(keyPath)
+			}
 			if(val instanceof mongoose.Document || val && val.isArray() && val.length > 0 && val[0] instanceof mongoose.Document){
 				docsByPath[keyPath] = val;
 			}
@@ -145,11 +152,14 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 		});
 	};
 	scan(devObject);
-
 	async.each(docsByPath.keys(), function(path, callback){
 		var childContext = {req:context.req, user:context.user, scope:populateDevelopChildrenOptions[path], parentDoc:me};
 		docsByPath[path].setHidden('context', childContext);
 		docsByPath[path].populateDevelop(function(err, popDevChild){
+			if(path == "corporation"){
+				console.log("popDevChild")
+				console.log(popDevChild.professionals[0])
+			}
 			devObject._set(path, popDevChild);
 			callback(err);
 		});
