@@ -263,21 +263,20 @@ var Auth_LogicController = {
 			console.log(input.user_attr);
 
 			if(input.user_attr.email) {
-				console.log('\n> PASS 1');
 
+				console.log('\n> PASS 1');
 				pipeline = pipeline.concat([
 					find_User,
 					create_User
 				]);
-				if(input.invite) {
-					console.log('\n> PASS 2');
 
+				if(input.invite) {
+
+					console.log('\n> PASS 2');
 					pipeline = pipeline.concat([
 						create_Token,
 						hash_Token,
-						add_Token,
-						//build_Url,
-						//send_Email
+						add_Token
 					]);
 				}
 			}
