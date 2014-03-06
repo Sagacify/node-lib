@@ -12,8 +12,6 @@ module.exports = function (mixin, callback) {
 		}
 
 		model('User').find(search, function (e, users) {
-			console.log('\n> RES FIND USERS :');
-			console.log(users);
 			if(e) {
 				return callback('COULDNT_FIND_USER');
 			}
@@ -24,10 +22,6 @@ module.exports = function (mixin, callback) {
 
 			mixin.users = users;
 			mixin.user = users[0];
-
-			console.log('\n> FIND USER :');
-			console.log(mixin.action);
-			console.log(mixin.user);
 
 			if(users && users.length && mixin.action === 'RegisterFakeUser') {
 				callback(true, mixin); // Hack on Async.js's waterfall to break out early AND return a result

@@ -63,7 +63,9 @@ Array.prototype.containsObject = function(_id){
 
 //Deprecated see containsWithEqualFunction
 Array.prototype.contains = function(item){
-	
+	if(!item){
+		return false;
+	}
 	// var founded =  !!~this.robustIndexOf(item);
 	// console.log("founded " +founded);
 
@@ -77,9 +79,29 @@ Array.prototype.contains = function(item){
 		};
 		return !!~-1;
 	}
+
 	else{
 		// this.indexOf(item) != -1
-		return !!~this.indexOf(item);
+		//return !!~this.indexOf(item);
+		for(var i = 0; i < this.length; i++){
+			var myitem = this[i];
+			if(typeof item != 'string' && typeof item.equals == 'function'){
+				if(item.equals(myitem)){
+					return true;
+				}
+			}
+			else if(typeof item != 'string' && typeof myitem.equals == 'function'){
+				if(myitem.equals(item)){
+					return true;
+				}
+			}
+			else{
+				if(myitem == item){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 };
 

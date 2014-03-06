@@ -157,6 +157,16 @@ obj_proto.setContext = function(context){
 	return this;
 };
 
+obj_proto.mapKey = function(key){
+	return this.map(function(item){
+		return item[key];
+	});
+};
+
+obj_proto.mapId = function(){
+	return this.mapKey('_id');
+};
+
 for(var key in obj_proto){
 	Object.defineProperty(Object.prototype, key, {
 		writable: true,

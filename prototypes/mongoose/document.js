@@ -162,7 +162,6 @@ mongoose.Document.prototype.doSet = function(path, val, type, options, callback)
 		});
 	}
 	else{
-		console.log(path)
 		var setterName = "set"+path.capitalize();
 		if(typeof this[setterName] == "function" && arguments.callee.caller.caller.caller != this[setterName]){
 			if(this[setterName].hasCallback() && callback){

@@ -154,15 +154,6 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 	scan(devObject);
 	async.each(docsByPath.keys(), function(path, callback){
 		var childContext = {req:context.req, user:context.user, scope:populateDevelopChildrenOptions[path], parentDoc:me};
-		if(path == "managers"){
-			console.log('populateDevelopChildren')
-			console.log(me)
-			console.log(me.context.scope)
-			console.log(me.bouh)
-		}
-		if(me.bouh){
-			console.log('bouh')
-		}
 		docsByPath[path].setHidden('context', childContext);
 		docsByPath[path].populateDevelop(function(err, popDevChild){
 			devObject._set(path, popDevChild);
