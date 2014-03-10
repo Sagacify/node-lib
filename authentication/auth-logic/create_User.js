@@ -1,10 +1,9 @@
-var UserModel = model('User');
 var expiration = config.expiration;
 
 module.exports = function (mixin, callback) {
 	var user = mixin.user_attr;
 	user.state = mixin.resultingState;
-	mixin.user = UserModel({
+	mixin.user = model('User')({
 		state: user.state
 	});
 	if(mixin.req) {
