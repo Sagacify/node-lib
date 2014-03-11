@@ -1,22 +1,32 @@
 module.exports = function (mixin, callback) {
 	var search = {};
 	var qs = mixin.search[1];
-	if((typeof qs === 'string') && qs.length) {
+	if(typeof qs === 'string' && qs.length) {
 		search[mixin.search[0]] = qs.toLowerCase();
-		console.log('search')
-		console.log(search)
+
+		var fakeUserProp = mixin.fakeUserProp;
+		if(typeof fakeUserProp === 'string' && fakeUserProp.length) {
+			search[fakeUserProp] = {
+				$ne: true
+			};
+		}
+
 		model('User').find(search, function (e, users) {
 			if(e) {
-				callback('COULDNT_FIND_USER');
+				return callback('COULDNT_FIND_USER');
 			}
-			else if((mixin.action !== 'Register') && (!users || !users.length)) {
-				console.log(arguments)
-				console.log("here?")
-				callback('INVALID_ATTR_COMBINATION');
+			
+			if(mixin.action !== 'Register' && mixin.action !== 'RegisterFakeUser' && (!users || !users.length)) {
+				return callback('INVALID_ATTR_COMBINATION');
+			}
+
+			mixin.users = users;
+			mixin.user = users[0];
+
+			if(users && users.length && mixin.action === 'RegisterFakeUser') {
+				callback(true, mixin); // Hack on Async.js's waterfall to break out early AND return a result
 			}
 			else {
-				mixin.users = users;
-				mixin.user = users[0];
 				callback(null, mixin);
 			}
 		});

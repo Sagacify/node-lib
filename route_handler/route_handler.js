@@ -28,6 +28,7 @@ RouteHandler.prototype.handle = function(){
 							if(err){
 								console.log(err);
 								console.log(err.stack)
+								console.log(new Error().stack)
 							}
 							res.SGsend(err||clientFormat);
 						});
@@ -130,7 +131,7 @@ RouteHandler.prototype.generateClientFormat = function(checkout, callback){
 		checkout.populateDevelop(callback);
 	}
 	else{
-		callback(checkout);
+		callback(null, checkout);
 	}
 };
 

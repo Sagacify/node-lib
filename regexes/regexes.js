@@ -870,7 +870,8 @@ var ascii_translator = {
 };
 
 exports.asciify = function asciify (char) {
-	return ascii_translator[char] || char;
+	var asciifiedChar;
+	return (asciifiedChar = ascii_translator[char]) ? '(' + asciifiedChar + '|' + char +')' : char;
 };
 
 function filter_NonAscii (utfString) {
@@ -882,8 +883,8 @@ function filter_NonAscii (utfString) {
 }
 
 exports.build_RegExp = function (string) {
-	string = filter_NonAscii(string);
 	var regexString = exports.regexify(string);
+	regexString = filter_NonAscii(regexString);
 	regexString = regexString.replace(/\s/g, '(\\s*)');
 	return new RegExp(regexString, 'gi');
 };

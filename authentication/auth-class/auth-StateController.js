@@ -27,6 +27,17 @@ var Auth_StateController = {
 	// 2 means "VALIDATED" state
 	Logout: 2,
 
+	// 0 means "NOTHING"
+	RegisterFakeUser: 0,
+
+	// 0 means "NOTHING"
+	ReverseRegister: 0,
+
+	// 1 means "UNVALIDATED" state
+	ReverseValidation: 1,
+
+	//__FAKE_USER_INVITE: 0
+
 };
 
 module.exports = Auth_StateController;
