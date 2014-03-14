@@ -4,7 +4,9 @@ var client = require('twilio')(config.sms.accountSid, config.sms.authToken);
 var templatePath = __dirname + '/../../views/sms/templates';
 
 exports.send_SMS = function (to, type, prefLang, parameters, callback) {
-	fs.readFile(templatePath + '/' + prefLang + '/' + type + '.txt', {encoding:'utf8'}, function (e, template) {
+	fs.readFile(templatePath + '/' + prefLang + '/' + type + '.txt', {
+		encoding: 'utf8'
+	}, function (e, template) {
 		if(e) {
 			console.log(new SGError(e));
 		}
