@@ -28,6 +28,9 @@ exports.sanitize = function sanitize(str) {
 };
 
 exports.clearText = function clearText(str) {
+	if (!str) {
+		return "";
+	}
 	str = str.replace(/\t+/g, ' ');
 	return str.replace(/\r?\n|\r/g, '');
 };
