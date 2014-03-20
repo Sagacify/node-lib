@@ -88,23 +88,20 @@ function generateHTML (mailTemplate, data, prefLang, callback) {
 
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
-
 			console.log("emailTemplates error");
 			console.log(e);
-			callback(e);
+			return callback(e);
 		}
-		else {
-			template(mailTemplate, data, function (e, html, text) {
-				if(e) {
-					console.log("template error");
-					console.log(e);
-					callback(e);
-				}
-				else {
-					callback(null, html, text);
-				}
-			});
-		}
+
+		template(mailTemplate, data, function (e, html, text) {
+			if(e) {
+				console.log("template error");
+				console.log(e);
+				return callback(e);
+			}
+
+			callback(null, html, text);
+		});
 	});
 }
 
