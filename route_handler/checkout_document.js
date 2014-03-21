@@ -4,10 +4,10 @@ function CheckoutDocument(context, route){
 	this.state = route.states.last();
 	this.parentState = this.state.parentState();
 	this.doc = this.state.obj;
-};
+}
 
 CheckoutDocument.prototype.get = function(callback){
-	console.log('get document')
+	console.log('get document');
 	callback(null, this.doc);
 };
 
@@ -36,7 +36,8 @@ CheckoutDocument.prototype.delete = function(callback){
 		}
 	}
 	else if(this.parentState.state.obj instanceof mongoose.Types.DocumentArray){
-		this.parentState.state.obj.removeFromArray(this.parentState.path, this.doc, function(err){
+		console.log(this.parentState.state.obj);
+		this.parentState.state.parentState().state.obj.removeFromArray(this.parentState.path, this.doc, function(err){
 			if(!err){
 				me.parentState.state.parentState().state.obj.save(callback);
 			}
