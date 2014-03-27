@@ -18,6 +18,9 @@ module.exports = function (mixin, callback) {
 		delete user[fakeUserProp];
 	}
 
+	console.log('> CREATE USER OUT - 0 : <');
+	console.log(user);
+
 	mixin.user[mixin.user.firstSet ? 'firstSet' : 'set'](user, function (e) {
 		if(e) {
 			console.log('> CREATE USER OUT - 1 : <');
