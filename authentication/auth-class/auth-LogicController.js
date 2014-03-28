@@ -253,14 +253,12 @@ var Auth_LogicController = {
 		},
 		// the method itself
 		function (input, callback) {
-			console.log('\n> RegisterFakeUser : <');
-			console.log(input.email);
 			var pipeline = [
 				echo_mixin(input)
 			];
 
-			console.log('\n> INPUT :');
-			console.log(input.user_attr);
+			console.log('\n> RegisterFakeUser : <');
+			console.log(input);
 
 			if(input.user_attr.email) {
 
