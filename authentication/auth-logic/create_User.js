@@ -1,4 +1,3 @@
-
 module.exports = function (mixin, callback) {
 	var user = mixin.user_attr;
 
