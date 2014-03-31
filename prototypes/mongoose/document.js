@@ -15,7 +15,7 @@ mongoose.Document.prototype.toObject = function(opts){
 
 
 mongoose.Document.prototype.getCreated_at = function() {
-	if(this.schema.tree._id.type.name == 'ObjectId')
+	if(this.schema.tree._id.type.name == 'ObjectId' && this._id)
  		return new Date(parseInt(this._id.toString().slice(0,8), 16) * 1000);
  	else if(this._get('created_at'))
  		return this._get('created_at');
