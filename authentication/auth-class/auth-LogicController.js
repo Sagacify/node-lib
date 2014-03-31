@@ -258,7 +258,7 @@ var Auth_LogicController = {
 			];
 
 			console.log('\n> RegisterFakeUser : <');
-			console.log(input);
+			console.log(input.user);
 
 			if(input.user_attr.email) {
 
