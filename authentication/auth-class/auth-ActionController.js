@@ -21,8 +21,6 @@ var Auth_ActionController = function Auth_ActionController () {
 
 	this.process = function (action, args, callback) {
 		var expectedState = me.gen_ExpectedState(action);
-		console.log('Auth logic')
-		console.log(args)
 		args.action = action;
 		args.expectedState = expectedState;
 		args.resultingState = me.gen_ResultingState(expectedState, action);

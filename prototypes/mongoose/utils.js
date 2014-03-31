@@ -26,11 +26,11 @@ exports.generateMeth = function(meth, Class){
 		}
 		else {
 			if(meth == 'sgUpdate' || meth == 'sgCreate') {
-				args = null;
+				args = undefined;
 			}
 			if(meth == 'sgRemove') {
-				path = null;
-				args = null;
+				path = undefined;
+				args = undefined;
 			}
 			var me = this;
 			var doCallback = function (err, res) {
@@ -42,9 +42,12 @@ exports.generateMeth = function(meth, Class){
 			};
 			var willCallback = function(err) {
 				if(!err) {
+					console.log('willCallback')
+					console.log(path)
+					console.log(args)
 					me[doMeth](
 						(path != null) ? path : doCallback,
-						(args !== null) ? args : doCallback,
+						(args !== undefined) ? args : doCallback,
 						doCallback
 					);
 				}
@@ -54,7 +57,7 @@ exports.generateMeth = function(meth, Class){
 			};
 			this[willMeth](
 				(path != null) ? path : willCallback,
-				(args !== null) ? args : willCallback,
+				(args !== undefined) ? args : willCallback,
 				willCallback
 			);
 		}
