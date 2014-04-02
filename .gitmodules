@@ -7,3 +7,6 @@
 [submodule "file/docsplit"]
 	path = file/docsplit
 	url = git@github.com:documentcloud/docsplit.git
+[submodule "webshot"]
+	path = webshot
+	url = git@github.com:skyless/node-webshot.git
