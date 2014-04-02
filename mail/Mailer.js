@@ -110,18 +110,16 @@ function getSubject (mailTemplate, prefLang) {
 	return fs.readFileSync(dirname + '/subject.txt', 'utf8');
 }
 
-exports.send_Mail = function (type, email, name, prefLang, token, callback) {
-	var types = ['validation', 'reset_password'];
-	console.log("SEND MAIL TO", email);
-	console.log(type, email, name, prefLang, token);
-	if(prefLang && types.indexOf(type) !== -1) {
-		var base_uri = '/auth';
-		var uri = base_uri + '/' + type;
-		var unique_uri = config.hostname + uri + '/' + token;
+exports.send_Mail = function (type, email, name, link, title, prefLang, token, callback) {
+	console.log('EMAIL TO -> ' + email);
+	console.log(arguments);
+	//var types = ['validation', 'reset_password'];
+	if(prefLang && type/*types.indexOf(type) !== -1*/) {
 		sendMessage(email, {
 			to: email,
-			link: unique_uri,
-			name: name
+			link: link,
+			name: name,
+			title: title
 		}, type, prefLang, callback);
 	}
 	else {
