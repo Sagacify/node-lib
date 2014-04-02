@@ -23,10 +23,10 @@ module.exports = function (mixin, callback) {
 			mixin.users = users;
 			mixin.user = users[0];
 
-			console.log('\n> FIND() results !');
-			console.log(mixin.action);
-			console.log(search);
-			console.log(users);
+			// console.log('\n> FIND() results !');
+			// console.log(mixin.action);
+			// console.log(search);
+			// console.log(users);
 
 			if(users && users.length && mixin.action === 'RegisterFakeUser') {
 				console.log('\n> HACK - BREAK RegisterFakeUser !');
