@@ -856,6 +856,15 @@ exports.ext = function () {
 
 			return index > -1;
 		},
+		isSupportedArchive : function (mimeType) {
+			var archiveSupportedFormats = [
+				extTypes['zip']
+			];
+
+			var index = archiveSupportedFormats.indexOf(mimeType);
+
+			return index > -1;
+		},
 		isVideo : function (mimeType) {
 			var videoFormats = [
 				extTypes['3g2'],
