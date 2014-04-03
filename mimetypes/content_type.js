@@ -839,7 +839,7 @@ exports.ext = function () {
 			return mimetype || 'application/octet-stream';
 		},
 		// http://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
-		isSupportedImage : function (mimeType) {
+		isImage : function (mimeType) {
 			var imageSupportedFormats = [
 				extTypes['bmp'],
 				extTypes['gif'],
