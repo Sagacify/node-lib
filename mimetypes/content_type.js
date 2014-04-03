@@ -1,5 +1,6 @@
 exports.ext = function () {
 	// list from http://www.stdicon.com/mimetypes
+	// Soemtimes, there is multiple mimetypes. The first one is the preferred one.
 	var extTypes = {
 		"123"			: "application/vnd.lotus-1-2-3",
 		"3dml"			: "text/vnd.in3d.3dml",
@@ -39,7 +40,7 @@ exports.ext = function () {
 		"atomsvc"		: "application/atomsvc+xml",
 		"atx"			: "application/vnd.antix.game-component",
 		"au"			: "audio/basic",
-		"avi"			: [ "video/x-msvideo", "video/avi" ],
+		"avi"			: [ "video/avi", "video/x-msvideo" ],
 		"aw"			: "application/applixware",
 		"azf"			: "application/vnd.airzip.filesecure.azf",
 		"azs"			: "application/vnd.airzip.filesecure.azs",
@@ -831,7 +832,11 @@ exports.ext = function () {
 			return (i < 0) ? '' : path.substr(++i);
 		},
 		getContentType: function (ext) {
-			return extTypes[ext.toLowerCase()] || 'application/octet-stream';
+			var mimetype = extTypes[ext.toLowerCase()];
+			if (Array.isArray(mimetype)) {
+				mimetype = mimetype[0];
+			}
+			return mimetype || 'application/octet-stream';
 		},
 		// http://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
 		isSupportedImage : function (mimeType) {
