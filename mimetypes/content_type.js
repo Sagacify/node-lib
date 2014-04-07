@@ -833,13 +833,21 @@ exports.ext = function () {
 		},
 		getContentType: function (ext) {
 			var mimetype = extTypes[ext.toLowerCase()];
-			if (Array.isArray(mimetype)) {
+			if (mimetype.isArray()) {
 				mimetype = mimetype[0];
 			}
 			return mimetype || 'application/octet-stream';
 		},
+		isSupportedMimetype: function (types, mimetype) {
+			var supportedFormats = [];
+			types.forEach(function (type) {
+				supportedFormats.push(extTypes[type]);
+			});
+
+			return supportedFormats.indexOf(mimetype) > -1;
+		},
 		// http://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
-		isSupportedImage : function (mimeType) {
+		isImage : function (mimetype) {
 			var imageSupportedFormats = [
 				extTypes['bmp'],
 				extTypes['gif'],
@@ -852,11 +860,23 @@ exports.ext = function () {
 				extTypes['svgz'],
 			];
 
-			var index = imageSupportedFormats.indexOf(mimeType);
-
-			return index > -1;
+			return imageSupportedFormats.indexOf(mimetype) > -1;
 		},
-		isVideo : function (mimeType) {
+		isArchive : function (mimetype) {
+			var archiveSupportedFormats = [
+				extTypes['zip'],
+				extTypes['rar'],
+				extTypes['tar'],
+				extTypes['gtar'],
+				extTypes['gz'],
+				extTypes['tgz'],
+				extTypes['apk'],
+				extTypes['jar']
+			];
+
+			return archiveSupportedFormats.indexOf(mimetype) > -1;
+		},
+		isVideo : function (mimetype) {
 			var videoFormats = [
 				extTypes['3g2'],
 				extTypes['3gp'],
@@ -909,10 +929,10 @@ exports.ext = function () {
 				}
 			});
 
-			var index = videoFormats.indexOf(mimeType);
+			var index = videoFormats.indexOf(mimetype);
 
 			if (index == -1) {
-				index = childrenVideoFormats.indexOf(mimeType);
+				index = childrenVideoFormats.indexOf(mimetype);
 			}
 
 			return index > -1;
