@@ -7,6 +7,12 @@ express.response.SGsend = function(object) {
 	var response;
 	var length;
 
+	console.log('headers')
+	console.log(this)
+
+	this.header("Access-Control-Allow-Origin", "*");
+	this.header("Access-Control-Allow-Headers", "X-Requested-With");
+
 	if(object instanceof SGError){
 		code = object.code;
 		error = {
