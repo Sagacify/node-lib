@@ -7,9 +7,6 @@ express.response.SGsend = function(object) {
 	var response;
 	var length;
 
-	console.log('headers')
-	console.log(this)
-
 	this.header("Access-Control-Allow-Origin", "*");
 	this.header("Access-Control-Allow-Headers", "X-Requested-With");
 
@@ -33,11 +30,11 @@ express.response.SGsend = function(object) {
 		length = object instanceof Array ? object.length : 1;
 	}
 
-	if(code == 200){
+	if(code == 200) {
 		// this.send({timestamp:new Date(), body:(response||null)});
 		this.send(response||null);
 	}
-	else{
+	else {
 		this.send(code, error);
 	}
 };
