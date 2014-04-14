@@ -52,13 +52,15 @@ function generateMail (to, data, mailTemplate, prefLang, callback){
 			var message = {
 				from: fromEmail,
 				to: to,
+				sender: config.AWS.sesSender + ' <' + fromEmail + '>',
 				subject: subject,
 				generateTextFromHTML: true,
 				attachments:attachments
 			};
 			message.text = text || undefined;
 			message.html = html || undefined;
-			console.log("message")
+			console.log('\n> E-Mail Message :');
+			//console.log(message);
 			callback(null, message);
 		}
 	});
@@ -72,6 +74,7 @@ function getAttachments (mailTemplate, prefLang) {
 	attachmentsFiles.forEach(function (anAttachment) {
 		attachments.push({
 			filePath: attachmentsFilesPath + '/' + anAttachment,
+			filename: anAttachment,
 			cid: anAttachment
 		});
 	});
