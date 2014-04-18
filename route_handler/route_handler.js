@@ -16,6 +16,7 @@ function RouteHandler (options) {
 
 RouteHandler.prototype.handle = function(){
 	var me = this;
+	var cors = this.options.cors;
 	return function autoGenerate (req, res) {
 		me.buildContext(req, res);
 		me.buildRoute(function(err){
@@ -30,19 +31,19 @@ RouteHandler.prototype.handle = function(){
 								console.log(err.stack)
 								console.log(new Error().stack)
 							}
-							res.SGsend(err||clientFormat);
+							res.SGsend(err||clientFormat, cors);
 						});
 					}
 					else {
 						console.log(err);
-						res.SGsend(err);
+						res.SGsend(err, cors);
 					}
 				});
 			}
 			else{
 				console.log(err);
 				console.log(err.stack)
-				res.SGsend(err);
+				res.SGsend(err, cors);
 			}
 		});
 	}

@@ -1,14 +1,17 @@
 var express = require('express');
 var SGError = require('../../errorhandler/SagaError');
 
-express.response.SGsend = function(object) {
+express.response.SGsend = function(object, cors) {
 	var code;
 	var error;
 	var response;
 	var length;
 
-	this.header("Access-Control-Allow-Origin", "*");
-	this.header("Access-Control-Allow-Headers", "X-Requested-With");
+
+	if(cors){
+		this.header("Access-Control-Allow-Origin", "*");
+		this.header("Access-Control-Allow-Headers", "X-Requested-With");
+	}
 
 	if(object instanceof SGError){
 		code = object.code;
