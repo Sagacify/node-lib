@@ -36,6 +36,8 @@ var Auth_StateController = {
 	// 1 means "UNVALIDATED" state
 	ReverseValidation: 1,
 
+	Emailless_Register: 0,
+
 	//__FAKE_USER_INVITE: 0
 
 };

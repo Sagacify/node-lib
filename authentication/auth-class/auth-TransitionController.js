@@ -38,6 +38,7 @@ var Auth_TransitionController = {
 
 	//__FAKE_USER_INVITE: 0
 
+	Emailless_Register: +2,
 };
 
 module.exports = Auth_TransitionController;
