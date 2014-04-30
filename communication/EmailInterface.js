@@ -153,8 +153,6 @@ EmailInterface.prototype.InstanciateMailParser = function (callback) {
  * @api private
  */
 EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
-	console.log("MAIL SETTINGS");
-	console.log(settings);
 	var emailContents = settings || {}
 	  , content = settings.html || settings.text || '';
 
@@ -184,8 +182,7 @@ EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
 			cid: /*this.attachmentsPath + '/' +*/ filename
 		};
 	}
-	console.log("attachments");
-	console.log(attachments);
+
 	emailContents.attachments = attachments;
 
 	// TODO : Optimize this function to be called only once at the construction of a new instance
