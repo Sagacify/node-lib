@@ -5,7 +5,7 @@ module.exports = function (mixin, callback) {
 		search[mixin.search[0]] = qs.toLowerCase();
 
 		var fakeUserProp = mixin.fakeUserProp;
-		if(typeof fakeUserProp === 'string' && fakeUserProp.length) {
+		if(typeof fakeUserProp === 'string' && fakeUserProp.length && mixin.action !== 'RegisterFakeUser') {
 			search[fakeUserProp] = {
 				$ne: true
 			};
@@ -23,7 +23,14 @@ module.exports = function (mixin, callback) {
 			mixin.users = users;
 			mixin.user = users[0];
 
+			// console.log('\n> FIND() results !');
+			// console.log(mixin.action);
+			// console.log(search);
+			// console.log(users);
+
 			if(users && users.length && mixin.action === 'RegisterFakeUser') {
+				console.log('\n> HACK - BREAK RegisterFakeUser !');
+				console.log(mixin);
 				callback(true, mixin); // Hack on Async.js's waterfall to break out early AND return a result
 			}
 			else {
