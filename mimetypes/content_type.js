@@ -2,6 +2,7 @@ exports.ext = function () {
 	// list from http://www.stdicon.com/mimetypes
 	// Soemtimes, there is multiple mimetypes. The first one is the preferred one.
 	var extTypes = {
+		"*"				: "application/octet-stream",
 		"123"			: "application/vnd.lotus-1-2-3",
 		"3dml"			: "text/vnd.in3d.3dml",
 		"3g2"			: "video/3gpp2",
