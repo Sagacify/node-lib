@@ -14,6 +14,11 @@ exports.generateMeth = function (meth, Class) {
 			callback = args;
 			args = {};
 		}
+		else{
+			if(typeof path == "function"){
+				callback = path;
+			}
+		}
 
 		if (!(typeof callback === 'function')) {
 			var willRes = this[willMeth](path, args);
