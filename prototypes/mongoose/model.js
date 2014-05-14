@@ -78,8 +78,8 @@ mongoose.Model.prototype.ensureRemoveConsistency = function(){
 	});
 };
 
-mongoose.Model.prototype.willRemove = function(){
-
+mongoose.Model.prototype.willRemove = function(callback){
+	callback();
 };
 
 // mongoose.Model.prototype.sgRemove = function(callback){
