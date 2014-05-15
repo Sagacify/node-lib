@@ -15,6 +15,5 @@ var async = require('async');
 // };
 
 async.choose = function (value, functions, callback) {
-	console.log("CHOOOOOSE");
 	functions[value](callback);
 };
