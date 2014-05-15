@@ -197,10 +197,8 @@ exports.notEmpty = function (str) {
 };
 
 exports.isVersion = function (str) {
-	return !!str.match(/^([0-9]+\.?)+$/g)
+	return !!str.match(/^([0-9]+\.?)+$/g);
 };
-
-
 
 exports.inferiorTo = function (num, value) {
 	return num < value;
