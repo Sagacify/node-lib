@@ -38,7 +38,6 @@ exports.generateMeth = function (meth, Class) {
 			}
 			var me = this;
 			var doCallback = function (err, res) {
-				console.log('doCallback')
 				if (!err) {
 					me[didMeth](path, args);
 				}
