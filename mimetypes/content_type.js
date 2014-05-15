@@ -826,124 +826,49 @@ exports.ext = function () {
 	return {
 		getName: function (path) {
 			var i = path.lastIndexOf('.');
+			
 			return (i < 0) ? path : path.substr(0, i);
 		},
 		getExt: function (path) {
 			var i = path.lastIndexOf('.');
+
 			return (i < 0) ? '' : path.substr(++i);
 		},
 		getContentType: function (ext) {
 			var mimetype = extTypes[ext.toLowerCase()];
+
 			if (mimetype.isArray()) {
 				mimetype = mimetype[0];
 			}
-			return mimetype || 'application/octet-stream';
+
+			return mimetype || extTypes['*'];
 		},
-		isSupportedMimetype: function (types, mimetype) {
-			var supportedFormats = [];
-			types.forEach(function (type) {
-				var format = extTypes[type];
-				if (format.isArray()) {
-					format.forEach(function (mime) {
-						supportedFormats.push(mime);
-					});
-				} else {
-					supportedFormats.push(format);
-				}
+		isSupportedMimetype: function (formats, mimetype) {
+			var supportedMimetype = [];
+
+			formats.forEach(function (format) {
+				var contentType = extTypes[format];
+				supportedMimetype = supportedMimetype.concat(contentType.isArray() ? contentType.flatten() : contentType);
 			});
 
-			return supportedFormats.indexOf(mimetype) > -1;
+			return supportedMimetype.indexOf(mimetype) > -1;
 		},
 		// http://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
 		isImage : function (mimetype) {
-			var imageSupportedFormats = [
-				extTypes['bmp'],
-				extTypes['gif'],
-				extTypes['ico'],
-				extTypes['jpg'],
-				extTypes['jpe'],
-				extTypes['jpeg'],
-				extTypes['png'],
-				extTypes['svg'],
-				extTypes['svgz'],
-			];
+			var imageSupportedFormats = ['bmp', 'gif', 'ico', 'jpg', 'jpe', 'jpeg', 'png', 'svg', 'svgz'];
 
-			return imageSupportedFormats.indexOf(mimetype) > -1;
+			return this.isSupportedMimetype(imageSupportedFormats, mimetype);
 		},
 		isArchive : function (mimetype) {
-			var archiveSupportedFormats = [
-				extTypes['zip'],
-				extTypes['rar'],
-				extTypes['tar'],
-				extTypes['gtar'],
-				extTypes['gz'],
-				extTypes['tgz'],
-				extTypes['apk'],
-				extTypes['jar']
-			];
+			var archiveFormats = ['zip', 'rar', 'tar', 'gtar', 'gz', 'tgz', 'apk', 'jar'];
 
-			return archiveSupportedFormats.indexOf(mimetype) > -1;
+			return this.isSupportedMimetype(archiveFormats, mimetype);
 		},
 		isVideo : function (mimetype) {
-			var videoFormats = [
-				extTypes['3g2'],
-				extTypes['3gp'],
-				extTypes['asf'],
-				extTypes['asx'],
-				extTypes['avi'],
-				extTypes['dvix'],
-				extTypes['f4v'],
-				extTypes['fli'],
-				extTypes['flv'],
-				extTypes['fvt'],
-				extTypes['h261'],
-				extTypes['h263'],
-				extTypes['h264'],
-				extTypes['jpgm'],
-				extTypes['jpgv'],
-				extTypes['jpm'],
-				extTypes['m1v'],
-				extTypes['m2v'],
-				extTypes['m4u'],
-				extTypes['mj2'],
-				extTypes['mjp2'],
-				extTypes['mkv'],
-				extTypes['mov'],
-				extTypes['movie'],
-				extTypes['mp4'],
-				extTypes['mp4v'],
-				extTypes['mpa'],
-				extTypes['mpe'],
-				extTypes['mpeg'],
-				extTypes['mpg'],
-				extTypes['mpg4'],
-				extTypes['mxu'],
-				extTypes['ogv'],
-				extTypes['pyv'],
-				extTypes['qt'],
-				extTypes['viv'],
-				extTypes['wm'],
-				extTypes['wmv'],
-				extTypes['wmx'],
-				extTypes['wvx']
-			];
+			var videoFormats = ['3g2', '3gp', 'asf', 'asx', 'avi', 'dvix', 'f4v', 'fli', 'flv', 'fvt', 'h261', 'h263', 'h264', 'jpgm', 'jpgv', 'jpm', 'm1v', 'm2v', 'm4u', 'mj2', 'mjp2', 'mkv', 'mov', 'movie', 'mp4', 'mp4v', 'mpa', 'mpe', 'mpeg', 'mpg', 'mpg4', 'mxu', 'ogv', 'pyv', 'qt', 'viv', 'wm', 'wmv', 'wmx', 'wvx'];
 
-			var childrenVideoFormats = [];
 
-			videoFormats.forEach(function (element, index) {
-				if (element.isArray()) {
-					childrenVideoFormats = childrenVideoFormats.concat(element);
-					videoFormats.splice(index, 1);
-				}
-			});
-
-			var index = videoFormats.indexOf(mimetype);
-
-			if (index == -1) {
-				index = childrenVideoFormats.indexOf(mimetype);
-			}
-
-			return index > -1;
+			return this.isSupportedMimetype(videoFormats, mimetype);
 		}
 	};
 }();
