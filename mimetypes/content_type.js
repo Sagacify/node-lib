@@ -1,5 +1,6 @@
 exports.ext = function () {
 	// list from http://www.stdicon.com/mimetypes
+	// Other source: http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
 	// Soemtimes, there is multiple mimetypes. The first one is the preferred one.
 	var extTypes = {
 		'*'				: 'application/octet-stream',
@@ -851,7 +852,7 @@ exports.ext = function () {
 				supportedMimetype = supportedMimetype.concat(Array.isArray(contentType) ? contentType.flatten() : contentType);
 			});
 
-			return supportedMimetype.indexOf(mimetype) > -1;
+			return !!~supportedMimetype.indexOf(mimetype);
 		},
 		// http://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
 		isImage : function (mimetype) {
