@@ -1,10 +1,6 @@
-
-
-
-
-Array.prototype.merge = function(array){
+Array.prototype.merge = function (array) {
 	var me = this;
-	array.forEach(function(item){
+	array.forEach(function (item) {
 		me.push(item);
 	});
 };
@@ -13,31 +9,30 @@ Array.prototype.popFirst= function(){
 	return this.splice(0, 1)[0];
 };
 
-Array.prototype.last = function(){
-	return this[this.length-1];
+Array.prototype.last = function () {
+	return this[this.length - 1];
 };
 
 //In an ids array
-Array.prototype.containsId = function(anId){
+Array.prototype.containsId = function (anId) {
 	return this.containsWithEqualFunction(anId, function(id){
 		return id.equals(anId);
 	});
-}
+};
 
 //In an docs array
-Array.prototype.containsDoc = function(docToSearchFor){
-	return this.containsWithEqualFunction(function(doc){
+Array.prototype.containsDoc = function (docToSearchFor) {
+	return this.containsWithEqualFunction(function (doc) {
 		return doc._id.equals(docToSearchFor._id);
 	});
-}
+};
 
-Array.prototype.containsWithEqualFunction = function(equalFunction){
+Array.prototype.containsWithEqualFunction = function (equalFunction) {
 	return this.filter(equalFunction).length > 0;
-}
+};
 
-Array.prototype.containsIdOrDoc = function(_id){
-	
-	return this.containsWithEqualFunction(function(item){
+Array.prototype.containsIdOrDoc = function (_id) {
+	return this.containsWithEqualFunction(function (item) {
 		return item && ((item._id || item)).equals(_id._id || _id);
 	});
 
@@ -45,22 +40,23 @@ Array.prototype.containsIdOrDoc = function(_id){
 
 
 //Deprecated see containsWithEqualFunction
-Array.prototype.containsObject = function(_id){
+Array.prototype.containsObject = function (_id) {
 	return this.filter(
-		function(item){
+		function (item) {
 			return item._id.equals(_id);
 		}).length > 0;
 };
 
 //Deprecated see containsWithEqualFunction
-Array.prototype.contains = function(item){
-	if(!item){
+Array.prototype.contains = function (item) {
+	if (!item) {
 		return false;
 	}
 
 	if (item && typeof item.isMongooseDocument == "function" && item.isMongooseDocument()) {
 		for (var i = 0; i < this.length; i++) {
 			if (this[i].isMongooseDocument() && this[i]._id.toString() == item._id.toString()) {
+<<<<<<< HEAD
 				return true;
 			};
 		};
@@ -69,19 +65,28 @@ Array.prototype.contains = function(item){
 	} else{
 
 		for(var i = 0; i < this.length; i++){
+=======
+				return !!~i;
+			}
+		}
+
+		return !!~-1;
+	} else {
+		// this.indexOf(item) != -1
+		//return !!~this.indexOf(item);
+		for (var i = 0; i < this.length; i++) {
+>>>>>>> 45af808388919cbbbe83753990f9ce54eed50008
 			var myitem = this[i];
-			if(typeof item != 'string' && typeof item.equals == 'function'){
-				if(item.equals(myitem)){
+			if (typeof item != 'string' && typeof item.equals == 'function') {
+				if (item.equals(myitem)) {
 					return true;
 				}
-			}
-			else if(typeof item != 'string' && typeof myitem.equals == 'function'){
-				if(myitem.equals(item)){
+			} else if (typeof item != 'string' && typeof myitem.equals == 'function') {
+				if (myitem.equals(item)) {
 					return true;
 				}
-			}
-			else{
-				if(myitem == item){
+			} else {
+				if (myitem == item) {
 					return true;
 				}
 			}
@@ -90,45 +95,45 @@ Array.prototype.contains = function(item){
 	}
 };
 
-Array.prototype.remove = function(item){
+Array.prototype.remove = function (item) {
 	if (!item) {
 		return;
-	};
+	}
 	var index = this.indexOf(item);
-	if(index != -1)
+	if (index != -1)
 		this.splice(index, 1);
 };
 
-Array.prototype.equals = function(array){
-	for(var i = 0; i < this.length; i++){
-		if(this[i] != array[i])
+Array.prototype.equals = function (array) {
+	for (var i = 0; i < this.length; i++){
+		if (this[i] != array[i])
 			return false;
 	}
 	return true;
 };
 
-Array.prototype.indexes = function(){
+Array.prototype.indexes = function () {
 	var indexes = [];
-	for(var i = 0; i < this.length; i++){
+	for (var i = 0; i < this.length; i++) {
 		indexes.push(i);
 	}
 	return indexes;
 };
 
-Array.prototype.diff = function(a) {
+Array.prototype.diff = function (a) {
 	return this.filter(function (i) {
 		return !(a.indexOf(i) > -1);
 	});
 };
 
-Array.prototype.intersect = function(a){
+Array.prototype.intersect = function (a) {
 	return this.filter(function (i) {
 		return (a.indexOf(i) > -1);
 	});
 };
 
-Array.prototype.populateDevelop = function(callback){
-        if(this.length == 0 || !(this[0] instanceof mongoose.Document)){
+Array.prototype.populateDevelop = function (callback) {
+        if (this.length === 0 || !(this[0] instanceof mongoose.Document)){
                 callback(null, this);
         } else {
                 this.setHidden('schema', this[0].schema);
@@ -136,21 +141,21 @@ Array.prototype.populateDevelop = function(callback){
         }
 };
 
-Array.prototype.sgRemove = function(item){
-	for(var i = this.length-1; i >= 0; i--){
+Array.prototype.sgRemove = function (item) {
+	for(var i = this.length-1; i >= 0; i--) {
 		if((this[i] && this[i] instanceof mongoose.Types.ObjectId && this[i].equals(item)) || (item && item instanceof mongoose.Types.ObjectId && item.equals(this[i])) || (this[i] == item)){
 			this.splice(i, 1);
 		}
 	}
 };
 
-Array.prototype.pairs = function(){
+Array.prototype.pairs = function () {
 	var pairArray = [];
 	var valueA, valueB;
 	for(var i = 0; i<this.length; i++){
 		valueA = this[i];
 		for(var j = i+1; j<this.length; j++){
-			valueB = this[j]; 
+			valueB = this[j];
 		}
 		pairArray.push([valueA, valueB]);
 	}
@@ -164,9 +169,14 @@ Array.prototype.removeDuplicates = function () {
 	});
 };
 
-Array.prototype.pushOnce = function(item){
+Array.prototype.pushOnce = function (item) {
 	if(item && !this.contains(item)){
-		console.log(item)
 		this.push(item);
 	}
+};
+
+Array.prototype.flatten = function (shallow) {
+	return this.reduce(function (previousValue, currentValue) {
+		return previousValue.concat((Array.isArray(currentValue) && !shallow) ? currentValue.flatten() : currentValue);
+	}, []);
 };
