@@ -161,23 +161,28 @@ EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
 	  , type = settings.type
 	  , path = dirname + '/' + this.templatesPath + '/' + lang
 	  , basePath = path + '/' + type
-	  , attachmentsPath = basePath + '/' + this.attachmentsPath;
+	  , attachmentsPath = basePath + '/' + this.attachmentsPath
+	  , staticAttachments = fs.readdirSync(attachmentsPath) || [];
 
 	var subject = settings.subject || fs.readFileSync(basePath + '/subject.txt', 'utf8');
 	emailContents.subject = settings.ref ? subject + ' (ref:' + settings.ref + ')' : subject;
 
-	var attachments = settings.attachments || [] /*|| fs.readdirSync(attachmentsPath)*/
+	var attachments = (settings.attachments || []).concat(staticAttachments)
 	  , attachment
 	  , filename;
 	for(var i = 0, len = attachments.length; i < len; i++) {
 		attachment = attachments[i];
 		filename = attachment.filename || attachment.fileName || attachment;
+		if(filename.startsWith('.')) {
+			continue;
+		}
 		attachments[i] = {
 			fileName: filename,
 			filePath: attachment.filePath || attachmentsPath + '/' + filename,
 			cid: /*this.attachmentsPath + '/' +*/ filename
 		};
 	}
+
 	emailContents.attachments = attachments;
 
 	// TODO : Optimize this function to be called only once at the construction of a new instance
