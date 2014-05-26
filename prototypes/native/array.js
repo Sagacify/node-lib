@@ -36,15 +36,6 @@ Array.prototype.containsIdOrDoc = function (_id) {
 		return item && ((item._id || item)).equals(_id._id || _id);
 	});
 
-	// if(!this.length){
-	// 	return false;
-	// }
-	// if(this[0].isObject()){
-	// 	return this.containsDoc({_id:_id});
-	// }
-	// else{
-	// 	return this.contains(_id);
-	// }
 };
 
 
@@ -61,14 +52,20 @@ Array.prototype.contains = function (item) {
 	if (!item) {
 		return false;
 	}
-	// var founded =  !!~this.robustIndexOf(item);
-	// console.log("founded " +founded);
-
-	// return founded;
 
 	if (item && typeof item.isMongooseDocument == "function" && item.isMongooseDocument()) {
 		for (var i = 0; i < this.length; i++) {
 			if (this[i].isMongooseDocument() && this[i]._id.toString() == item._id.toString()) {
+<<<<<<< HEAD
+				return true;
+			};
+		};
+		return false;
+
+	} else{
+
+		for(var i = 0; i < this.length; i++){
+=======
 				return !!~i;
 			}
 		}
@@ -78,6 +75,7 @@ Array.prototype.contains = function (item) {
 		// this.indexOf(item) != -1
 		//return !!~this.indexOf(item);
 		for (var i = 0; i < this.length; i++) {
+>>>>>>> 45af808388919cbbbe83753990f9ce54eed50008
 			var myitem = this[i];
 			if (typeof item != 'string' && typeof item.equals == 'function') {
 				if (item.equals(myitem)) {

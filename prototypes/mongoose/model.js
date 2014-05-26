@@ -12,7 +12,6 @@ mongoose.Model.prototype._save = mongoose.Model.prototype.save;
 
 mongoose.Model.prototype.save = function save(fn){
 	if(this.modifiedPaths().length==0 && !this.isNew){
-		console.log('no modifiedPaths')
 		if(fn)
 			fn(null, this);
 	}
