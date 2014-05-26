@@ -56,9 +56,6 @@ RouteState.prototype.type = function(){
 	else if(this.obj instanceof mongoose.Types.DocumentArray){
 		return "DocumentArray";
 	}
-	else if(this.obj instanceof Array){
-		return "PrimitiveArray";
-	}
 	else{
 		var parentState = this.parentState();
 		if(typeof this.obj == "function" /*&& parentState.state.type() == "Document"*/ && (parentState.state.obj.schema.hasAction(this.urlPart()))){
@@ -66,6 +63,9 @@ RouteState.prototype.type = function(){
 		}
 		if(typeof this.obj == "function" /*&& parentState.state.type() == "Document"*/ && (parentState.state.obj.schema.hasVirtual(this.urlPart()))){
 			return "Virtual";
+		}
+		else if(this.obj instanceof Array){
+			return "PrimitiveArray";
 		}
 		else{
 			return "Primitive";
@@ -159,7 +159,7 @@ RouteState.prototype.getObjectFromFixPath = function(callback){
 RouteState.prototype.populateObject = function(callback){
 	//console.log("populateObject")
 	var parentState = this.parentState();
-	if(this.type()=='Virtual' || this.type()=='Action' || this.type()=='Primitive' || this.type()=='DocumentArray' || !parentState || !(parentState.state.obj instanceof mongoose.Document)){
+	if(this.type()=='Document' || this.type()=='Virtual' || this.type()=='Action' || this.type()=='Primitive' || this.type()=='DocumentArray' || !parentState || !(parentState.state.obj instanceof mongoose.Document)){
 		return callback(null);
 	}
 	if(this.index == this.route.length-1 || parentState.state.type() != "Document" || !parentState.state.obj.isRef(parentState.path) || !parentState.state.obj.isRefArray(parentState.path) ||

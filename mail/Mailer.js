@@ -52,13 +52,15 @@ function generateMail (to, data, mailTemplate, prefLang, callback){
 			var message = {
 				from: fromEmail,
 				to: to,
+				sender: config.AWS.sesSender + ' <' + fromEmail + '>',
 				subject: subject,
 				generateTextFromHTML: true,
 				attachments:attachments
 			};
 			message.text = text || undefined;
 			message.html = html || undefined;
-			console.log("message")
+			console.log('\n> E-Mail Message :');
+			//console.log(message);
 			callback(null, message);
 		}
 	});
@@ -72,6 +74,7 @@ function getAttachments (mailTemplate, prefLang) {
 	attachmentsFiles.forEach(function (anAttachment) {
 		attachments.push({
 			filePath: attachmentsFilesPath + '/' + anAttachment,
+			filename: anAttachment,
 			cid: anAttachment
 		});
 	});
@@ -88,23 +91,20 @@ function generateHTML (mailTemplate, data, prefLang, callback) {
 
 	emailTemplates(dirname, function (e, template) {
 		if(e) {
-
 			console.log("emailTemplates error");
 			console.log(e);
-			callback(e);
+			return callback(e);
 		}
-		else {
-			template(mailTemplate, data, function (e, html, text) {
-				if(e) {
-					console.log("template error");
-					console.log(e);
-					callback(e);
-				}
-				else {
-					callback(null, html, text);
-				}
-			});
-		}
+
+		template(mailTemplate, data, function (e, html, text) {
+			if(e) {
+				console.log("template error");
+				console.log(e);
+				return callback(e);
+			}
+
+			callback(null, html, text);
+		});
 	});
 }
 
@@ -113,18 +113,16 @@ function getSubject (mailTemplate, prefLang) {
 	return fs.readFileSync(dirname + '/subject.txt', 'utf8');
 }
 
-exports.send_Mail = function (type, email, name, prefLang, token, callback) {
-	var types = ['validation', 'reset_password'];
-	console.log("SEND MAIL TO", email);
-	console.log(type, email, name, prefLang, token);
-	if(prefLang && types.indexOf(type) !== -1) {
-		var base_uri = '/auth';
-		var uri = base_uri + '/' + type;
-		var unique_uri = config.hostname + uri + '/' + token;
+exports.send_Mail = function (type, email, name, link, title, prefLang, token, callback) {
+	console.log('EMAIL TO -> ' + email);
+	console.log(arguments);
+	//var types = ['validation', 'reset_password'];
+	if(prefLang && type/*types.indexOf(type) !== -1*/) {
 		sendMessage(email, {
 			to: email,
-			link: unique_uri,
-			name: name
+			link: link,
+			name: name,
+			title: title
 		}, type, prefLang, callback);
 	}
 	else {

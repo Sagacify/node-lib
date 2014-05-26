@@ -128,14 +128,21 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 	var me = this;
 	var context = this.context;
 	var populateDevelopChildrenOptions = typeof this.populateDevelopChildrenOptions == "function"? this.populateDevelopChildrenOptions(context.scope) : this.schema.populateDevelopChildrenOptions(context.scope);
-	populateDevelopChildrenOptions = populateDevelopChildrenOptions||[];
+	//populateDevelopChildrenOptions = populateDevelopChildrenOptions||[];
 	populateDevelopChildrenOptions = populateDevelopChildrenOptions.childrenScopes||populateDevelopChildrenOptions;
 
 	var docsByPath = {};
 	var scan = function(obj, path){
 		obj.keys().forEach(function(key){
 			var keyPath = path?(path+"."+key):key;
-			var val = me._get(keyPath);
+			var keyPathGetter = 'get'+keyPath.capitalize();
+			var val;
+			if(keyPath in me.schema.paths && typeof me[keyPathGetter] != "function"){
+				val = me._get(keyPath);
+			}
+			else{
+				val = obj._get(keyPath)
+			}
 			if(val instanceof mongoose.Document || val && val.isArray() && val.length > 0 && val[0] instanceof mongoose.Document){
 				docsByPath[keyPath] = val;
 			}
@@ -145,7 +152,6 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 		});
 	};
 	scan(devObject);
-
 	async.each(docsByPath.keys(), function(path, callback){
 		var childContext = {req:context.req, user:context.user, scope:populateDevelopChildrenOptions[path], parentDoc:me};
 		docsByPath[path].setHidden('context', childContext);
