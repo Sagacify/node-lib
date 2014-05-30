@@ -4,7 +4,9 @@ var client = require('twilio')(config.sms.accountSid, config.sms.authToken);
 var templatePath = __dirname + '/../../views/sms/templates';
 
 exports.send_SMS = function (to, type, prefLang, parameters, callback) {
-	fs.readFile(templatePath + '/' + prefLang + '/' + type + '.txt', {encoding:'utf8'}, function (e, template) {
+	fs.readFile(templatePath + '/' + prefLang + '/' + type + '.txt', {
+		encoding: 'utf8'
+	}, function (e, template) {
 		if(e) {
 			console.log(new SGError(e));
 		}
@@ -12,12 +14,13 @@ exports.send_SMS = function (to, type, prefLang, parameters, callback) {
 			for(var parameterName in parameters) {
 				template = template.replace('{{ '  + parameterName + ' }}', parameters[parameterName]);
 			}
-			client.sms.messages.create({
+			//client.sms.messages.create({
+			client.messages.create({
 				to:to, // The phone numver we want to deliver the message to
 				from: config.sms.from, // A number bought from Twilio that is used for outbound communication
 				body: template // body of the SMS message
-			}, function(err, message){
-				console.log(err);
+			}, function (e, message) {
+				console.log(e);
 				console.log(message.sid);
 			});
 		}

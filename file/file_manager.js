@@ -173,6 +173,6 @@ exports.readThenDeleteLocalFile = function (filepath, callback) {
 
 exports.getSize = function (filepath, callback) {
 	fs.stat(filepath, function (err, stats) {
-		callback(err, stats ? stats.size : null);
+		callback(err, stats ? stats.size : 0);
 	});
 };

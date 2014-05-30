@@ -15,7 +15,7 @@ mongoose.Document.prototype.toObject = function(opts){
 
 
 mongoose.Document.prototype.getCreated_at = function() {
-	if(this.schema.tree._id.type.name == 'ObjectId')
+	if(this.schema.tree._id.type.name == 'ObjectId' && this._id)
  		return new Date(parseInt(this._id.toString().slice(0,8), 16) * 1000);
  	else if(this._get('created_at'))
  		return this._get('created_at');
@@ -450,6 +450,7 @@ mongoose.Document.prototype.doUpdate = function(args, callback){
 	        if(me.parent)
 	        	docToSave = me.parent();
 			docToSave.save(callback);
+			//me.ensureUpdateConsistency();
 	    }
 		else{
 			callback(err);
@@ -477,51 +478,51 @@ mongoose.Document.prototype.ensureUpdateConsistency = function(){
 
 	//Doit etre fait dans une lib en particulier.C'est un enorme block!
 
-	// var me = this;
-	// if (this.getModelName) {
-	// 	return;
-	// };
-	// var myModelName = this.getModelName();
-
-	// mongoose.models.keys().forEach(function(modelName){
-	// 	var skelleton = mongoose.models[modelName].schema.skelleton;
-	// 	if(skelleton[myModelName]){
-	// 		skelleton[myModelName].forEach(function(path){
-	// 			if(path.endsWith('._id')){
-	// 				var findArgs = {};
-	// 				findArgs[path] = me._id;
-	// 				model(modelName).find(findArgs, function(err, docs){
-	// 					if(docs){
-	// 						docs.forEach(function(doc){
-	// 							var semiEmbeddedPath = path.substring(0, path.length-4);
-	// 							var semiEmbeddedDoc;
-	// 							if(doc.isSemiEmbedded(semiEmbeddedPath)){
-	// 								semiEmbeddedDoc = doc.get(semiEmbeddedPath);
-	// 							}
-	// 							// else if(doc.isSemiEmbeddedArray(semiEmbeddedPath)){
-	// 							// 	semiEmbeddedDoc = doc.get(semiEmbeddedPath).id(me._id);
-	// 							// }
-	// 							if(semiEmbeddedDoc){
-	// 								var changed = false;
-	// 								doc.schema.paths.keys().forEach(function(key){
-	// 									var semiEmbeddedKey = key.substring(semiEmbeddedPath.length+1, key.length);
-	// 									if(semiEmbeddedKey && !key.endsWith("_id") && key.startsWith(semiEmbeddedPath) && me.get(semiEmbeddedKey) != semiEmbeddedDoc._get(semiEmbeddedKey)){
-	// 										doc.set(key, me.get(semiEmbeddedKey));
-	// 										//semiEmbeddedDoc[key] = me[key];
-	// 										changed = true;
-	// 									}
-	// 								});
-	// 								if(changed){
-	// 									doc.save();
-	// 								}
-	// 							}
-	// 						});
-	// 					}
-	// 				});
-	// 			}
-	// 		});
-	// 	}
-	// });
+	var me = this;
+	if (!this.getModelName) {
+		return;
+	};
+	var myModelName = this.getModelName();
+	mongoose.models.keys().forEach(function(modelName){
+		var skelleton = mongoose.models[modelName].schema.skelleton;
+		if(skelleton[myModelName]){
+			skelleton[myModelName].forEach(function(path){
+				if(path.endsWith('._id')){
+					var findArgs = {};
+					findArgs[path] = me._id;
+					console.log(1)
+					model(modelName).find(findArgs, function(err, docs){
+						if(docs){
+							docs.forEach(function(doc){
+								var semiEmbeddedPath = path.substring(0, path.length-4);
+								var semiEmbeddedDoc;
+								if(doc.isSemiEmbedded(semiEmbeddedPath)){
+									semiEmbeddedDoc = doc.get(semiEmbeddedPath);
+								}
+								// else if(doc.isSemiEmbeddedArray(semiEmbeddedPath)){
+								// 	semiEmbeddedDoc = doc.get(semiEmbeddedPath).id(me._id);
+								// }
+								if(semiEmbeddedDoc){
+									var changed = false;
+									doc.schema.paths.keys().forEach(function(key){
+										var semiEmbeddedKey = key.substring(semiEmbeddedPath.length+1, key.length);
+										if(semiEmbeddedKey && !key.endsWith("_id") && key.startsWith(semiEmbeddedPath) && me.get(semiEmbeddedKey) != semiEmbeddedDoc._get(semiEmbeddedKey)){
+											doc.set(key, me.get(semiEmbeddedKey));
+											//semiEmbeddedDoc[key] = me[key];
+											changed = true;
+										}
+									});
+									if(changed){
+										doc.save();
+									}
+								}
+							});
+						}
+					});
+				}
+			});
+		}
+	});
 };
 
 ['get', 'set', 'do', 'addInArray', 'removeFromArray', 'create', 'update', 'remove'].forEach(function(meth){

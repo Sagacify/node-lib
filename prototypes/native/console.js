@@ -106,17 +106,20 @@ Object.defineProperty(global, '__script', {
 });
 
 
-var winston = require('winston');
-winston.add(winston.transports.File, { filename: 'somefile.log' });
+// var winston = require('winston');
+// winston.add(winston.transports.File, { filename: 'somefile.log' });
 
 // console._log = console.log;
-// console.log = function(text){
+// console.log = function(text) {
+// 	if(text instanceof Error) {
+// 		Error.stackTraceLimit = 100;
+// 		console.log(new Error().stack);
+// 	}
 // 	console._log(__script + ' : ' + __line);
 // 	console._log.apply(this, arguments);
 // };
 
-
-// console._log = console.log;
-// console.log = function(text){
-// 	winston.info(text); 
-// };
+/*console._log = console.log;
+console.log = function(text){
+	winston.info(text); 
+};*/

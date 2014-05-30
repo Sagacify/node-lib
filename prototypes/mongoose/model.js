@@ -12,7 +12,6 @@ mongoose.Model.prototype._save = mongoose.Model.prototype.save;
 
 mongoose.Model.prototype.save = function save(fn){
 	if(this.modifiedPaths().length==0 && !this.isNew){
-		console.log('modifiedPaths')
 		if(fn)
 			fn(null, this);
 	}
@@ -78,8 +77,8 @@ mongoose.Model.prototype.ensureRemoveConsistency = function(){
 	});
 };
 
-mongoose.Model.prototype.willRemove = function(){
-
+mongoose.Model.prototype.willRemove = function(callback){
+	callback();
 };
 
 // mongoose.Model.prototype.sgRemove = function(callback){
