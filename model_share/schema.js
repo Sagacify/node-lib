@@ -51,6 +51,7 @@ mongoose.Schema.prototype.publicFormat = function(){
 			// 	publicFormat.doc.tree[path] = [publicSpec(spec.caster)];
 			// }
 			else{
+				console.log(publicFormat.doc);
 				publicFormat.doc.tree[path] = publicSpec(spec);
 			}
 		}
