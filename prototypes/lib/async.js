@@ -1,4 +1,4 @@
-// var async = require('async');
+var async = require('async');
 
 //Callback = function(err, resultsArray)
 // async.prototype.eachOrder = function(array, iterator, callback) {
@@ -13,3 +13,7 @@
 	// 	};
 	// });
 // };
+
+async.choose = function (value, functions, callback) {
+	functions[value](callback);
+};
