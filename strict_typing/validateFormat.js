@@ -311,7 +311,6 @@ exports.timeString = function (str) {
 	return is.String(str) && !!str.match(/^([0-1][0-9]|[0-2][0-3])\:([0-6][0-9])$/);
 };
 
-// ^[A-Za-z\s0-9]+(,\s)[A-Za-z\s0-9]+(,\s)[A-Za-z\s0-9]+
 exports.isGoogleMapAddress = function (str) {
-	return is.String(str) && !!str.match(/^[^,]+(,\s)[^,]+(,\s)[^,]+$/g);
+	return is.String(str) && !!str.match(/^([^,]+(,\s))?[^,]+(,\s)[^,]+$/g);
 };
