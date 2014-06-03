@@ -1,3 +1,5 @@
+var async = require('async');
+
 var keyForArgs = function(args){
 	var key;
 	if(args && args.isString()){
@@ -27,6 +29,15 @@ redisClient.get = function(keyArgs, callback){
 	this._get(keyForArgs(keyArgs), callback);
 };
 
+redisClient.getJSON = function(key, callback){
+	this.get(key, function(err, res){
+		if(err || !res){
+			return callback(err);
+		}
+		callback(null, JSON.parse(res));
+	});
+};
+
 redisClient._set = redisClient.set;
 
 redisClient.set = function(keyArgs, value, callback){
@@ -38,6 +49,13 @@ redisClient.set = function(keyArgs, value, callback){
 		var callback = arguments.last();
 	}
 	this._set(keyForArgs(keyArgs), value, callback);
+};
+
+redisClient.setJSON = function(key, value, callback){
+	if(value){
+		value = JSON.stringify(value);
+	}
+	this.set(key, value, callback);
 };
 
 redisClient.mhgetall = function(keys, callback){
@@ -111,4 +129,44 @@ redisClient.setList = function(collection, name, callback){
 	}
 
 	// TODO
+};
+
+redisClient.delKeyPattern = function(key, callback){
+	var multi = this.multi();
+	this.keys(key, function(err, keys){
+		if(err){
+			callback(err);
+		}
+
+		keys.forEach(function(key){
+			multi.del(key);
+		});
+
+		multi.exec(callback);
+	});
+};
+
+redisClient.delKeysPattern = function(keys, callback){
+	var multi = this.multi();
+	console.log('delKeysPattern')
+	console.log(keys)
+	var me = this;
+	async.each(keys, function(key, callback){
+		me.keys(key, function(err, keys){
+			if(err){
+				callback(err);
+			}
+
+			keys.forEach(function(key){
+				multi.del(key);
+			});
+			callback();
+		});
+	}, function(err){
+		if(err){
+			return callback(err);
+		}
+		console.log('willMulti')
+		multi.exec(callback);
+	});
 };
