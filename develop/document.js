@@ -58,9 +58,9 @@ mongoose.Document.prototype.populateFromContext = function(callback){
 };
 
 //create object, remove fields, attach additional fields and do process -> result before cache
-mongoose.Document.prototype.develop = function(callback){
+mongoose.Document.prototype.develop = function(callback, customContext){
 	var me = this;
-	var context = this.context;
+	var context = customContext || this.context;
 	var developedDoc = this.toObject();
 
 	var developOptions = typeof this.developOptions == "function"? this.developOptions(context.scope) : this.schema.developOptions(context.scope);
