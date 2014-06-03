@@ -208,6 +208,10 @@ exports.equalTo = function (num, value) {
 	return num === value;
 };
 
+exports.verboseBoolean = function (str) {
+	return str === 'yes' || str === 'no';
+};
+
 exports.superiorTo = function (num, value) {
 	return num > value;
 };
