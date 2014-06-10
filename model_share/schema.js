@@ -14,8 +14,8 @@ mongoose.Schema.prototype.setSingle = function(path, single){
 	this.paths[path].options.single = single;
 };
 
-mongoose.Schema.prototype.publicFormat = function(){
-	var publicFormat = {doc:{tree:{}, virtuals:{}, actions:{}}, collection:{virtuals:{}, actions:{}}};
+mongoose.Schema.prototype.publicFormat = function(modelName){
+	var publicFormat = {doc:{tree:{}, virtuals:{}, actions:{}, modelName:modelName}, collection:{virtuals:{}, actions:{}}};
 
 	var publicSpec = function(spec){
 		if(spec.options.geoindex){
