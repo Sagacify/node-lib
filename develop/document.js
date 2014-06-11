@@ -48,19 +48,49 @@ mongoose.Document.prototype.populateFromContext = function(callback){
 	}
 	if(fieldsToPopulate.length == 0){
 		callback(null);
-	}
-	else{
-		for(var i = 0; i < fieldsToPopulate.length-1; i++){
-			this.populate(fieldsToPopulate[i]);
+	} else{
+			// for(var i = 0; i < fieldsToPopulate.length-1; i++){
+			// 	this.populate(fieldsToPopulate[i]);
+			// }
+			// this.populate(fieldsToPopulate[i], callback);
+			this.populate(fieldsToPopulate, callback);
 		}
-		this.populate(fieldsToPopulate[i], callback);
-	}
 };
 
-//create object, remove fields, attach additional fields and do process -> result before cache
-mongoose.Document.prototype.develop = function(callback){
+mongoose.Types.Embedded.prototype.populate = function(fieldsToPopulate, callback){
+	var refs = {};
+	var tree = this.schema.tree;
+	console.log("POPULATE COMMENT AUTHOR");
+	console.log(arguments);
 	var me = this;
-	var context = this.context;
+	async.each(fieldsToPopulate, function(field, callback){
+		if (!tree[field]) {
+			return callback();
+		};
+		if (!tree[field].ref) {
+			return callback();
+		};
+		var content = tree[field];
+		mongoose.model(content.ref).findById(me[field]).exec(function(err, doc){
+			console.log("BEFORE");
+			console.log(me.set.toString());
+
+			me.set(field, doc);
+			
+			me[field] = doc;
+
+			console.log("AFTER");
+			console.log(me);
+			callback(err);
+		})
+	}, callback);
+}
+
+
+//create object, remove fields, attach additional fields and do process -> result before cache
+mongoose.Document.prototype.develop = function(callback, customContext){
+	var me = this;
+	var context = customContext || this.context;
 	var developedDoc = this.toObject();
 
 	var developOptions = typeof this.developOptions == "function"? this.developOptions(context.scope) : this.schema.developOptions(context.scope);
