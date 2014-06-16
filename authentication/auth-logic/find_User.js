@@ -15,7 +15,7 @@ module.exports = function (mixin, callback) {
 			if(e) {
 				return callback('COULDNT_FIND_USER');
 			}
-			
+
 			if(mixin.action !== 'Register' && mixin.action !== 'Emailless_Register' && mixin.action !== 'RegisterFakeUser' && (!users || !users.length)) {
 				return callback('INVALID_ATTR_COMBINATION');
 			}
