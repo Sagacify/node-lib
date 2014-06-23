@@ -32,6 +32,8 @@ module.exports = function (app) {
 		app[methodName](uri, function (req, res, next) {
 			return (auth === true) || (auth === 'optional') ? BearerAuth(auth, req, res, next) : next();
 		}, function (req, res, next) {
+			req.inOptions = options;
+
 			if(req.query._scope){
 				req.clientScope = req.query._scope;
 				delete req.query._scope;

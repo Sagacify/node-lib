@@ -1,4 +1,4 @@
-var ct = require('../mimetypes/content_type');
+var ct = require('../mimetypes/content_type').ext;
 var virusScan = require('./virusScan');
 var async = require('async');
 
@@ -24,6 +24,14 @@ var readQueue = async.queue(function (params, callback) {
 	s3.client.getObject(params, callback);
 }, 3);
 
+var removeQueue = async.queue(function (params, callback) {
+	s3.client.deleteObject(params, callback);
+}, 3);
+
+var deleteQueue = async.queue(function (params, callback) {
+	s3.client.deleteObjects(params, callback);
+}, 3);
+
 /* Create bucket if not existing */
 exports.s3BucketInitialization = function () {
 	var bucketNames = [];
@@ -43,8 +51,7 @@ exports.s3BucketInitialization = function () {
 					}, function (err, data) {
 						if (err) {
 							console.log(err);
-						}
-						else console.log("Successfully created S3 " + bucketName + " bucket");
+						} else console.log("Successfully created S3 " + bucketName + " bucket");
 					});
 				} else {
 					console.log("S3 bucket " + bucketName + " connected...");
@@ -54,28 +61,28 @@ exports.s3BucketInitialization = function () {
 	});
 };
 
-exports.writeFileToS3 = function (base64data, extension, secure, callback) {
+exports.writeFileToS3 = function (base64data, originalFilename, extension, secure, callback) {
 	var name = uuid.v4();
 	var filename = extension ? name + "." + extension : name;
+
+	console.log("write file to S3: ", originalFilename);
 
 	writeQueue.push({
 		Bucket: secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName,
 		Key: filename,
 		Body: new Buffer(base64data, 'base64'),
-		ContentType: ct.ext.getContentType(extension)
+		ContentType: ct.getContentType(extension),
+		ContentDisposition: 'attachment; filename="' + originalFilename || filename + '"'
 	}, function (err) {
 		callback(err, filename);
 	});
 };
 
-// http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
-
 exports.readFileFromS3 = function (filename, secureOrBucket, callback) {
 	var bucket;
-	if(typeof secureOrBucket == "string"){
+	if (typeof secureOrBucket == "string") {
 		bucket = secureOrBucket;
-	}
-	else{
+	} else {
 		bucket = secureOrBucket ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName;
 	}
 
@@ -111,10 +118,29 @@ exports.createStreamToFileSystem = function (filename, callback) {
 	});
 };
 
-exports.removeFileFromS3 = function (filename, callback) {
-	s3.client.deleteObject({
-		Bucket: config.AWS.s3BucketName,
+exports.removeFileFromS3 = function (filename, secure, callback) {
+	removeQueue.push({
+		Bucket: secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName,
 		Key: filename
+	}, callback);
+};
+
+exports.removeFilesFromS3 = function (filenames, secure, callback) {
+	if (!filenames.length) {
+		return callback(new SGError('NO_FILENAMES'));
+	}
+	var objects = [];
+	filenames.forEach(function (filename) {
+		objects.push({
+			Key: filename
+		});
+	});
+
+	deleteQueue.push({
+		Bucket: secure ? config.AWS.s3SecuredBucketName : config.AWS.s3BucketName,
+		Delete: {
+			Objects: objects
+		}
 	}, callback);
 };
 
@@ -131,8 +157,7 @@ exports.getSecuredFilepath = function (filename) {
 	return s3Client.signedUrl(filename, expires);
 };
 
-exports.uploadThenDeleteLocalFile = function (filepath, extension, secure, callback) {
-	if (!callback) console.log("WTF");
+exports.uploadThenDeleteLocalFile = function (filepath, originalFilename, extension, secure, callback) {
 	//Scan for viruses
 	virusScan.launchFileScan(filepath, function (err, msg) {
 		if (err) {
@@ -147,7 +172,7 @@ exports.uploadThenDeleteLocalFile = function (filepath, extension, secure, callb
 			if (err) {
 				return callback(err);
 			}
-			exports.writeFileToS3(new Buffer(data, 'binary').toString('base64'), extension, secure, function (err, filename) {
+			exports.writeFileToS3(new Buffer(data, 'binary').toString('base64'), originalFilename, extension, secure, function (err, filename) {
 				if (err) {
 					console.log("ERROR WRITE TO S3");
 					console.log(err);
