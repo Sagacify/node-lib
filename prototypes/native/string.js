@@ -14,11 +14,11 @@ String.prototype.base64Sanitize = function (base64) {
 	return base64.replace(/\//g, '-').replace(/\+/g, '_');
 };
 
-String.prototype.capitalize = function () {
+String.prototype.capitalize = function(separator) {
 	var capitalized = "";
-	var split = this.split('.');
-	split.forEach(function (part) {
-		capitalized += part.charAt(0).toUpperCase() + part.slice(1);
+	var split = this.split(separator||'.');
+	split.forEach(function(part){
+		capitalized += part.charAt(0).toUpperCase()+part.slice(1);
 	});
 	return capitalized;
 };

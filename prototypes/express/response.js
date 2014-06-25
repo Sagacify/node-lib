@@ -25,7 +25,7 @@ express.response.SGsend = function(object, cors) {
 		};
 	}
 	else if(object instanceof Error){
-		SGsend(new SGError(object), cors);
+		this.SGsend(new SGError(object), cors);
 	}
 	else {
 		code = 200;
