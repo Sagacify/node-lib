@@ -106,7 +106,7 @@ EmailSender.prototype.addDirectTransport = function (options) {
  */
 EmailSender.prototype.addSendMailTransport = function (options) {
 	options = options || {};
-	this.transport.sendmail = nodemailer.createTransport('sendmail', {
+	this.transports.sendmail = nodemailer.createTransport('sendmail', {
 		path: options.path
 	});
 };
