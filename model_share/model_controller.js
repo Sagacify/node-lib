@@ -9,7 +9,7 @@ module.exports = function (app) {
 		var schemas = {};
 		mongoose.models.keys().forEach(function (model) {
 			if(model !== 'Bug') {
-				schemas[model] = mongoose.models[model].schema.publicFormat();
+				schemas[model] = mongoose.models[model].schema.publicFormat(model);
 				schemas[model].collection.name = mongoose.collectionNameFromModelName(model);
 			}
 		});
