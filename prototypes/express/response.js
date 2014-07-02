@@ -1,25 +1,31 @@
 var express = require('express');
 var SGError = require('../../errorhandler/SagaError');
 
-express.response.SGsend = function(object) {
+express.response.SGsend = function(object, cors) {
 	var code;
 	var error;
 	var response;
 	var length;
 
+
+	if(cors){
+		this.header("Access-Control-Allow-Origin", "*");
+		this.header("Access-Control-Allow-Headers", "X-Requested-With");
+	}
+
 	if(object instanceof SGError){
+		console.log("-----> SEND SG ERRROR");
 		code = object.code;
 		error = {
 			type: object.type,
-			verbose: object.verbose
+			verbose: object.verbose,
+		};
+		if ('args' in object) {
+			error.args = object.args;
 		};
 	}
 	else if(object instanceof Error){
-		code = 600;
-		error = {
-			type: 'generic',
-			verbose: 'Oops, something bad happened.'
-		};
+		this.SGsend(new SGError(object), cors);
 	}
 	else {
 		code = 200;
@@ -27,20 +33,14 @@ express.response.SGsend = function(object) {
 		length = object instanceof Array ? object.length : 1;
 	}
 
-	if(code == 200){
-		this.send(response);
+	if(code == 200) {
+		// this.send({timestamp:new Date(), body:(response||null)});
+		this.send(response||null);
 	}
-	else{
+	else {
+		console.log("SEND ERROR");
 		this.send(code, error);
 	}
-	// this.send({
-	// 	meta: {
-	// 		code:code,
-	// 		error: error,
-	// 		length: length
-	// 	},
-	// 	response: response
-	// });
 };
 
 express.response.handle = function(){

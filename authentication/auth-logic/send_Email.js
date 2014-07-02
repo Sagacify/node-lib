@@ -1,33 +1,44 @@
 var Mailer = require('../../mail/Mailer');
 var send_VerficationMail = Mailer.send_VerficationMail;
 var send_PasswordResetMail = Mailer.send_PasswordResetMail;
+var LanguageManager = require('../../languages/Language');
 
-var languageMapper = {
-	"Français" : "fr",
-	"English" : "en",
-	"Nederlandse" : "nl"
+var emailTypeMap = {
+	'Register': 'validation',
+	'ForgotPassword': 'reset_password'
 };
 
 module.exports = function (mixin, callback) {
 	var typeof_email = false;
-	if(mixin.action === 'Register') {
-		typeof_email = 'validation';
+	typeof_email = emailTypeMap[mixin.action];
+
+	if(mixin.template) {
+		typeof_email = mixin.template;
 	}
-	else if(mixin.action === 'ForgotPassword') {
-		typeof_email = 'reset_password';
-	}
+
 	if(typeof_email) {
-		console.log('Email is -> ' + mixin.email);
-		console.log(mixin);
-		var name = mixin.user.firstname + ' ' + mixin.user.lastname;
-		Mailer.send_Mail(typeof_email, mixin.email, name, languageMapper[mixin.prefLang], mixin.token, function (e) {
-			//TODO resend mail if fail
-			// if(e) {
-			// 	callback('COULDNT_SEND_EMAIL');
-			// }
-			// else {
-			// 	callback(null, mixin);
-			// }
+		var token = mixin.token;
+		var name = mixin.user.name || mixin.user.firstname + ' ' + mixin.user.lastname;
+		var link = config.hostname + '/auth/' + (emailTypeMap[mixin.action] || mixin.template) + '/' + token;
+
+		Mailer.send_Mail(
+			typeof_email,
+			mixin.email,
+			name,
+			link,
+			mixin.user.title,
+			LanguageManager.getPreferedLanguage(mixin.user.prefLang),
+			token,
+		function (e, msg) {
+			if (e) {
+				console.log('Email Error');
+				console.log(e);
+				console.log(msg);
+			}
+			else {
+				console.log("No Error");
+				console.log(msg);
+			}
 		});
 		callback(null, mixin);
 	}

@@ -30,8 +30,7 @@ function setup_QueryLogSchema () {
 		},
 		stack: {
 			type: String
-		},
-
+		}
 	});
 	model('QueryLog', QueryLogSchema);
 }
@@ -77,35 +76,52 @@ function save_QueryLog (explanation, id, options, fields, stack) {
 // 	process.stdin.setRawMode();
 // }
 
+function logCursorExplain (method, privateStack, cursor, dict, options) {
+	cursor.explain(function (e, explanation) {
+		if(e) {
+			console.log(new SGError(e));
+		}
+		else {
+			console.log(method.toUpperCase() + ' :');
+			console.log(explanation);
+			console.log(dict);
+			console.log(options);
+			console.log(cursor);
+			save_QueryLog(explanation, privateStack[0], options, dict, privateStack[1]);
+		}
+	});
+}
+
 function set_MongoosePrototype_FindOne () {
 	var _findOne = mongoose.Collection.prototype._findOne;
 	var findOne = mongoose.Collection.prototype.findOne;
 
 	mongoose.Collection.prototype._findOne = _findOne ? _findOne : findOne;
 
-	mongoose.Collection.prototype.findOne = function find (dict, options, callback) {
+	mongoose.Collection.prototype.findOne = function findOne (dict, options, callback) {
 		var me = this;
 		var privateStack = __benchmarkOrigin;
-		this._find(function (e, cursor) {
+		var argsToArray = Array.apply(null, arguments);
+		// if(dict._id && dict._id['$in'] && dict._id['$in'].length > 5) {
+		// 	console.log('WOOOOT !')
+		// 	console.log(dict);
+		// 	Error.stackTraceLimit = 100;
+		// 	console.log(new Error().stack);
+		// 	process.exit();
+		// }
+		argsToArray.splice(-1);
+		argsToArray.push(function (e, cursor) {
+			console.log('PASS FINDONE');
 			if(e) {
-				callback(new SGError(e));
+				console.log(e);
+				console.log(e.stack);
+				return callback(new SGError(e));
 			}
 			else {
-				cursor.explain(function (e, explanation) {
-					if(e) {
-						callback(new SGError(e));
-					}
-					else {
-						callback(null, cursor);
-						console.log('FindOne :');
-						console.log(explanation);
-						console.log(dict);
-						console.log(options);
-						save_QueryLog(explanation, privateStack[0], options, dict, privateStack[1]);
-					}
-				});
+				return logCursorExplain('findOne', privateStack, cursor, dict, options) || callback.apply(this, arguments);
 			}
 		});
+		return this._findOne.apply(this, argsToArray);
 	};
 }
 
@@ -118,33 +134,32 @@ function set_MongoosePrototype_Find () {
 	mongoose.Collection.prototype.find = function find (dict, options, callback) {
 		var me = this;
 		var privateStack = __benchmarkOrigin;
-		this._find(function (e, cursor) {
+		var argsToArray = Array.apply(null, arguments);
+		// if(dict._id && dict._id['$in'] && dict._id['$in'].length > 5) {
+		// 	console.log('WOOOOT !')
+		// 	//console.log(me.context.req);
+		// 	callback(true);
+		// }
+		argsToArray.splice(-1);
+		argsToArray.push(function (e, cursor) {
+			console.log('PASS FIND');
 			if(e) {
-				callback(new SGError(e));
+				console.log(e);
+				console.log(e.stack);
+				return callback(new SGError(e));
 			}
 			else {
-				cursor.explain(function (e, explanation) {
-					if(e) {
-						callback(new SGError(e));
-					}
-					else {
-						callback(null, cursor);
-						console.log('Find :');
-						console.log(explanation);
-						console.log(dict);
-						console.log(options);
-						save_QueryLog(explanation, privateStack[0], options, dict, privateStack[1]);
-					}
-				});
+				return logCursorExplain('find', privateStack, cursor, dict, options) || callback.apply(this, arguments);
 			}
 		});
+		return this._find.apply(this, argsToArray);
 	};
 }
 
 module.exports = function () {
-	if(_NODE_ENV === 'development') {
-		// setup_QueryLogSchema();
-		// set_MongoosePrototype_Find();
-		// set_MongoosePrototype_FindOne();
-	}
+	// if(NODE_ENV === 'development') {
+	// 	setup_QueryLogSchema();
+	// 	set_MongoosePrototype_Find();
+	// 	set_MongoosePrototype_FindOne();
+	// }
 };

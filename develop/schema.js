@@ -2,32 +2,40 @@ var async = require('async');
 
 mongoose.Schema.prototype.populateDevelop = function(callback){
 	var context = this.context;
-	if(this.length == 0 || !(this[0] instanceof mongoose.Document)){
+
+	if (!this.length) {
+		callback();
+		return;
+	};
+
+	if(!(this[0] instanceof mongoose.Document)){
 		callback(null, this);
-	}
-	else{
+	} else {
 		var schema = this.schema||this;
-		var fieldsToPopulate = schema.populateOptions(context.scope).fields;
+
+		var fieldsToPopulate = schema.populateOptions(context.scope);
+		if(!(fieldsToPopulate instanceof Array)){
+			fieldsToPopulate = fieldsToPopulate.fields;
+		}
+
 		var fieldsToPopulateString = "";
 		fieldsToPopulate.forEach(function(fieldToPopulate){
 			fieldsToPopulateString += fieldToPopulate + " ";
 		});
 
+		var developedArray = [];
 		var me = this;
 		var populateDevelopDocs = function(){
 			async.each(me.indexes(), function(index, callback){
-				Object.defineProperty(me[index], "context", {
-					writable: true,
-					value: context
-				});
+				me[index].setHidden('context', context);
 				me[index].populateDevelop(function(err, popDevObj){
 					if(!err){
-						me[index] = popDevObj;
+						developedArray[index] = popDevObj;
 					}
 					callback(err);
-				});
+				});				
 			}, function(err){
-				callback(err, me);
+				callback(err, developedArray);
 			});
 		};
 
@@ -66,6 +74,7 @@ mongoose.Schema.prototype.cacheOptions = function(context){
 };
 
 mongoose.Schema.prototype.populateOptions = function(scope){
+
 	if(typeof this.statics.populateOptions == "function")
 		return this.statics.populateOptions.apply(this, arguments);
 	else

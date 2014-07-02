@@ -11,21 +11,27 @@ mongoose.Model.prototype.getModelName = function(){
 mongoose.Model.prototype._save = mongoose.Model.prototype.save;
 
 mongoose.Model.prototype.save = function save(fn){
-	if(this.modifiedPaths().length==0){
+	if(this.modifiedPaths().length==0 && !this.isNew){
 		if(fn)
-			fn(null);
+			fn(null, this);
 	}
 	else{
 		return this._save.apply(this, arguments);
 	}
 };
 
+mongoose.Model.prototype.sgSave = function(callback){
+	var me = this;
+	this.save(function(err){
+		callback(err);
+		if(!err){
+			me.ensureUpdateConsistency();
+		}
+	});
+};
+
 mongoose.Model.prototype._remove = mongoose.Model.prototype.remove;
 
-// mongoose.Model.prototype.remove = function(){
-// 	this.ensureRemoveConsistency();
-// 	return this._remove.apply(this, arguments);
-// };
 
 mongoose.Model.prototype.ensureRemoveConsistency = function(){
 	var me = this;
@@ -67,8 +73,8 @@ mongoose.Model.prototype.ensureRemoveConsistency = function(){
 	});
 };
 
-mongoose.Model.prototype.willRemove = function(){
-
+mongoose.Model.prototype.willRemove = function(callback){
+	callback();
 };
 
 // mongoose.Model.prototype.sgRemove = function(callback){
@@ -80,10 +86,11 @@ mongoose.Model.prototype.willRemove = function(){
 
 // 	this.remove(post);
 // };
+
 mongoose.Model.prototype.doRemove = function(){
 	this.ensureRemoveConsistency();
-   	return this._remove.apply(this, arguments);
-}
+	return this._remove.apply(this, arguments);
+};
 
 mongoose.Model.prototype.didRemove = function(){
 
@@ -94,22 +101,26 @@ mongoose.Model.willFindById = function(id){
 };
 
 mongoose.Model.sgFindById = function(id, callback){
-	var me = this;	
+	var me = this;
 	var find = function(){
 		me.findById(id, function(err, doc){
-			callback(err, doc);
 			if(!err){
 				if(doc){
-					Object.defineProperty(doc, "context", {
-						writable: true,
-						value: me.context
-					});
-				}	
-				me.didFindById(doc);
+					doc.setHidden('context', me.context);
+					me.didFindById(doc);
+					callback(null, doc);
+				}
+				else {
+					console.log('Bad _id?');
+					callback(new SGError('NO_RESULT'));
+				}
+			}
+			else {
+				callback(err);
 			}
 		});
-	}
-	if(!this.willFindById.hasCallback()){
+	};
+	if(!this.willFindById.hasCallback()) {
 		var willRes = this.willFindById(id);
 		if(willRes instanceof Error||willRes instanceof SGError){
 			callback(willRes);
@@ -133,14 +144,23 @@ mongoose.Model.didFindById = function(doc){
 
 };
 
+mongoose.Document.prototype.willCreate = function(args, callback){
+	return this.willUpdate(args, callback);
+};
+
+mongoose.Document.prototype.doCreate = function(args, callback){
+	this.doUpdate(args, callback);
+};
+
+mongoose.Document.prototype.didCreate = function(args){
+	this.didUpdate(args);
+};
+
 mongoose.Model.sgCreate = function(raw, callback){
 	var model = this;
 	var doc = new model();
 
-	Object.defineProperty(doc, "context", {
-		writable: true,
-		value: this.context
-	});
+	doc.setHidden('context', this.context);
 
 	//auto set logged user
 	for(var path in this.schema.paths){
@@ -154,8 +174,7 @@ mongoose.Model.sgCreate = function(raw, callback){
 			}
 		}
 	}
-
-	doc.sgUpdate(raw, callback);
+	doc.sgCreate(raw, callback);
 };
 
 mongoose.Model.get = function(path, args, callback){

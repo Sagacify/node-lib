@@ -56,9 +56,6 @@ RouteState.prototype.type = function(){
 	else if(this.obj instanceof mongoose.Types.DocumentArray){
 		return "DocumentArray";
 	}
-	else if(this.obj instanceof Array){
-		return "PrimitiveArray";
-	}
 	else{
 		var parentState = this.parentState();
 		if(typeof this.obj == "function" /*&& parentState.state.type() == "Document"*/ && (parentState.state.obj.schema.hasAction(this.urlPart()))){
@@ -66,6 +63,9 @@ RouteState.prototype.type = function(){
 		}
 		if(typeof this.obj == "function" /*&& parentState.state.type() == "Document"*/ && (parentState.state.obj.schema.hasVirtual(this.urlPart()))){
 			return "Virtual";
+		}
+		else if(this.obj instanceof Array){
+			return "PrimitiveArray";
 		}
 		else{
 			return "Primitive";
@@ -85,6 +85,11 @@ RouteState.prototype.getObject = function(callback){
 		//get current user
 		if(this.pathPart() === 'user') {
 			callback(null, this.context.user);
+		}
+		else if(this.pathPart() === 'admin') {
+			var AdminModel = mongoose.model('Admin');
+			AdminModel.setHidden('context', this.context);
+			AdminModel.getOrCreate(callback);
 		}
 		else {
 			callback(null, mongoose.model(mongoose.modelNameFromCollectionName(this.pathPart())));
@@ -108,7 +113,8 @@ RouteState.prototype.getObjectFromVariablePath = function(callback){
 	if(!parentState){
 		return callback(new SGError());
 	}
-	if(this.pathPart().toLowerCase().endsWith("id")){
+	var pathPart = this.pathPart().toLowerCase();
+	if(pathPart.endsWith("id")){
 		//parentState is Model
 		if(parentState.state.type() == "Model"){
 			parentState.state.obj.sgFindById(this.urlPart(), callback);
@@ -120,6 +126,9 @@ RouteState.prototype.getObjectFromVariablePath = function(callback){
 		else{
 			callback(null, this.urlPart());
 		}
+	}
+	else if(pathPart.endsWith("slug")){
+		parentState.state.obj.findOne({slug:this.urlPart()}, callback);
 	}
 	//if urlpart is a variable but not an id, it is used as a filter on the collection
 	else{
@@ -150,7 +159,7 @@ RouteState.prototype.getObjectFromFixPath = function(callback){
 RouteState.prototype.populateObject = function(callback){
 	//console.log("populateObject")
 	var parentState = this.parentState();
-	if(this.type()=='Virtual' || this.type()=='Action' || this.type()=='Primitive' || this.type()=='DocumentArray' || !parentState || !(parentState.state.obj instanceof mongoose.Document)){
+	if(this.type()=='Document' || this.type()=='Virtual' || this.type()=='Action' || this.type()=='Primitive' || this.type()=='DocumentArray' || !parentState || !(parentState.state.obj instanceof mongoose.Document)){
 		return callback(null);
 	}
 	if(this.index == this.route.length-1 || parentState.state.type() != "Document" || !parentState.state.obj.isRef(parentState.path) || !parentState.state.obj.isRefArray(parentState.path) ||
@@ -183,7 +192,7 @@ RouteState.prototype.attachCaller = function(){
 	else{
 		var parentState = this.parentState();
 		if(parentState){
-			if(parentState.state.obj instanceof mongoose.Document && parentState.state.obj.schema.tree._get(parentState.path)){
+			if(parentState.state.obj instanceof mongoose.Document && parentState.state.obj.schema.tree._get(parentState.path) && parentState.state.obj.schema.tree._get(parentState.path)[0].ref){
 				caller = model(parentState.state.obj.schema.tree._get(parentState.path)[0].ref).schema;
 			}
 			if(parentState.state.caller instanceof mongoose.Schema) {
@@ -199,10 +208,10 @@ RouteState.prototype.attachCaller = function(){
 
 RouteState.prototype.attachContext = function(){
 	if(this.obj && (this.obj.isObject()||this.obj instanceof Function)){
-		Object.defineProperty(this.obj, "context", {
-			writable: true,
-			value: this.context
-		});
+		this.obj.setHidden('context', this.context);
+	}
+	if(this.caller){
+		this.caller.setHidden('context', this.context);
 	}
 };
 

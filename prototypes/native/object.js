@@ -1,7 +1,7 @@
 var is = require('../../strict_typing/validateType');
 var obj_proto = {};
 
-obj_proto.clone = function () {
+obj_proto.sgClone = function () {
 	if ((this == null) || ((typeof this) !== 'object')) {
 		return this;
 	}
@@ -143,6 +143,28 @@ obj_proto.pathsKeys = function() {
 			return ele + (child ? '.' + child : '');
 		}));
 	}, []) : [''];
+};
+
+obj_proto.setHidden = function(path, val){
+	Object.defineProperty(this, path, {
+		writable: true,
+		value: val
+	});
+};
+
+obj_proto.setContext = function(context){
+	this.setHidden('context', context);
+	return this;
+};
+
+obj_proto.mapKey = function(key){
+	return this.map(function(item){
+		return item[key];
+	});
+};
+
+obj_proto.mapId = function(){
+	return this.mapKey('_id');
 };
 
 for(var key in obj_proto){

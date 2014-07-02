@@ -870,5 +870,21 @@ var ascii_translator = {
 };
 
 exports.asciify = function asciify (char) {
-	return ascii_translator[char] || char;
+	var asciifiedChar;
+	return (asciifiedChar = ascii_translator[char]) ? '(' + asciifiedChar + '|' + char +')' : char;
+};
+
+function filter_NonAscii (utfString) {
+	var asciiString = '';
+	for(var i = 0, len = utfString.length; i < len; i++) {
+		asciiString += exports.asciify(utfString[i]);
+	}
+	return asciiString;
+}
+
+exports.build_RegExp = function (string) {
+	var regexString = exports.regexify(string);
+	regexString = filter_NonAscii(regexString);
+	regexString = regexString.replace(/\s/g, '(\\s*)');
+	return new RegExp(regexString, 'gi');
 };

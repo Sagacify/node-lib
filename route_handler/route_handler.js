@@ -16,40 +16,43 @@ function RouteHandler (options) {
 
 RouteHandler.prototype.handle = function(){
 	var me = this;
+	var cors = this.options.cors;
 	return function autoGenerate (req, res) {
 		me.buildContext(req, res);
 		me.buildRoute(function(err){
 			if(!err){
-				me.checkout(function(err, checkout){
+				me.checkout(function (err, checkout){
+					//console.log('CHECKOUT :'); // BUG: returns [] on "Virtuals" !
+					//console.log(arguments);
 					if(!err){
-						me.clientFormat(checkout, function(err, clientFormat){
+						me.generateClientFormat(checkout, function(err, clientFormat){
 							if(err){
-								// console.log(err);
-								// console.log(err.stack)
+								console.log(err);
+								console.log(err.stack)
+								console.log(new Error().stack)
 							}
-							res.SGsend(err||clientFormat);
+							res.SGsend(err||clientFormat, cors);
 						});
 					}
-					else{
+					else {
 						console.log(err);
-						console.log(err.stack)
-						res.SGsend(err);
+						res.SGsend(err, cors);
 					}
 				});
 			}
 			else{
 				console.log(err);
 				console.log(err.stack)
-				res.SGsend(err);
+				res.SGsend(err, cors);
 			}
 		});
 	}
 };
 
-RouteHandler.prototype.buildContext = function(req){
+RouteHandler.prototype.buildContext = function (req) {
 	var scope;
 	if(this.options.scope == "clientScope"){
-		scope = req.clientScope;
+		scope = req.query.scope;
 	}
 	else if(typeof this.options.scope == "function"){
 		scope = this.options.scope(req.clientScope, req.user);
@@ -76,6 +79,7 @@ RouteHandler.prototype.buildRoute = function(callback) {
 	splitUrl.popFirst();
 	if(!splitUrl.last())
 		splitUrl.pop();
+
 	this.route = {
 		splitPath: splitPath,
 		splitUrl:splitUrl,
@@ -121,16 +125,14 @@ RouteHandler.prototype.checkout = function(callback){
 	}
 };
 
-RouteHandler.prototype.clientFormat = function(checkout, callback){
+RouteHandler.prototype.generateClientFormat = function(checkout, callback){
 	if(checkout && typeof checkout.populateDevelop == "function"){
-		Object.defineProperty(checkout, "context", {
-			writable: true,
-			value: this.context
-		});
+		if(!checkout.context)
+			checkout.setHidden('context', this.context);
 		checkout.populateDevelop(callback);
 	}
 	else{
-		callback(checkout);
+		callback(null, checkout);
 	}
 };
 

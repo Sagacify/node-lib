@@ -19,13 +19,26 @@ var Auth_StateController = {
 	ChangePassword: 2,
 
 	// 2 means "VALIDATED" state
-	ForgotPassword: 2,
+	ForgotPassword: [1, 2],
 
 	// 2 means "VALIDATED" state
 	TokenStrategy: 2,
 
 	// 2 means "VALIDATED" state
 	Logout: 2,
+
+	// 0 means "NOTHING"
+	RegisterFakeUser: 0,
+
+	// 0 means "NOTHING"
+	ReverseRegister: 0,
+
+	// 1 means "UNVALIDATED" state
+	ReverseValidation: 1,
+
+	Emailless_Register: 0,
+
+	//__FAKE_USER_INVITE: 0
 
 };
 

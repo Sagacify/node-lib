@@ -11,6 +11,7 @@ var Auth_ActionController = function Auth_ActionController () {
 	};
 
 	this.gen_ResultingState = function (expectedState, action) {
+		expectedState = Array.isArray(expectedState) ? Math.max.apply(null, expectedState) : expectedState;
 		return expectedState + Auth_TransitionController[action];
 	};
 
