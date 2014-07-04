@@ -32,6 +32,19 @@ var deleteQueue = async.queue(function (params, callback) {
 	s3.client.deleteObjects(params, callback);
 }, 3);
 
+exports.getConfig = function () {
+	return {
+		region: config.AWS.region,
+		accessKeyId: config.AWS.accessKeyId,
+		secretAccessKey: config.AWS.secretAccessKey,
+		s3StaticURL: config.AWS.s3StaticURL,
+		s3BucketName: config.AWS.s3BucketName,
+		s3SecuredBucketName: config.AWS.s3SecuredBucketName,
+		sesFromEmail: config.AWS.sesFromEmail,
+		sesSender: config.AWS.sesSender
+	};
+};
+
 /* Create bucket if not existing */
 exports.s3BucketInitialization = function () {
 	var bucketNames = [];
