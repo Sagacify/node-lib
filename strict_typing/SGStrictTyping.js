@@ -1,7 +1,7 @@
 var is = require('./validateType');
 var isValid = require('./validateFormat');
 
-var HalloweenSkelleton = require('../../lib/dataskelleton/HalloweenSkelleton');
+var HalloweenSkelleton = require('../dataskelleton/HalloweenSkelleton');
 var models = mongoose.models;
 
 var escape_default = config.escapeDefault;
