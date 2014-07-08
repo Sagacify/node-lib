@@ -10,7 +10,7 @@ var s3;
 
 /* Create AWS environement */
 /* *********************** */
-if (config) {
+if (typeof config !== 'undefined') {
 	exports.initialize(config);
 }
 
