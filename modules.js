@@ -21,6 +21,7 @@ module.exports = {
 	// errorhandler
 
 	/// escaping
+	sanitize: require('./escaping/Sanitize'),
 
 	// file
 	file_manager: require('./file/file_manager'),

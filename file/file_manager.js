@@ -6,15 +6,22 @@ var AWS = require('aws-sdk');
 var uuid = require('node-uuid');
 var fs = require('fs');
 var tmp = require('tmp');
+var s3;
 
 /* Create AWS environement */
 /* *********************** */
-AWS.config.update({
-	region: config.AWS.region,
-	accessKeyId: config.AWS.accessKeyId,
-	secretAccessKey: config.AWS.secretAccessKey
-});
-s3 = new AWS.S3();
+if (config) {
+	exports.initialize(config);
+}
+
+exports.initialize = function (config) {
+	AWS.config.update({
+		region: config.AWS.region,
+		accessKeyId: config.AWS.accessKeyId,
+		secretAccessKey: config.AWS.secretAccessKey
+	});
+	s3 = new AWS.S3();
+};
 
 var writeQueue = async.queue(function (params, callback) {
 	s3.client.putObject(params, callback);
