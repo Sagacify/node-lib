@@ -1,0 +1,15 @@
+{
+	"name": "node-lib",
+	"description": "Sagacify Node Library",
+	"version": "0.0.1",
+	"private": true,
+	"author": "Sagacify (https://github.com/Sagacify)",
+	"engines": {
+		"node": "latest"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Sagacify/node-lib"
+	},
+	"main": "./modules"
+}
