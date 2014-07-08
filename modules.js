@@ -1,3 +1,11 @@
+global.mongoose = require('mongoose');
+require('mongoose-schema-extend');
+
+global.Schema = mongoose.Schema;
+global.ObjectId = Schema.ObjectId;
+global.Model = mongoose.Model;
+global.model = mongoose.model.bind(mongoose);
+
 module.exports = {
 	// authentication
 
