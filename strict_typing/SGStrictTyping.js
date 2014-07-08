@@ -4,7 +4,7 @@ var isValid = require('./validateFormat');
 var HalloweenSkelleton = require('../dataskelleton/HalloweenSkelleton');
 var models = mongoose.models;
 
-var escape_default = config.escapeDefault || true;
+var escape_default = typeof config !== 'undefined' ? config.escapeDefault : true;
 // var sanitize_default = config.sanitizeDefault;
 
 function remodel_DataSkelleton (parentModel) {
