@@ -23,8 +23,6 @@ if (typeof config !== 'undefined') {
 	exports.initialize(config);
 }
 
-
-
 var writeQueue = async.queue(function (params, callback) {
 	s3.client.putObject(params, callback);
 }, 3);
