@@ -8,12 +8,6 @@ var fs = require('fs');
 var tmp = require('tmp');
 var s3;
 
-/* Create AWS environement */
-/* *********************** */
-if (typeof config !== 'undefined') {
-	exports.initialize(config);
-}
-
 exports.initialize = function (config) {
 	AWS.config.update({
 		region: config.AWS.region,
@@ -22,6 +16,12 @@ exports.initialize = function (config) {
 	});
 	s3 = new AWS.S3();
 };
+
+/* Create AWS environement */
+/* *********************** */
+if (typeof config !== 'undefined') {
+	exports.initialize(config);
+}
 
 var writeQueue = async.queue(function (params, callback) {
 	s3.client.putObject(params, callback);
