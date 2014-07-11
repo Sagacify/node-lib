@@ -6,7 +6,7 @@ exports.execute = function (command, callback) {
 		timeout: 300000
 	}, function (error, stdout, stderr) {
 		if (is.Function(callback)) {
-			callback(error ? error + "\n" + command : error, stderr, stdout);
+			callback(error, stderr, stdout);
 		} else {
 			if (error) {
 				console.log('exec error: ' + error + command);
@@ -25,9 +25,13 @@ exports.execute = function (command, callback) {
 	// });
 };
 
-exports.executor = function (commands, callback) {
+exports.run = function (command, callback) {
+	exports.execute(command, function (error, stderr, stdout) {
+		var err = error || stderr;
+		if (err) {
+			return callback(err);
+		}
 
-	commands.forEach(function (command) {
-		this.execute(command, callback);
+		callback(null, stdout);
 	});
 };
