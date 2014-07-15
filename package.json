@@ -13,7 +13,26 @@
 	},
 	"dependencies": {
 		"mongoose": "latest",
-		"mongoose-schema-extend": "latest"
+		"mongoose-schema-extend": "latest",
+		"simplesmtp": "latest",
+		"async": "latest",
+		"node-uuid": "latest",
+		"aws-sdk": "2.0.0-rc.19",
+		"tmp": "latest",
+		"know": "latest",
+		"request": "latest",
+		"supertest": "latest",
+		"bcrypt": "latest",
+		"crypto": "latest",
+		"email-templates": "latest",
+		"nodemailer": "latest",
+		"twilio": "latest",
+		"stripe": "latest",
+		"winston": "latest",
+		"express": "3.5.1",
+		"helmet": "latest",
+		"zombie": "latest",
+		"jstoxml": "latest"
 	},
 	"main": "./modules"
 }
