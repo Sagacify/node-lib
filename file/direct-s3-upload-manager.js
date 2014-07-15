@@ -1,5 +1,5 @@
 var crypto = require("crypto"),
-AWS = require('aws-sdk');
+    AWS = require('aws-sdk');
 
 // AWS.config.update({
 //     region: config.AWS.region,
@@ -8,25 +8,21 @@ AWS = require('aws-sdk');
 // });
 // var s3 = new AWS.S3();
 
-
 // Signs any requests.  Delegate to a more specific signer based on type of request.
-exports.signRequest = function(req, res) {
+exports.signRequest = function (req, res) {
     if (req.body.headers) {
         signRestRequest(req, res);
-    }
-    else {
+    } else {
         signPolicy(req, res);
     }
-}
-
-
+};
 
 // Signs multipart (chunked) requests.  Omit if you don't want to support chunking.
 function signRestRequest(req, res) {
     var stringToSign = req.body.headers,
         signature = crypto.createHmac("sha1", config.AWS.secretAccessKey)
-        .update(stringToSign)
-        .digest("base64");
+            .update(stringToSign)
+            .digest("base64");
 
     var jsonResponse = {
         signature: signature
@@ -35,7 +31,7 @@ function signRestRequest(req, res) {
     res.setHeader("Content-Type", "application/json");
 
     // if (isValidRestRequest(stringToSign)) {
-        res.end(JSON.stringify(jsonResponse));
+    res.end(JSON.stringify(jsonResponse));
     // }
     // else {
     //     res.status(400);
@@ -47,8 +43,8 @@ function signRestRequest(req, res) {
 function signPolicy(req, res) {
     var base64Policy = new Buffer(JSON.stringify(req.body)).toString("base64"),
         signature = crypto.createHmac("sha1", config.AWS.secretAccessKey)
-        .update(base64Policy)
-        .digest("base64");
+            .update(base64Policy)
+            .digest("base64");
 
     var jsonResponse = {
         policy: base64Policy,
@@ -58,7 +54,7 @@ function signPolicy(req, res) {
     res.setHeader("Content-Type", "application/json");
 
     // if (isPolicyValid(req.body)) {
-        res.end(JSON.stringify(jsonResponse));
+    res.end(JSON.stringify(jsonResponse));
     // }
     // else {
     //     res.status(400);
@@ -79,11 +75,10 @@ function isValidRestRequest(headerStr) {
 function isPolicyValid(policy) {
     var bucket, parsedMaxSize, parsedMinSize, isValid;
 
-    policy.conditions.forEach(function(condition) {
+    policy.conditions.forEach(function (condition) {
         if (condition.bucket) {
             bucket = condition.bucket;
-        }
-        else if (condition instanceof Array && condition[0] === "content-length-range") {
+        } else if (condition instanceof Array && condition[0] === "content-length-range") {
             parsedMinSize = condition[1];
             parsedMaxSize = condition[2];
         }
@@ -95,8 +90,7 @@ function isPolicyValid(policy) {
     // ensure that the client and server have agreed upon the exact same
     // values.
     if (expectedMinSize != null && expectedMaxSize != null) {
-        isValid = isValid && (parsedMinSize === expectedMinSize.toString())
-                          && (parsedMaxSize === expectedMaxSize.toString());
+        isValid = isValid && (parsedMinSize === expectedMinSize.toString()) && (parsedMaxSize === expectedMaxSize.toString());
     }
 
     return isValid;

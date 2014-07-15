@@ -15,5 +15,16 @@ var async = require('async');
 // };
 
 async.choose = function (value, functions, callback) {
-	functions[value](callback);
+	if (!value) {
+		throw new Error("You have to specify the preferred value.");
+	}
+	if (!(value in functions)) {
+		return callback();
+	}
+
+	functions[value](function() {
+		if (callback) {
+			callback.apply(this, arguments);
+		}
+	});
 };
