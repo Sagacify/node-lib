@@ -12,7 +12,7 @@ function emitEvent(event, data) {
 }
 
 EventEmitter.on('FrostyBug', function (args) {
-	if(config.errorLog) {
+	if(typeof config !== 'undefined' && config.errorLog) {
 		if(args && (args.length > 0)) {
 			var bug = model('Bug')({
 				message: args.err
