@@ -7,6 +7,9 @@ global.Model = mongoose.Model;
 global.model = mongoose.model.bind(mongoose);
 
 module.exports = {
+	// prototypes
+	prototypes: require('./prototypes/prototypes'),
+
 	// authentication
 
 	// benchmarks
@@ -57,8 +60,6 @@ module.exports = {
 	// mongo-middleware
 
 	// payment
-
-	// prototypes
 
 	// regexes
 

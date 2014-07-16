@@ -19,7 +19,6 @@
 		"node-uuid": "latest",
 		"aws-sdk": "2.0.0-rc.19",
 		"tmp": "latest",
-		"know": "latest",
 		"request": "latest",
 		"supertest": "latest",
 		"bcrypt": "latest",
