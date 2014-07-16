@@ -8,7 +8,6 @@ global.model = mongoose.model.bind(mongoose);
 
 module.exports = {
 	// prototypes
-	prototypes: require('./prototypes/prototypes'),
 
 	// authentication
 
