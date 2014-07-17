@@ -6,15 +6,22 @@ var AWS = require('aws-sdk');
 var uuid = require('node-uuid');
 var fs = require('fs');
 var tmp = require('tmp');
+var s3;
+
+exports.initialize = function (config) {
+	AWS.config.update({
+		region: config.AWS.region,
+		accessKeyId: config.AWS.accessKeyId,
+		secretAccessKey: config.AWS.secretAccessKey
+	});
+	s3 = new AWS.S3();
+};
 
 /* Create AWS environement */
 /* *********************** */
-AWS.config.update({
-	region: config.AWS.region,
-	accessKeyId: config.AWS.accessKeyId,
-	secretAccessKey: config.AWS.secretAccessKey
-});
-s3 = new AWS.S3();
+if (typeof config !== 'undefined') {
+	exports.initialize(config);
+}
 
 var writeQueue = async.queue(function (params, callback) {
 	s3.client.putObject(params, callback);
@@ -31,6 +38,19 @@ var removeQueue = async.queue(function (params, callback) {
 var deleteQueue = async.queue(function (params, callback) {
 	s3.client.deleteObjects(params, callback);
 }, 3);
+
+exports.getConfig = function () {
+	return {
+		region: config.AWS.region,
+		accessKeyId: config.AWS.accessKeyId,
+		secretAccessKey: config.AWS.secretAccessKey,
+		s3StaticURL: config.AWS.s3StaticURL,
+		s3BucketName: config.AWS.s3BucketName,
+		s3SecuredBucketName: config.AWS.s3SecuredBucketName,
+		sesFromEmail: config.AWS.sesFromEmail,
+		sesSender: config.AWS.sesSender
+	};
+};
 
 /* Create bucket if not existing */
 exports.s3BucketInitialization = function () {

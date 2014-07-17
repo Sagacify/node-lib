@@ -9,11 +9,11 @@ if(!config.AWS){
 var fromEmail = config.AWS.sesFromEmail;
 
 // Create an Amazon SES transport object
-var transport = nodemailer.createTransport('SES', {
-	AWSAccessKeyID: config.AWS.accessKeyId,
-	AWSSecretKey: config.AWS.secretAccessKey,
-	ServiceUrl: 'https://email.eu-west-1.amazonaws.com' // optional
-});
+//var transport = nodemailer.createTransport('SES', {
+// 	AWSAccessKeyID: config.AWS.accessKeyId,
+// 	AWSSecretKey: config.AWS.secretAccessKey,
+// 	ServiceUrl: 'https://email.eu-west-1.amazonaws.com' // optional
+// });
 
 setupInfo('SES Configured');
 
