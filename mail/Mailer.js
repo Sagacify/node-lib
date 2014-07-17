@@ -2,6 +2,10 @@ var emailTemplates = require('email-templates');
 var nodemailer = require('nodemailer');
 var fs = require('fs');
 
+if(!config.AWS){
+	return;
+}
+
 var fromEmail = config.AWS.sesFromEmail;
 
 // Create an Amazon SES transport object
