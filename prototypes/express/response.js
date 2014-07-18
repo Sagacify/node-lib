@@ -7,8 +7,6 @@ express.response.SGsend = function(object, cors) {
 	var response;
 	var length;
 
-	console.log('cors', cors)
-
 	if(cors){
 		this.header("Access-Control-Allow-Origin", "*");
 		this.header("Access-Control-Allow-Headers", "X-Requested-With");

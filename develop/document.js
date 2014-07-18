@@ -60,8 +60,7 @@ mongoose.Document.prototype.populateFromContext = function(callback){
 mongoose.Types.Embedded.prototype.populate = function(fieldsToPopulate, callback){
 	var refs = {};
 	var tree = this.schema.tree;
-	console.log("POPULATE COMMENT AUTHOR");
-	console.log(arguments);
+
 	var me = this;
 	async.each(fieldsToPopulate, function(field, callback){
 		if (!tree[field]) {
@@ -72,15 +71,10 @@ mongoose.Types.Embedded.prototype.populate = function(fieldsToPopulate, callback
 		};
 		var content = tree[field];
 		mongoose.model(content.ref).findById(me[field]).exec(function(err, doc){
-			console.log("BEFORE");
-			console.log(me.set.toString());
-
 			me.set(field, doc);
 			
 			me[field] = doc;
 
-			console.log("AFTER");
-			console.log(me);
 			callback(err);
 		})
 	}, callback);
@@ -171,7 +165,7 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 				val = me._get(keyPath);
 			}
 			else{
-				val = obj._get(keyPath)
+				val = obj._get(keyPath);
 			}
 			if(val instanceof mongoose.Document || val && val.isArray() && val.length > 0 && val[0] instanceof mongoose.Document){
 				docsByPath[keyPath] = val;

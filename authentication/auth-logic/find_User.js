@@ -12,7 +12,6 @@ module.exports = function (mixin, callback) {
 		}
 
 		model('User').find(search, function (e, users) {
-			console.log(arguments);
 			if(e) {
 				return callback('COULDNT_FIND_USER');
 			}

@@ -128,7 +128,7 @@ RouteHandler.prototype.checkout = function(callback){
 RouteHandler.prototype.generateClientFormat = function(checkout, callback){
 	if(checkout && typeof checkout.populateDevelop == "function"){
 		if(!checkout.context)
-			checkout.setHidden('context', this.context);
+			checkout.setContext(this.context);
 		checkout.populateDevelop(callback);
 	}
 	else{
