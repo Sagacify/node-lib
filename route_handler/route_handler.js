@@ -22,8 +22,6 @@ RouteHandler.prototype.handle = function(){
 		me.buildRoute(function(err){
 			if(!err){
 				me.checkout(function (err, checkout){
-					//console.log('CHECKOUT :'); // BUG: returns [] on "Virtuals" !
-					//console.log(arguments);
 					if(!err){
 						me.generateClientFormat(checkout, function(err, clientFormat){
 							if(err){
