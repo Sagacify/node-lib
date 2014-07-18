@@ -14,6 +14,8 @@ mongoose.Schema.prototype.setSingle = function(path, single){
 	this.paths[path].options.single = single;
 };
 
+
+//Refactorer moi 
 mongoose.Schema.prototype.publicFormat = function(modelName){
 	var publicFormat = {doc:{tree:{}, virtuals:{}, actions:{}, modelName:modelName}, collection:{virtuals:{}, actions:{}}};
 
@@ -31,7 +33,22 @@ mongoose.Schema.prototype.publicFormat = function(modelName){
 	var publicVirtualActionSpec = function(virtualActionSpec){
 		var publicSpec;
 		if(virtualActionSpec instanceof Array){
-			publicSpec = [{type: virtualActionSpec[0].type, ref: virtualActionSpec[0].ref}];
+			var arrayContent = virtualActionSpec[0];
+			// if (!arrayContent.type && !arrayContent.ref) {
+			// 	//Content is embedded object
+			// 	//Process sub path
+			// 	var subVirtuals = {};
+			// 	for(subPath in arrayContent){
+			// 		if (subPath == "public") {
+			// 			continue;
+			// 		};
+			// 		if (arrayContent[subPath].public) {
+			// 			subVirtuals[subPath] = publicVirtualActionSpec(arrayContent[subPath]);
+			// 		};
+			// 	}
+			// 	return [subVirtuals];
+			// };
+			publicSpec = [{type: arrayContent.type, ref: arrayContent.ref}];
 		}
 		else{
 			publicSpec = {type: virtualActionSpec.type, ref: virtualActionSpec.ref};
@@ -57,15 +74,21 @@ mongoose.Schema.prototype.publicFormat = function(modelName){
 	}
 
 	for(var path in this.documentVirtuals){
-		var publicCheck = this.documentVirtuals[path] instanceof Array?this.documentVirtuals[path][0]:this.documentVirtuals[path];
-		if(publicCheck.public)
+		var publicCheck = this.documentVirtuals[path] instanceof Array ? this.documentVirtuals[path][0]:this.documentVirtuals[path];
+		if (path == 'relatedResources') {
+			console.log("--------------------------------------->");
+			console.log(this.documentVirtuals[path]);
+		};
+		if(publicCheck.public){
 			publicFormat.doc.virtuals[path] = publicVirtualActionSpec(this.documentVirtuals[path]);
+		}
 	}
 
 	for(var path in this.documentActions){
 		var publicCheck = this.documentActions[path] instanceof Array?this.documentActions[path][0]:this.documentActions[path];
-		if(publicCheck.public)
+		if(publicCheck.public){
 			publicFormat.doc.actions[path] = publicVirtualActionSpec(this.documentActions[path]);
+		}
 	}
 
 	for(var path in this.collectionVirtuals){
