@@ -22,8 +22,6 @@ RouteHandler.prototype.handle = function(){
 		me.buildRoute(function(err){
 			if(!err){
 				me.checkout(function (err, checkout){
-					//console.log('CHECKOUT :'); // BUG: returns [] on "Virtuals" !
-					//console.log(arguments);
 					if(!err){
 						me.generateClientFormat(checkout, function(err, clientFormat){
 							if(err){
@@ -128,7 +126,7 @@ RouteHandler.prototype.checkout = function(callback){
 RouteHandler.prototype.generateClientFormat = function(checkout, callback){
 	if(checkout && typeof checkout.populateDevelop == "function"){
 		if(!checkout.context)
-			checkout.setHidden('context', this.context);
+			checkout.setContext(this.context);
 		checkout.populateDevelop(callback);
 	}
 	else{

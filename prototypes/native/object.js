@@ -146,6 +146,9 @@ obj_proto.pathsKeys = function() {
 };
 
 obj_proto.setHidden = function(path, val){
+	// if (path == "context" && typeof this == 'function') {
+	// 	throw "ERROR888"
+	// };
 	Object.defineProperty(this, path, {
 		writable: true,
 		value: val

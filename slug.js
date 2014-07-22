@@ -1,5 +1,3 @@
-
-
 exports.preprocessSlug = function(text){
 	if(!text)
 		return text;

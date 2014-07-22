@@ -117,7 +117,7 @@ RouteState.prototype.getObjectFromVariablePath = function(callback){
 	if(pathPart.endsWith("id")){
 		//parentState is Model
 		if(parentState.state.type() == "Model"){
-			parentState.state.obj.sgFindById(this.urlPart(), callback);
+			parentState.state.obj.setContext(this.context).sgFindById(this.urlPart(), callback);
 		}
 		//parentState is DocumentArray
 		else if(parentState.state.type() == "DocumentArray"){
@@ -164,6 +164,7 @@ RouteState.prototype.populateObject = function(callback){
 	}
 	if(this.index == this.route.length-1 || parentState.state.type() != "Document" || !parentState.state.obj.isRef(parentState.path) || !parentState.state.obj.isRefArray(parentState.path) ||
 		this.context.req.method == "DELETE" && this.index == this.route.length-2 && parentState.state.obj.get(parentState.path) instanceof Array && this.route.splitUrl[this.index+1] != this.route.splitPath[this.index+1]){
+		var obj = parentState.state.obj.get(parentState.path);
 		callback(null, parentState.state.obj.get(parentState.path));
 	}
 	//must come from a Document
@@ -207,6 +208,7 @@ RouteState.prototype.attachCaller = function(){
 };
 
 RouteState.prototype.attachContext = function(){
+	//if this.obj == function -> !!!
 	if(this.obj && (this.obj.isObject()||this.obj instanceof Function)){
 		this.obj.setHidden('context', this.context);
 	}

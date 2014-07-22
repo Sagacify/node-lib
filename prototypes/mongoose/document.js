@@ -63,10 +63,6 @@ mongoose.Document.prototype.generateSlug = function(baseString, callback){
 	});
 };
 
-// mongoose.Document.prototype.didDo = function(action, params){
-// 	if(typeof this["did"+action.capitalize()] == "function")
-// 		return this["did"+action.capitalize()]._apply(this, params);
-// };
 
 mongoose.Document.prototype.isSemiEmbedded = function(path){
 	var schema = this.schema.tree._get(path);
