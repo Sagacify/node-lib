@@ -76,8 +76,6 @@ mongoose.Schema.prototype.publicFormat = function(modelName){
 	for(var path in this.documentVirtuals){
 		var publicCheck = this.documentVirtuals[path] instanceof Array ? this.documentVirtuals[path][0]:this.documentVirtuals[path];
 		if (path == 'relatedResources') {
-			console.log("--------------------------------------->");
-			console.log(this.documentVirtuals[path]);
 		};
 		if(publicCheck.public){
 			publicFormat.doc.virtuals[path] = publicVirtualActionSpec(this.documentVirtuals[path]);
