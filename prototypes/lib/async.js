@@ -25,6 +25,8 @@ async.choose = function (value, functions, callback) {
 		if (!(value in functions)) {
 			return false;
 		}
+
+		return true;
 	};
 
 	// If value is not found and is false (except null), then check for "false" value.
