@@ -25,9 +25,8 @@ async.choose = function (value, functions, callback) {
 		if (!(value in functions)) {
 			return false;
 		}
-		else{
-			return true;
-		}
+
+		return true;
 	};
 
 
