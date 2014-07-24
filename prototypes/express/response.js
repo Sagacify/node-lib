@@ -13,7 +13,7 @@ express.response.SGsend = function(object, cors) {
 	}
 
 	if(object instanceof SGError){
-		console.log("-----> SEND SG ERRROR");
+		console.log("-----> SEND SG ERROR");
 		code = object.code;
 		error = {
 			type: object.type,
