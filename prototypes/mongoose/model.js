@@ -180,6 +180,7 @@ mongoose.Model.sgCreate = function(raw, callback){
 mongoose.Model.get = function(path, args, callback){
 	var getterPath = "get"+path.capitalize();
 	if(typeof this[getterPath] == "function"){
+		console.log(this.context.req.filters)
 		this[getterPath]._apply(this, args, callback);
 	}
 	else{
