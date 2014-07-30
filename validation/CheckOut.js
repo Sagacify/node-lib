@@ -86,6 +86,7 @@ module.exports = function (app) {
 			//The cloneToObject() method is needed because FUCK VISION-MEDIA !
 			// --> https://github.com/visionmedia/express/issues/1742
 			req.mixin = req.params.cloneToObject().merge(req.body).merge(mixin_options);
+
 			SGMixinValidation(cb, options.validation || {}, caja, req, res, next);
 		});
 	}
