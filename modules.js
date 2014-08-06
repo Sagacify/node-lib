@@ -1,3 +1,5 @@
+// prerequites
+
 global.mongoose = require('mongoose');
 require('mongoose-schema-extend');
 
@@ -5,6 +7,15 @@ global.Schema = mongoose.Schema;
 global.ObjectId = Schema.ObjectId;
 global.Model = mongoose.Model;
 global.model = mongoose.model.bind(mongoose);
+
+// var consoleEnhancements = require('./console/deprecatedAlert');
+// global.deprecatedAlert = consoleEnhancements.deprecatedAlert;
+// global.setupInfo = consoleEnhancements.setupInfo;
+// global.consoleError = consoleEnhancements.consoleError;
+
+// global.SGError = require('./errorhandler/SagaError');
+
+// require('./prototypes/prototypes');
 
 module.exports = {
 	// prototypes
@@ -27,9 +38,6 @@ module.exports = {
 	// dataskelleton
 
 	// develop
-
-	// errorhandler
-	SagaError: require('./errorHandler/SagaError'),
 
 	/// escaping
 	sanitize: require('./escaping/Sanitize'),
@@ -60,9 +68,6 @@ module.exports = {
 	// mongo-middleware
 
 	// payment
-
-	// prototypes
-	prototypes: require('./prototypes/prototypes'),
 
 	// regexes
 
