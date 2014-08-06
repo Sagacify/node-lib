@@ -29,6 +29,7 @@ module.exports = {
 	// develop
 
 	// errorhandler
+	SagaError: require('./errorHandler/SagaError'),
 
 	/// escaping
 	sanitize: require('./escaping/Sanitize'),
@@ -59,6 +60,9 @@ module.exports = {
 	// mongo-middleware
 
 	// payment
+
+	// prototypes
+	prototypes: require('./prototypes/prototypes'),
 
 	// regexes
 
