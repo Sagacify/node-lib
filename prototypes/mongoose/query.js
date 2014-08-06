@@ -75,6 +75,12 @@ mongoose.Query.prototype.cache = function cache(options){
 	return this;
 };
 
+mongoose.Query.prototype._limit = mongoose.Query.prototype.limit;
+
+mongoose.Query.prototype.limit = function limit(limit){
+	return this._limit(Math.min(limit, 100));
+};
+
 mongoose.Query.prototype.paginate = function paginate(paginate){
 	return this.skip(paginate.offset).limit(paginate.limit);
 };
