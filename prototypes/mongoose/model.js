@@ -32,10 +32,6 @@ mongoose.Model.prototype.sgSave = function(callback){
 
 mongoose.Model.prototype._remove = mongoose.Model.prototype.remove;
 
-// mongoose.Model.prototype.remove = function(){
-// 	this.ensureRemoveConsistency();
-// 	return this._remove.apply(this, arguments);
-// };
 
 mongoose.Model.prototype.ensureRemoveConsistency = function(){
 	var me = this;

@@ -14,18 +14,18 @@ express.response.SGsend = function(object, cors) {
 	}
 
 	if(object instanceof SGError){
+		console.log("-----> SEND SG ERRROR");
 		code = object.code;
 		error = {
 			type: object.type,
-			verbose: object.verbose
+			verbose: object.verbose,
+		};
+		if ('args' in object) {
+			error.args = object.args;
 		};
 	}
 	else if(object instanceof Error){
-		code = 600;
-		error = {
-			type: 'generic',
-			verbose: 'Oops, something bad happened.'
-		};
+		this.SGsend(new SGError(object), cors);
 	}
 	else {
 		code = 200;
@@ -38,6 +38,7 @@ express.response.SGsend = function(object, cors) {
 		this.send(response||null);
 	}
 	else {
+		console.log("SEND ERROR");
 		this.send(code, error);
 	}
 };
