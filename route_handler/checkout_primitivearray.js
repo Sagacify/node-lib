@@ -7,25 +7,32 @@ function CheckoutPrimitiveArray(context, route){
 };
 
 CheckoutPrimitiveArray.prototype.get = function(callback){
+	console.log('CHECKOUT PRIMITIVE ARRAY.')
+
 	var me = this;
 	if(this.parentState.state.type()=="Document" && this.parentState.state.obj.isRefArray(this.parentState.path)){
 		var getterName = 'get'+this.parentState.path.capitalize();
 		if(typeof this.parentState.state.obj[getterName] == 'function'){
+			console.log('1')
 			if(this.parentState.state.obj[getterName].hasCallback()){
-				this.parentState.state.obj[getterName](callback);
+				console.log('2')
+				var paginate = {
+					offset: req.query.offset,
+					limit: req.query.limit
+				};				
+				this.parentState.state.obj[getterName]._apply(this.parentState.state.obj,{paginate:paginate}, callback)
 			}
 			else{
+				console.log('3')
 				callback(this.parentState.state.obj[getterName]());
 			}
-		}
-		else{
+		} else {		
+			console.log('3.5');
 			this.parentState.state.obj.populate(this.parentState.path, function(err){
-				if(!err){
-					callback(null, me.parentState.state.obj.get(me.parentState.path));
+				if(err){
+					return callback(err);
 				}
-				else{
-					callback(err)
-				}
+				callback(null, me.parentState.state.obj.get(me.parentState.path));
 			});
 		}
 	}
