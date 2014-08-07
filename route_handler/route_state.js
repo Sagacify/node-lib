@@ -151,7 +151,7 @@ RouteState.prototype.getObjectFromFixPath = function(callback){
 	}
 	//get me from document or collection, i am in a virtual or in the tree 
 	else{
-		parentState.state.caller.get.apply(parentState.state.obj, [parentState.path, callback]);
+		parentState.state.caller.get.apply(parentState.state.obj, [parentState.path, this.context.req.mixin, callback]);
 	}
 };
 

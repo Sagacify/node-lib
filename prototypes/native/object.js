@@ -170,7 +170,7 @@ obj_proto.mapId = function(){
 	return this.mapKey('_id');
 };
 
-obj_proto.context = function(){
+obj_proto.sgContext = function(){
 	return this[this.length-1];
 };
 
