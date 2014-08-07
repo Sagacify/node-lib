@@ -17,8 +17,8 @@ CheckoutPrimitiveArray.prototype.get = function(callback){
 			if(this.parentState.state.obj[getterName].hasCallback()){
 				console.log('2')
 				var paginate = {
-					offset: req.query.offset,
-					limit: req.query.limit
+					offset: me.context.req.query.offset,
+					limit: me.context.req.query.limit
 				};				
 				this.parentState.state.obj[getterName]._apply(this.parentState.state.obj,{paginate:paginate}, callback)
 			}
