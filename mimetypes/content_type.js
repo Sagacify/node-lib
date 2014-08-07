@@ -1,4 +1,14 @@
 exports.ext = function () {
+
+	// dependency
+	if (!Array.prototype.flatten) {
+		Array.prototype.flatten = function (shallow) {
+			return this.reduce(function (previousValue, currentValue) {
+				return previousValue.concat((Array.isArray(currentValue) && !shallow) ? currentValue.flatten() : currentValue);
+			}, []);
+		};
+	}
+				
 	// list from http://www.stdicon.com/mimetypes
 	// Other source: http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
 	// Soemtimes, there is multiple mimetypes. The first one is the preferred one.
