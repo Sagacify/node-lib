@@ -4,27 +4,25 @@ var async = require('async');
 mongoose.Document.prototype.populateDevelop = function(callback){
 	var me = this;
 	var context = this.context;
+
 	this.populateFromContext(function(err){
-		if(!err) {
-			me.develop(function(err, devObject){
-				if(!err){
-					me.populateDevelopChildren(devObject, function(err, popDevObject){
-						if(!err){
-							callback(null, popDevObject);
-						}
-						else{
-							callback(err);
-						}
-					});
-				}
-				else{
-					callback(err);
-				}
+		if (err) {
+			return callback(err);
+		};
+
+		me.develop(function(err, devObject){
+			if (err) {
+				return callback(err);
+			};
+
+			me.populateDevelopChildren(devObject, function(err, popDevObject){
+				if (err) {
+					return callback(err);
+				};
+
+				callback(null, popDevObject);
 			});
-		}
-		else{
-			callback(err);
-		}
+		});
 	});
 };
 
