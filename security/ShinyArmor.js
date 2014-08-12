@@ -1,11 +1,11 @@
 /**
-* ShinyArmor.js adds security features an middlewares to Expressjs.
-* Notable middlewares are the Helmet.js library.
-*/
+ * ShinyArmor.js adds security features an middlewares to Expressjs.
+ * Notable middlewares are the Helmet.js library.
+ */
 
 var helmet = require('helmet');
 
-exports.security = function(app) {
+exports.security = function (app) {
 
 	// Redirect non-HTTP requests
 	// app.use(function (req, res, next) {
@@ -13,14 +13,13 @@ exports.security = function(app) {
 	// 	var isSecure = config.https && (!req.secure || (req.get('X-Forwarded-Proto') !== 'https'));
 	// 	console.log("isSecure");
 	// 	//console.log('https://' + req.get('Host'));
-		
+
 	// 	return isSecure ? next() : res.redirect('https://' + req.get('Host') /*+ req.url*/);
 	// });
 
-	app.use(function(req, res, next) {
+	app.use(function (req, res, next) {
 		return (config.https && (req.get('X-Forwarded-Proto') !== 'https')) ?
-				res.redirect('https://' + req.get('Host') + req.url)
-				: next();
+			res.redirect('https://' + req.get('Host') + req.url) : next();
 		// if((config.https) && (!req.secure) && (req.get('X-Forwarded-Proto') !== 'https')) {
 		// 	res.redirect('https://' + req.get('Host') + req.url);
 		// }
@@ -29,7 +28,7 @@ exports.security = function(app) {
 	});
 
 	// XSS protection
-	app.use(helmet.iexss());
+	app.use(helmet.xssFilter());
 
 	// Cache-Control header which sets the no-cache, no-store properties
 	// if(NODE_ENV !== 'production') {
@@ -43,9 +42,11 @@ exports.security = function(app) {
 	app.use(helmet.xframe('deny'));
 
 	//Prevent MIME sniffing in IE / Chrome :
-	app.use(helmet.contentTypeOptions());
+	app.use(helmet.nosniff());
 
 	// Force HTTPS transport
-	app.use(helmet.hsts(8640000, true));
-
+	app.use(helmet.hsts({
+		maxAge: 8640000,
+		includeSubdomains: true
+	}));
 };
