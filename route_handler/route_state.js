@@ -157,10 +157,9 @@ RouteState.prototype.getObjectFromFixPath = function(callback){
 
 //populate only if not last route part and if current object is reference or array of reference and is not in the further conditions
 RouteState.prototype.populateObject = function(callback){
-	console.log("populateObject")
+	//console.log("populateObject")
 	var parentState = this.parentState();
 	if(this.type()=='Document' || this.type()=='Virtual' || this.type()=='Action' || this.type()=='Primitive' || this.type()=='DocumentArray' || !parentState || !(parentState.state.obj instanceof mongoose.Document)){
-		console.log('1')
 		return callback(null);
 	}
 	if(this.index == this.route.length-1 || 
@@ -168,18 +167,12 @@ RouteState.prototype.populateObject = function(callback){
 		!parentState.state.obj.isRef(parentState.path) || 
 		!parentState.state.obj.isRefArray(parentState.path) ||
 		this.context.req.method == "DELETE" && this.index == this.route.length-2 && parentState.state.obj.get(parentState.path) instanceof Array && this.route.splitUrl[this.index+1] != this.route.splitPath[this.index+1]){
-		console.log('here')
-		console.log(this.index == this.route.length-1)
-		console.log(parentState.state.type() != "Document")
-		console.log(!parentState.state.obj.isRef(parentState.path))
-		console.log(!parentState.state.obj.isRefArray(parentState.path))
 
 		var obj = parentState.state.obj.get(parentState.path);
 		callback(null, parentState.state.obj.get(parentState.path));
 	}
 	//must come from a Document
 	else{
-		console.log('there')
 		parentState.state.obj.populate(parentState.path, function(err){
 			if(!err){
 				callback(null, parentState.state.obj.get(parentState.path));
