@@ -826,11 +826,21 @@ exports.ext = function () {
 	};
 	return {
 		getName: function (path) {
+			if (!path) {
+				return null;
+			}
+
 			var i = path.lastIndexOf('.');
 			
 			return (i < 0) ? path : path.substr(0, i);
 		},
 		getExt: function (path) {
+			console.log('path:', path);
+
+			if (!path) {
+				return null;
+			}
+
 			var i = path.lastIndexOf('.');
 
 			return (i < 0) ? '' : path.substr(++i);
@@ -867,7 +877,6 @@ exports.ext = function () {
 		},
 		isVideo : function (mimetype) {
 			var videoFormats = ['3g2', '3gp', 'asf', 'asx', 'avi', 'dvix', 'f4v', 'fli', 'flv', 'fvt', 'h261', 'h263', 'h264', 'jpgm', 'jpgv', 'jpm', 'm1v', 'm2v', 'm4u', 'mj2', 'mjp2', 'mkv', 'mov', 'movie', 'mp4', 'mp4v', 'mpa', 'mpe', 'mpeg', 'mpg', 'mpg4', 'mxu', 'ogv', 'pyv', 'qt', 'viv', 'wm', 'wmv', 'wmx', 'wvx'];
-
 
 			return this.isSupportedMimetype(videoFormats, mimetype);
 		}
