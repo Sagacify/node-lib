@@ -827,7 +827,7 @@ exports.ext = function () {
 	return {
 		getName: function (path) {
 			if (!path) {
-				return null;
+				return '';
 			}
 
 			var i = path.lastIndexOf('.');
@@ -838,7 +838,7 @@ exports.ext = function () {
 			console.log('path:', path);
 
 			if (!path) {
-				return null;
+				return '';
 			}
 
 			var i = path.lastIndexOf('.');
