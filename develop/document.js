@@ -29,7 +29,7 @@ mongoose.Document.prototype.populateDevelop = function(callback){
 //populate this
 mongoose.Document.prototype.populateFromContext = function(callback){
 	var me = this;
-	var context = this.context;
+	var context = this.context||{};
 	var populateOptions = typeof this.populateOptions == "function"? this.populateOptions(context.scope) : this.schema.populateOptions(context.scope);
 	populateOptions = populateOptions||[];
 	var fieldsToPopulate = [];
@@ -82,7 +82,7 @@ mongoose.Types.Embedded.prototype.populate = function(fieldsToPopulate, callback
 //create object, remove fields, attach additional fields and do process -> result before cache
 mongoose.Document.prototype.develop = function(callback, customContext){
 	var me = this;
-	var context = customContext || this.context;
+	var context = customContext || this.context || {};
 	var developedDoc = this.toObject();
 
 	var developOptions = typeof this.developOptions == "function"? this.developOptions(context.scope) : this.schema.developOptions(context.scope);
@@ -148,7 +148,7 @@ mongoose.Document.prototype.develop = function(callback, customContext){
 //TODO handle virtuals and actions results
 mongoose.Document.prototype.populateDevelopChildren = function(devObject, callback){
 	var me = this;
-	var context = this.context;
+	var context = this.context || {};
 	var populateDevelopChildrenOptions = typeof this.populateDevelopChildrenOptions == "function"? this.populateDevelopChildrenOptions(context.scope) : this.schema.populateDevelopChildrenOptions(context.scope);
 	//populateDevelopChildrenOptions = populateDevelopChildrenOptions||[];
 	populateDevelopChildrenOptions = populateDevelopChildrenOptions.childrenScopes||populateDevelopChildrenOptions;

@@ -34,20 +34,6 @@ mongoose.Schema.prototype.publicFormat = function(modelName){
 		var publicSpec;
 		if(virtualActionSpec instanceof Array){
 			var arrayContent = virtualActionSpec[0];
-			// if (!arrayContent.type && !arrayContent.ref) {
-			// 	//Content is embedded object
-			// 	//Process sub path
-			// 	var subVirtuals = {};
-			// 	for(subPath in arrayContent){
-			// 		if (subPath == "public") {
-			// 			continue;
-			// 		};
-			// 		if (arrayContent[subPath].public) {
-			// 			subVirtuals[subPath] = publicVirtualActionSpec(arrayContent[subPath]);
-			// 		};
-			// 	}
-			// 	return [subVirtuals];
-			// };
 			publicSpec = [{type: arrayContent.type, ref: arrayContent.ref}];
 		}
 		else{
@@ -64,9 +50,6 @@ mongoose.Schema.prototype.publicFormat = function(modelName){
 				if(this.isSingle(path))
 					publicFormat.doc.tree[path][0].single = true;
 			}
-			// else if(spec.caster/* && !(spec.options.type instanceof Array)*/){
-			// 	publicFormat.doc.tree[path] = [publicSpec(spec.caster)];
-			// }
 			else{
 				publicFormat.doc.tree[path] = publicSpec(spec);
 			}
