@@ -170,6 +170,10 @@ obj_proto.mapId = function(){
 	return this.mapKey('_id');
 };
 
+obj_proto.sgContext = function(){
+	return this[this.length-1];
+};
+
 for(var key in obj_proto){
 	Object.defineProperty(Object.prototype, key, {
 		writable: true,

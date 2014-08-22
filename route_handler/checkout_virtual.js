@@ -11,7 +11,7 @@ CheckoutVirtual.prototype.get = function(callback){
 		this.parentState.state.obj.get(this.parentState.path, this.context.req.mixin, callback);
 	}
 	else{
-		this.parentState.state.caller.get.apply(this.parentState.state.obj, [this.parentState.path, this.context.req.mixin.filter, callback]);
+		this.parentState.state.caller.get.apply(this.parentState.state.obj, [this.parentState.path, this.context.req.mixin, callback]);
 	}
 };
 

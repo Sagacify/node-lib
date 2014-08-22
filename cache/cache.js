@@ -1,2 +1,4 @@
-require('./model');
-require('./redis');
+module.exports = function(redisClient){
+	require('./model');
+	require('./redis')(redisClient);
+};

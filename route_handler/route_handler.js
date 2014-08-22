@@ -26,8 +26,8 @@ RouteHandler.prototype.handle = function(){
 						me.generateClientFormat(checkout, function(err, clientFormat){
 							if(err){
 								console.log(err);
-								console.log(err.stack)
-								console.log(new Error().stack)
+								console.log(err.stack);
+								console.log(new Error().stack);
 							}
 							res.SGsend(err||clientFormat, cors);
 						});
@@ -91,7 +91,9 @@ RouteHandler.prototype.buildRoute = function(callback) {
 
 RouteHandler.prototype.checkout = function(callback){
 	var checkoutClass;
-	switch(this.route.states.last().type()) {
+	var type = this.route.states.last().type();
+	console.log(type)
+	switch(type) {
 		case "Model":
 			checkoutClass = CheckoutModel;
 			break;
