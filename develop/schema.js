@@ -22,7 +22,7 @@ mongoose.Schema.prototype.populateDevelop = function(callback){
 		fieldsToPopulate.forEach(function(fieldToPopulate){
 			fieldsToPopulateString += fieldToPopulate + " ";
 		});
-
+		
 		var developedArray = [];
 		var me = this;
 		var populateDevelopDocs = function(){
