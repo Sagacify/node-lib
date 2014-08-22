@@ -29,7 +29,7 @@ exports.security = function(app) {
 	});
 
 	// XSS protection
-	app.use(helmet.iexss());
+	app.use(helmet.xssFilter()); //Kev : helmet.iexss() deprecated -> changing to this
 
 	// Cache-Control header which sets the no-cache, no-store properties
 	// if(NODE_ENV !== 'production') {
@@ -43,9 +43,9 @@ exports.security = function(app) {
 	app.use(helmet.xframe('deny'));
 
 	//Prevent MIME sniffing in IE / Chrome :
-	app.use(helmet.contentTypeOptions());
+	app.use(helmet.nosniff()); //Kev : helmet.contentTypeOptions() deprecated -> changing to this
 
 	// Force HTTPS transport
-	app.use(helmet.hsts(8640000, true));
+	app.use(helmet.hsts({maxAge:8640000, includeSubdomains:true}));
 
 };
