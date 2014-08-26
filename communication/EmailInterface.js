@@ -71,6 +71,7 @@ EmailInterface.prototype.with = function (transport) {
 EmailInterface.prototype.getCleanEmailBody = function (email) {
 
 	function regexpIndexOf (str, regex, startpos) {
+		str = str||'';
 		var pos = startpos || 0
 		  , indexOf = str.substring(pos).search(regex);
 		return (indexOf >= 0) ? (indexOf + pos) : indexOf;
