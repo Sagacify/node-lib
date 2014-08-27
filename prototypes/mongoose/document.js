@@ -7,7 +7,7 @@ mongoose.Document.prototype.toObject = function(opts){
 	var obj = this._toObject2(opts);
 	if(opts && opts.remove){
 		opts.remove.forEach(function(fieldToRemove){
-			obj.deleteRecursiveField(fieldToRemove);	
+			obj.deleteRecursiveField(fieldToRemove);
 		});
 	}
 	return obj;
@@ -16,11 +16,11 @@ mongoose.Document.prototype.toObject = function(opts){
 
 mongoose.Document.prototype.getCreated_at = function() {
 	if(this.schema.tree._id.type.name == 'ObjectId' && this._id)
- 		return new Date(parseInt(this._id.toString().slice(0,8), 16) * 1000);
- 	else if(this._get('created_at'))
- 		return this._get('created_at');
- 	else
- 		return null;
+		return new Date(parseInt(this._id.toString().slice(0,8), 16) * 1000);
+	else if(this._get('created_at'))
+		return this._get('created_at');
+	else
+		return null;
 };
 
 mongoose.Document.prototype.generateSlug = function(baseString, callback){
