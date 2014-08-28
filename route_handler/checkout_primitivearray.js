@@ -7,7 +7,6 @@ function CheckoutPrimitiveArray(context, route){
 };
 
 CheckoutPrimitiveArray.prototype.get = function(callback){
-
 	var me = this;
 	if(this.parentState.state.type()=="Document" && this.parentState.state.obj.isRefArray(this.parentState.path)){
 		var getterName = 'get'+this.parentState.path.capitalize();
@@ -17,7 +16,7 @@ CheckoutPrimitiveArray.prototype.get = function(callback){
 					offset: me.context.req.query.offset,
 					limit: me.context.req.query.limit
 				};				
-				this.parentState.state.obj[getterName]._apply(this.parentState.state.obj,{paginate:paginate}, callback)
+				this.parentState.state.obj[getterName]._apply(this.parentState.state.obj, me.context.req.mixin, callback)
 			}
 			else{
 				callback(this.parentState.state.obj[getterName]());
