@@ -48,3 +48,20 @@ async.choose = function (value, functions, callback) {
 		}
 	});
 };
+
+
+
+async.chainMethods = function (methodsName, args, instance, callback) {
+	async.eachSeries(methodsName, function(methodsName, callback){
+		if (!instance[methodsName]) {
+			return callback();
+		};
+
+		if (instance[methodsName].hasCallback()) {
+			return instance[methodsName](args, callback);
+		};
+
+		instance[methodsName](args);
+		callback();
+	}, callback);
+};
