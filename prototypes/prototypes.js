@@ -8,7 +8,8 @@ require('./native/console');
 
 // Mongoose objects
 require('./mongoose/mongoose');
-require('./mongoose/document');
+// require('./mongoose/document');
+require('./mongoose/documents/document');
 require('./mongoose/model');
 require('./mongoose/query');
 require('./mongoose/documentarray');
