@@ -10,8 +10,7 @@ Function.prototype.getParamNames = function(){
 
 Function.prototype.hasCallback = function(){
 	var paramNames = this.getParamNames();
-	var lastParamName = paramNames.last();
-	return lastParamName == 'callback'||lastParamName == 'next';
+	return paramNames.contains('callback') || paramNames.contains('next');
 };
 
 Function.prototype._apply = function(thisArg, argsObject, callback){

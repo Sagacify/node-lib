@@ -4,34 +4,32 @@ var async = require('async');
 mongoose.Document.prototype.populateDevelop = function(callback){
 	var me = this;
 	var context = this.context;
+
 	this.populateFromContext(function(err){
-		if(!err) {
-			me.develop(function(err, devObject){
-				if(!err){
-					me.populateDevelopChildren(devObject, function(err, popDevObject){
-						if(!err){
-							callback(null, popDevObject);
-						}
-						else{
-							callback(err);
-						}
-					});
-				}
-				else{
-					callback(err);
-				}
+		if (err) {
+			return callback(err);
+		};
+
+		me.develop(function(err, devObject){
+			if (err) {
+				return callback(err);
+			};
+
+			me.populateDevelopChildren(devObject, function(err, popDevObject){
+				if (err) {
+					return callback(err);
+				};
+
+				callback(null, popDevObject);
 			});
-		}
-		else{
-			callback(err);
-		}
+		});
 	});
 };
 
 //populate this
 mongoose.Document.prototype.populateFromContext = function(callback){
 	var me = this;
-	var context = this.context;
+	var context = this.context||{};
 	var populateOptions = typeof this.populateOptions == "function"? this.populateOptions(context.scope) : this.schema.populateOptions(context.scope);
 	populateOptions = populateOptions||[];
 	var fieldsToPopulate = [];
@@ -60,8 +58,7 @@ mongoose.Document.prototype.populateFromContext = function(callback){
 mongoose.Types.Embedded.prototype.populate = function(fieldsToPopulate, callback){
 	var refs = {};
 	var tree = this.schema.tree;
-	console.log("POPULATE COMMENT AUTHOR");
-	console.log(arguments);
+
 	var me = this;
 	async.each(fieldsToPopulate, function(field, callback){
 		if (!tree[field]) {
@@ -72,15 +69,10 @@ mongoose.Types.Embedded.prototype.populate = function(fieldsToPopulate, callback
 		};
 		var content = tree[field];
 		mongoose.model(content.ref).findById(me[field]).exec(function(err, doc){
-			console.log("BEFORE");
-			console.log(me.set.toString());
-
 			me.set(field, doc);
 			
 			me[field] = doc;
 
-			console.log("AFTER");
-			console.log(me);
 			callback(err);
 		})
 	}, callback);
@@ -90,8 +82,9 @@ mongoose.Types.Embedded.prototype.populate = function(fieldsToPopulate, callback
 //create object, remove fields, attach additional fields and do process -> result before cache
 mongoose.Document.prototype.develop = function(callback, customContext){
 	var me = this;
-	var context = customContext || this.context;
+	var context = customContext || this.context || {};
 	var developedDoc = this.toObject();
+
 
 	var developOptions = typeof this.developOptions == "function"? this.developOptions(context.scope) : this.schema.developOptions(context.scope);
 
@@ -155,8 +148,10 @@ mongoose.Document.prototype.develop = function(callback, customContext){
 //populateDevelop children
 //TODO handle virtuals and actions results
 mongoose.Document.prototype.populateDevelopChildren = function(devObject, callback){
+
+
 	var me = this;
-	var context = this.context;
+	var context = this.context || {};
 	var populateDevelopChildrenOptions = typeof this.populateDevelopChildrenOptions == "function"? this.populateDevelopChildrenOptions(context.scope) : this.schema.populateDevelopChildrenOptions(context.scope);
 	//populateDevelopChildrenOptions = populateDevelopChildrenOptions||[];
 	populateDevelopChildrenOptions = populateDevelopChildrenOptions.childrenScopes||populateDevelopChildrenOptions;
@@ -165,13 +160,14 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 	var scan = function(obj, path){
 		obj.keys().forEach(function(key){
 			var keyPath = path?(path+"."+key):key;
+
 			var keyPathGetter = 'get'+keyPath.capitalize();
 			var val;
 			if(keyPath in me.schema.paths && typeof me[keyPathGetter] != "function"){
 				val = me._get(keyPath);
 			}
 			else{
-				val = obj._get(keyPath)
+				val = obj._get(keyPath);
 			}
 			if(val instanceof mongoose.Document || val && val.isArray() && val.length > 0 && val[0] instanceof mongoose.Document){
 				docsByPath[keyPath] = val;
@@ -189,7 +185,7 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 			devObject._set(path, popDevChild);
 			callback(err);
 		});
-	}, function(err){
+	}, function(err){		
 		callback(err, devObject);
 	});
 };

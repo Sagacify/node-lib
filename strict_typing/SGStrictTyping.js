@@ -319,7 +319,7 @@ var SGStrictTyping = function SGStrictTyping (strict_mode) {
 					console.log(ele);
 					console.log(ele_config);
 					console.log(acceptableValue);
-					console.log(' --> [ ] NOT OK !!!');
+					console.log(' --> [ ] 1 - NOT OK !!!');
 					return callback(this.base_error + '_INVALID_VALUE');
 				}
 			}

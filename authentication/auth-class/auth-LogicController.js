@@ -365,7 +365,7 @@ var Auth_LogicController = {
 			search: ['Array', {
 				lenEqualTo: [2]
 			}],
-			email: ['String', 'notNull', 'notEmpty', 'isEmail'],
+			email: ['String', 'notNull', 'notEmpty'],
 			password: ['String', 'notNull', 'notEmpty'],
 			user_attr: ['Object'],
 			expectedState: ['Number'],

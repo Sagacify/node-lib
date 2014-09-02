@@ -9,6 +9,10 @@ Array.prototype.popFirst= function(){
 	return this.splice(0, 1)[0];
 };
 
+Array.prototype.first = function () {
+	return this[0];
+};
+
 Array.prototype.last = function () {
 	return this[this.length - 1];
 };
@@ -37,7 +41,6 @@ Array.prototype.containsIdOrDoc = function (_id) {
 	});
 
 };
-
 
 //Deprecated see containsWithEqualFunction
 Array.prototype.containsObject = function (_id) {

@@ -12,20 +12,21 @@ CheckoutPrimitiveArray.prototype.get = function(callback){
 		var getterName = 'get'+this.parentState.path.capitalize();
 		if(typeof this.parentState.state.obj[getterName] == 'function'){
 			if(this.parentState.state.obj[getterName].hasCallback()){
-				this.parentState.state.obj[getterName](callback);
+				var paginate = {
+					offset: me.context.req.query.offset,
+					limit: me.context.req.query.limit
+				};				
+				this.parentState.state.obj[getterName]._apply(this.parentState.state.obj, me.context.req.mixin, callback)
 			}
 			else{
 				callback(this.parentState.state.obj[getterName]());
 			}
-		}
-		else{
+		} else {		
 			this.parentState.state.obj.populate(this.parentState.path, function(err){
-				if(!err){
-					callback(null, me.parentState.state.obj.get(me.parentState.path));
+				if(err){
+					return callback(err);
 				}
-				else{
-					callback(err)
-				}
+				callback(null, me.parentState.state.obj.get(me.parentState.path));
 			});
 		}
 	}

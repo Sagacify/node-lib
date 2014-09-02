@@ -4,6 +4,8 @@
  */
 
 var Caja = require('./GoogleCaja.js');
+var Entities = require('html-entities').AllHtmlEntities;
+var entities = new Entities();
 
 var HTML_ENTITY_MAP = {
 	'&': '&amp;',
@@ -28,9 +30,12 @@ exports.sanitize = function sanitize(str) {
 };
 
 exports.clearText = function clearText(str) {
-	if (!str) {
-		return "";
+	if(typeof str !== 'string') {
+		return '';
 	}
-	str = str.replace(/\t+/g, ' ');
-	return str.replace(/\r?\n|\r/g, '');
+	return entities.decode(
+		str
+		.replace(/\s+/g, ' ')
+		.replace(/\r?\n|\r/g, '')
+	).replace(/(<([^>]+)>)/g, '');
 };

@@ -1,0 +1,6 @@
+[submodule "mongoosastic"]
+	path = mongoosastic
+	url = git@github.com:Sagacify/mongoosastic.git
+[submodule "webshot"]
+	path = webshot
+	url = git@github.com:skyless/node-webshot.git

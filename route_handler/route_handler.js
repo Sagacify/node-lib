@@ -22,14 +22,12 @@ RouteHandler.prototype.handle = function(){
 		me.buildRoute(function(err){
 			if(!err){
 				me.checkout(function (err, checkout){
-					//console.log('CHECKOUT :'); // BUG: returns [] on "Virtuals" !
-					//console.log(arguments);
 					if(!err){
 						me.generateClientFormat(checkout, function(err, clientFormat){
 							if(err){
 								console.log(err);
-								console.log(err.stack)
-								console.log(new Error().stack)
+								console.log(err.stack);
+								console.log(new Error().stack);
 							}
 							res.SGsend(err||clientFormat, cors);
 						});
@@ -93,7 +91,9 @@ RouteHandler.prototype.buildRoute = function(callback) {
 
 RouteHandler.prototype.checkout = function(callback){
 	var checkoutClass;
-	switch(this.route.states.last().type()) {
+	var type = this.route.states.last().type();
+	console.log(type)
+	switch(type) {
 		case "Model":
 			checkoutClass = CheckoutModel;
 			break;
@@ -128,7 +128,7 @@ RouteHandler.prototype.checkout = function(callback){
 RouteHandler.prototype.generateClientFormat = function(checkout, callback){
 	if(checkout && typeof checkout.populateDevelop == "function"){
 		if(!checkout.context)
-			checkout.setHidden('context', this.context);
+			checkout.setContext(this.context);
 		checkout.populateDevelop(callback);
 	}
 	else{

@@ -7,14 +7,13 @@ express.response.SGsend = function(object, cors) {
 	var response;
 	var length;
 
-
 	if(cors){
 		this.header("Access-Control-Allow-Origin", "*");
 		this.header("Access-Control-Allow-Headers", "X-Requested-With");
 	}
 
 	if(object instanceof SGError){
-		console.log("-----> SEND SG ERRROR");
+		console.log("-----> SEND SG ERROR");
 		code = object.code;
 		error = {
 			type: object.type,
