@@ -4,8 +4,6 @@
  */
 
 var Caja = require('./GoogleCaja.js');
-var Entities = require('html-entities').AllHtmlEntities;
-var entities = new Entities();
 
 var HTML_ENTITY_MAP = {
 	'&': '&amp;',
@@ -19,11 +17,11 @@ var HTML_ENTITY_MAP = {
 // OSWASP Guidlines: &, <, >, ", ' plus forward slash.
 var HTML_CHARACTERS_EXPRESSION = /[&"'<>\/]/gm;
 
-function escapeHTML(text) {
+exports.escapeHTML = function escapeHTML (text) {
 	return text && text.replace(HTML_CHARACTERS_EXPRESSION, function (c) {
 		return HTML_ENTITY_MAP[c] || c;
 	});
-}
+};
 
 exports.sanitize = function sanitize(str) {
 	return str ? Caja.escape(str) : "";
