@@ -32,7 +32,7 @@
 		"helmet": "latest",
 		"zombie": "latest",
 		"jstoxml": "latest",
-		"html-entities": "1.1.1"
+		"html-entities": "^1.1.1"
 	},
 	"main": "./modules"
 }
