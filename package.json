@@ -31,7 +31,8 @@
 		"express": "3.5.1",
 		"helmet": "latest",
 		"zombie": "latest",
-		"jstoxml": "latest"
+		"jstoxml": "latest",
+		"html-entities": "1.1.1"
 	},
 	"main": "./modules"
 }
