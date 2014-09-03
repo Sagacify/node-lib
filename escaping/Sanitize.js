@@ -26,14 +26,3 @@ exports.escapeHTML = function escapeHTML (text) {
 exports.sanitize = function sanitize(str) {
 	return str ? Caja.escape(str) : "";
 };
-
-exports.clearText = function clearText(str) {
-	if(typeof str !== 'string') {
-		return '';
-	}
-	return entities.decode(
-		str
-		.replace(/\s+/g, ' ')
-		.replace(/\r?\n|\r/g, '')
-	).replace(/(<([^>]+)>)/g, '');
-};
