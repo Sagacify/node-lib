@@ -1,7 +1,5 @@
-/**
- * TODO : escaping HTML entities
- * This is Express's implementation which probably isn't safe :
- */
+var Entities = require('html-entities').AllHtmlEntities;
+var entities = new Entities();
 
 var Caja = require('./GoogleCaja.js');
 
@@ -17,12 +15,29 @@ var HTML_ENTITY_MAP = {
 // OSWASP Guidlines: &, <, >, ", ' plus forward slash.
 var HTML_CHARACTERS_EXPRESSION = /[&"'<>\/]/gm;
 
-exports.escapeHTML = function escapeHTML (text) {
+exports.escapeHTML = function (text) {
 	return text && text.replace(HTML_CHARACTERS_EXPRESSION, function (c) {
 		return HTML_ENTITY_MAP[c] || c;
 	});
 };
 
-exports.sanitize = function sanitize(str) {
-	return str ? Caja.escape(str) : "";
+exports.sanitize = function (str) {
+	return str ? Caja.escape(str) : '';
+};
+
+exports.clearText = function (str) {
+	var text = '';
+	if(typeof str === 'string') {
+		text = str;
+	}
+
+	// Remove non-extended-ASCII characters
+	text = text.replace(/[^\u0000-\u00ff]/g, '');
+	text = text.replace(/\s+/g, ' ');
+
+	text = entities.decode(text);
+	text = exports.escapeHTML(text);
+	text = text.trim();
+
+	return text;
 };
