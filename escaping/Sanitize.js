@@ -31,11 +31,12 @@ exports.clearText = function (str) {
 		text = str;
 	}
 
+	text = entities.decode(text);
+
 	// Remove non-extended-ASCII characters
 	text = text.replace(/[^\u0000-\u00ff]/g, '');
 	text = text.replace(/\s+/g, ' ');
-
-	text = entities.decode(text);
+	
 	text = exports.escapeHTML(text);
 	text = text.trim();
 
