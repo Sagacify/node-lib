@@ -69,32 +69,57 @@ EmailInterface.prototype.with = function (transport) {
  * @api private
  */
 EmailInterface.prototype.getCleanEmailBody = function (email) {
+	email = email
+		// Remove email signatures
+		.replace(/(\r?\n)\-{2} ?(\r?\n)[\w\W]+/, '')
+		// Remove Outlook previous message header
+		.replace(/(\r?\n)\-+ ?Original Message ?\-+[\w\W]+/i, '')
+		// Remove other type of Outlook previous message header
+		.replace(/(\r?\n)\_{30,}[\w\W]+/, '')
+		.replace(/(\r?\n)\-{30,}[\w\W]+/, '')
+		// Mac OSX mail
+		.replace(/(\r?\n)On ([^(\r?\n)]*?) wrote:(\r?\n)[\w\W]+/i, '')
+		// Forwarded emails
+		.replace(/(\r?\n)\-{5,} ?Forwarded by [\w\W]+ ?\-{5,}(\r?\n)/i, '')
+		// Outlook and other email clients's reply format with multilingual support
+		.replace(/(\r?\n)\*?(From|De)\*?: [\w\W]+/i, '')
+		// Hotmail reply format
+		.replace(/(\r?\n)Date: [\w\W]+/i, '')
+		// Smartphone footer
+		.replace(/(\r?\n)Sent from my [\w\W]+/i, '')
+		// Sent by signature style
+		.replace(/(\r?\n)Sent by:[\w\W]+/i, '')
+		// Remove replies
+		.replace(/(\r?\n)> [\w\W]+/i, '')
+		.trim();
 
-	function regexpIndexOf (str, regex, startpos) {
-		str = str||'';
-		var pos = startpos || 0
-		  , indexOf = str.substring(pos).search(regex);
-		return (indexOf >= 0) ? (indexOf + pos) : indexOf;
-	}
+	return email;
 
-	function reverseString (str) {
-		return str.split('').reverse().join('');
-	}
+	// function regexpIndexOf (str, regex, startpos) {
+	// 	str = str||'';
+	// 	var pos = startpos || 0
+	// 	  , indexOf = str.substring(pos).search(regex);
+	// 	return (indexOf >= 0) ? (indexOf + pos) : indexOf;
+	// }
 
-	var regexpQuote = /\r?\n+>+/g
-	  , indexQuote = regexpIndexOf(email, regexpQuote, 0);
-	if(~indexQuote) {
-		email = email.substring(indexQuote, -1);
-		var regexpNewline = /\r?\n+/g
-		  , reverseEmail = reverseString(email)
-		  , indexAuthor = regexpIndexOf(reverseEmail, regexpNewline, 0);
-		if(~indexAuthor) {
-			email = email.substring(0, email.length - 1 - indexAuthor);
-		}
-	}
-	return email.trim()
-		.replace(/\r?\n/g, '<br>')
-		.replace(/\b(?!(?:.\B)*(.)(?:\B.)*\1)[\t(<\/?br>)]+\b/g, '<br>');
+	// function reverseString (str) {
+	// 	return str.split('').reverse().join('');
+	// }
+
+	// var regexpQuote = /\r?\n+>+/g
+	//   , indexQuote = regexpIndexOf(email, regexpQuote, 0);
+	// if(~indexQuote) {
+	// 	email = email.substring(indexQuote, -1);
+	// 	var regexpNewline = /\r?\n+/g
+	// 	  , reverseEmail = reverseString(email)
+	// 	  , indexAuthor = regexpIndexOf(reverseEmail, regexpNewline, 0);
+	// 	if(~indexAuthor) {
+	// 		email = email.substring(0, email.length - 1 - indexAuthor);
+	// 	}
+	// }
+	// return email.trim()
+	// 	.replace(/\r?\n/g, '<br>')
+	// 	.replace(/\b(?!(?:.\B)*(.)(?:\B.)*\1)[\t(<\/?br>)]+\b/g, '<br>');
 };
 
 /**
