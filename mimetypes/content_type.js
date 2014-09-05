@@ -1,4 +1,14 @@
 exports.ext = function () {
+
+	// dependency
+	if (!Array.prototype.flatten) {
+		Array.prototype.flatten = function (shallow) {
+			return this.reduce(function (previousValue, currentValue) {
+				return previousValue.concat((Array.isArray(currentValue) && !shallow) ? currentValue.flatten() : currentValue);
+			}, []);
+		};
+	}
+				
 	// list from http://www.stdicon.com/mimetypes
 	// Other source: http://svn.apache.org/repos/asf/httpd/httpd/trunk/docs/conf/mime.types
 	// Soemtimes, there is multiple mimetypes. The first one is the preferred one.
@@ -865,20 +875,31 @@ exports.ext = function () {
 			return !!~supportedMimetype.indexOf(mimetype);
 		},
 		// http://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
-		isImage : function (mimetype) {
+		isImage: function (mimetype) {
 			var imageSupportedFormats = ['bmp', 'gif', 'ico', 'jpg', 'jpe', 'jpeg', 'png', 'svg', 'svgz'];
 
 			return this.isSupportedMimetype(imageSupportedFormats, mimetype);
 		},
-		isArchive : function (mimetype) {
+		isArchive: function (mimetype) {
 			var archiveFormats = ['zip', 'rar', 'tar', 'gtar', 'gz', 'tgz', 'apk', 'jar'];
 
 			return this.isSupportedMimetype(archiveFormats, mimetype);
 		},
-		isVideo : function (mimetype) {
+		isVideo: function (mimetype) {
 			var videoFormats = ['3g2', '3gp', 'asf', 'asx', 'avi', 'dvix', 'f4v', 'fli', 'flv', 'fvt', 'h261', 'h263', 'h264', 'jpgm', 'jpgv', 'jpm', 'm1v', 'm2v', 'm4u', 'mj2', 'mjp2', 'mkv', 'mov', 'movie', 'mp4', 'mp4v', 'mpa', 'mpe', 'mpeg', 'mpg', 'mpg4', 'mxu', 'ogv', 'pyv', 'qt', 'viv', 'wm', 'wmv', 'wmx', 'wvx'];
 
 			return this.isSupportedMimetype(videoFormats, mimetype);
+		},
+		getMediaType: function (mimetype) {
+			if (this.isImage(mimetype)) {
+				return 'IMAGE';
+			} else if (this.isVideo(mimetype)) {
+				return 'VIDEO';
+			} else if (this.isArchive(mimetype)) {
+				return 'ARCHIVE';
+			} else {
+				return 'DOCUMENT';
+			}
 		}
 	};
 }();

@@ -1,6 +1,6 @@
 var is = require('./validateType');
 
-var tokenSize = (config.tokensize === '256') ? 256 : 512;
+var tokenSize = (typeof config !== 'undefined' && config.tokensize === '256') ? 256 : 512;
 var objectidSize = 3072;
 
 function bitSize_to_nthSize (bitsize, nthsize) {

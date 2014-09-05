@@ -92,7 +92,7 @@ RouteHandler.prototype.buildRoute = function(callback) {
 RouteHandler.prototype.checkout = function(callback){
 	var checkoutClass;
 	var type = this.route.states.last().type();
-	console.log(type)
+
 	switch(type) {
 		case "Model":
 			checkoutClass = CheckoutModel;
