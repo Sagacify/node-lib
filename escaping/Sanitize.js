@@ -13,7 +13,8 @@ var HTML_ENTITY_MAP = {
 };
 
 // OSWASP Guidlines: &, <, >, ", ' plus forward slash.
-var HTML_CHARACTERS_EXPRESSION = /[&"'<>\/]/gm;
+// var HTML_CHARACTERS_EXPRESSION = /[&"'<>\/]/gm;
+var HTML_CHARACTERS_EXPRESSION = /[&"'<>]/gm;
 
 exports.escapeHTML = function (text) {
 	return text && text.replace(HTML_CHARACTERS_EXPRESSION, function (c) {
@@ -36,7 +37,7 @@ exports.clearText = function (str) {
 	// Remove non-extended-ASCII characters
 	text = text.replace(/[^\u0000-\u00ff]/g, '');
 	text = text.replace(/\s+/g, ' ');
-	
+
 	text = exports.escapeHTML(text);
 	text = text.trim();
 
