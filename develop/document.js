@@ -166,7 +166,7 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 			if(keyPath in me.schema.paths && typeof me[keyPathGetter] != "function"){
 				val = me._get(keyPath);
 			}
-			else{
+			else {
 				val = obj._get(keyPath);
 			}
 			if(val instanceof mongoose.Document || val && val.isArray() && val.length > 0 && val[0] instanceof mongoose.Document){
