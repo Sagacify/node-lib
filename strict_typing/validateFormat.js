@@ -136,6 +136,10 @@ exports.isIPNet = function (str) {
 	return validators.isIP(str) !== 0;
 };
 
+exports.hasAlpha = function (str) {
+	return !!str.match(/[a-zA-Z]/);
+};
+
 exports.isAlpha = function (str) {
 	return !!str.match(/^[a-zA-Z]+$/);
 };
@@ -146,6 +150,10 @@ exports.isAlphanumeric = function (str) {
 
 exports.isTrue = function (bool) {
 	return bool === true;
+};
+
+exports.hasNumeric = function (str) {
+	return !!str.match(/[0-9]/);
 };
 
 exports.isNumeric = function (str) {
