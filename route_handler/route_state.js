@@ -1,5 +1,6 @@
 function RouteState(context, route, index){
 	this.context = context;
+	this.context.req.mixin.context = this.context;
 	this.route = route;
 	route.states.push(this);
 	this.index = index;
