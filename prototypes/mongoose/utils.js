@@ -19,7 +19,7 @@ exports.generateMeth = function (meth, Class) {
 			}
 		}
 
-		if (!(typeof callback === 'function')) {
+		if (typeof callback !== 'function') {
 			var willRes = this[willMeth](path, args);
 			if (willRes instanceof Error || willRes instanceof SGError) {
 				return willRes;
@@ -46,7 +46,7 @@ exports.generateMeth = function (meth, Class) {
 			var willCallback = function (err) {
 				if (!err) {
 					me[doMeth](
-						(path != null) ? path : doCallback, (args !== undefined) ? args : doCallback,
+						(path !== null) ? path : doCallback, (args !== undefined) ? args : doCallback,
 						doCallback
 					);
 				} else {
@@ -55,7 +55,7 @@ exports.generateMeth = function (meth, Class) {
 			};
 
 			this[willMeth](
-				(path != null) ? path : willCallback, (args !== undefined) ? args : willCallback,
+				(path !== null) ? path : willCallback, (args !== undefined) ? args : willCallback,
 				willCallback
 			);
 		}

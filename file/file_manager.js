@@ -6,6 +6,7 @@ var AWS = require('aws-sdk');
 var uuid = require('node-uuid');
 var fs = require('fs');
 var tmp = require('tmp');
+var knox = require('knox');
 var s3;
 
 exports.initialize = function (config) {
@@ -165,7 +166,13 @@ exports.removeFilesFromS3 = function (filenames, secure, callback) {
 };
 
 exports.getSecuredFilepath = function (filename) {
-	var knox = require('knox');
+	// var params = {
+	// 	Bucket: this.getConfig().s3SecuredBucketName,
+	// 	Key: filename,
+	// 	Expires: 30
+	// };
+	// return s3.client.getSignedUrl('getObject', params);
+
 	var s3Client = knox.createClient({
 		key: config.AWS.accessKeyId,
 		secret: config.AWS.secretAccessKey,

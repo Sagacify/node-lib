@@ -1,6 +1,6 @@
 var is = require('./validateType');
 
-var tokenSize = (config.tokensize === '256') ? 256 : 512;
+var tokenSize = (typeof config !== 'undefined' && config.tokensize === '256') ? 256 : 512;
 var objectidSize = 3072;
 
 function bitSize_to_nthSize (bitsize, nthsize) {
@@ -136,6 +136,10 @@ exports.isIPNet = function (str) {
 	return validators.isIP(str) !== 0;
 };
 
+exports.hasAlpha = function (str) {
+	return !!str.match(/[a-zA-Z]/);
+};
+
 exports.isAlpha = function (str) {
 	return !!str.match(/^[a-zA-Z]+$/);
 };
@@ -146,6 +150,10 @@ exports.isAlphanumeric = function (str) {
 
 exports.isTrue = function (bool) {
 	return bool === true;
+};
+
+exports.hasNumeric = function (str) {
+	return !!str.match(/[0-9]/);
 };
 
 exports.isNumeric = function (str) {

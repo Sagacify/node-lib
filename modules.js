@@ -1,4 +1,25 @@
+// prerequites
+
+global.mongoose = require('mongoose');
+require('mongoose-schema-extend');
+
+global.Schema = mongoose.Schema;
+global.ObjectId = Schema.ObjectId;
+global.Model = mongoose.Model;
+global.model = mongoose.model.bind(mongoose);
+
+// var consoleEnhancements = require('./console/deprecatedAlert');
+// global.deprecatedAlert = consoleEnhancements.deprecatedAlert;
+// global.setupInfo = consoleEnhancements.setupInfo;
+// global.consoleError = consoleEnhancements.consoleError;
+
+// global.SGError = require('./errorhandler/SagaError');
+
+// require('./prototypes/prototypes');
+
 module.exports = {
+	// prototypes
+
 	// authentication
 
 	// benchmarks
@@ -17,8 +38,6 @@ module.exports = {
 	// dataskelleton
 
 	// develop
-
-	// errorhandler
 
 	/// escaping
 	sanitize: require('./escaping/Sanitize'),
@@ -49,8 +68,6 @@ module.exports = {
 	// mongo-middleware
 
 	// payment
-
-	// prototypes
 
 	// regexes
 

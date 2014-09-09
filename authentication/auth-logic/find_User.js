@@ -23,14 +23,8 @@ module.exports = function (mixin, callback) {
 			mixin.users = users;
 			mixin.user = users[0];
 
-			// console.log('\n> FIND() results !');
-			// console.log(mixin.action);
-			// console.log(search);
-			// console.log(users);
-
 			if(users && users.length && mixin.action === 'RegisterFakeUser') {
-				console.log('\n> HACK - BREAK RegisterFakeUser !');
-				console.log(mixin);
+				// console.log('\n> HACK - BREAK RegisterFakeUser !');
 				callback(true, mixin); // Hack on Async.js's waterfall to break out early AND return a result
 			}
 			else {

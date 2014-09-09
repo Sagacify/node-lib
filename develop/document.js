@@ -29,7 +29,7 @@ mongoose.Document.prototype.populateDevelop = function(callback){
 //populate this
 mongoose.Document.prototype.populateFromContext = function(callback){
 	var me = this;
-	var context = this.context;
+	var context = this.context||{};
 	var populateOptions = typeof this.populateOptions == "function"? this.populateOptions(context.scope) : this.schema.populateOptions(context.scope);
 	populateOptions = populateOptions||[];
 	var fieldsToPopulate = [];
@@ -82,8 +82,9 @@ mongoose.Types.Embedded.prototype.populate = function(fieldsToPopulate, callback
 //create object, remove fields, attach additional fields and do process -> result before cache
 mongoose.Document.prototype.develop = function(callback, customContext){
 	var me = this;
-	var context = customContext || this.context;
+	var context = customContext || this.context || {};
 	var developedDoc = this.toObject();
+
 
 	var developOptions = typeof this.developOptions == "function"? this.developOptions(context.scope) : this.schema.developOptions(context.scope);
 
@@ -147,8 +148,10 @@ mongoose.Document.prototype.develop = function(callback, customContext){
 //populateDevelop children
 //TODO handle virtuals and actions results
 mongoose.Document.prototype.populateDevelopChildren = function(devObject, callback){
+
+
 	var me = this;
-	var context = this.context;
+	var context = this.context || {};
 	var populateDevelopChildrenOptions = typeof this.populateDevelopChildrenOptions == "function"? this.populateDevelopChildrenOptions(context.scope) : this.schema.populateDevelopChildrenOptions(context.scope);
 	//populateDevelopChildrenOptions = populateDevelopChildrenOptions||[];
 	populateDevelopChildrenOptions = populateDevelopChildrenOptions.childrenScopes||populateDevelopChildrenOptions;
@@ -157,12 +160,13 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 	var scan = function(obj, path){
 		obj.keys().forEach(function(key){
 			var keyPath = path?(path+"."+key):key;
+
 			var keyPathGetter = 'get'+keyPath.capitalize();
 			var val;
 			if(keyPath in me.schema.paths && typeof me[keyPathGetter] != "function"){
 				val = me._get(keyPath);
 			}
-			else{
+			else {
 				val = obj._get(keyPath);
 			}
 			if(val instanceof mongoose.Document || val && val.isArray() && val.length > 0 && val[0] instanceof mongoose.Document){
@@ -181,7 +185,7 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 			devObject._set(path, popDevChild);
 			callback(err);
 		});
-	}, function(err){
+	}, function(err){		
 		callback(err, devObject);
 	});
 };
