@@ -890,15 +890,23 @@ exports.ext = function () {
 
 			return this.isSupportedMimetype(videoFormats, mimetype);
 		},
+		// http://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats
+		isDocument: function (mimetype) {
+			var documentFormats = ['dxf', 'pdb', 'pdf', 'csv', 'txt', 'diff', 'xml', 'pct', 'docx', 'xlsx', 'pptx', 'doc', 'dot', 'vsd', 'xls', 'xlw', 'xlt', 'odt', 'odp', 'odb', 'odg', 'odf', 'sxw', 'stw', 'sxc', 'stc', 'sxi', 'sti', 'sxd', 'std', 'sxm', 'sdc', 'vor', 'wpd', 'wps', 'sda', 'sdd', 'sdp', 'sdw', 'sgl', 'rtf', 'wks', '123', 'html', 'htm', 'xhtml', 'ppt', 'pps', 'pot', 'pcx', 'psd', 'wmf', 'pgm', 'pbm', 'ppm', 'ras', 'xbm', 'xpm', 'eps', 'tif', 'tiff'];
+
+			return this.isSupportedMimetype(documentFormats, mimetype);
+		},
 		getMediaType: function (mimetype) {
 			if (this.isImage(mimetype)) {
 				return 'IMAGE';
-			} else if (this.isVideo(mimetype)) {
-				return 'VIDEO';
 			} else if (this.isArchive(mimetype)) {
 				return 'ARCHIVE';
-			} else {
+			} else if (this.isVideo(mimetype)) {
+				return 'VIDEO';
+			} else if (this.isDocument(mimetype)) {
 				return 'DOCUMENT';
+			} else {
+				return 'UNKNOWN';
 			}
 		}
 	};
