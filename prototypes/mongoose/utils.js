@@ -32,7 +32,7 @@ exports.generateMeth = function (meth, Class) {
 				args = undefined;
 			}
 			if (meth == 'sgRemove') {
-				path = undefined;
+				path = null;
 				args = undefined;
 			}
 			var me = this;
