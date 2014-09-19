@@ -835,6 +835,20 @@ exports.ext = function () {
 		'zmm'			: 'application/vnd.handheld-entertainment+xml'
 	};
 	return {
+		// http://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
+		getImageFormats: function () {
+			return ['bmp', 'gif', 'ico', 'jpg', 'jpe', 'jpeg', 'png', 'svg', 'svgz'];
+		},
+		getArchiveFormats: function () {
+			return ['zip', 'rar', 'tar', 'gtar', 'gz', 'tgz', 'apk', 'jar'];
+		},
+		getVideoFormats: function () {
+			return ['3g2', '3gp', 'asf', 'asx', 'avi', 'dvix', 'f4v', 'fli', 'flv', 'fvt', 'h261', 'h263', 'h264', 'jpgm', 'jpgv', 'jpm', 'm1v', 'm2v', 'm4u', 'mj2', 'mjp2', 'mkv', 'mov', 'movie', 'mp4', 'mp4v', 'mpa', 'mpe', 'mpeg', 'mpg', 'mpg4', 'mxu', 'ogv', 'pyv', 'qt', 'viv', 'wm', 'wmv', 'wmx', 'wvx'];
+		},
+		// http://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats
+		getDocumentFormats: function() {
+			return ['dxf', 'pdb', 'pdf', 'csv', 'txt', 'diff', 'xml', 'pct', 'docx', 'xlsx', 'pptx', 'doc', 'dot', 'vsd', 'xls', 'xlw', 'xlt', 'odt', 'odp', 'odb', 'odg', 'odf', 'sxw', 'stw', 'sxc', 'stc', 'sxi', 'sti', 'sxd', 'std', 'sxm', 'sdc', 'vor', 'wpd', 'wps', 'sda', 'sdd', 'sdp', 'sdw', 'sgl', 'rtf', 'wks', '123', 'html', 'htm', 'xhtml', 'ppt', 'pps', 'pot', 'pcx', 'psd', 'wmf', 'pgm', 'pbm', 'ppm', 'ras', 'xbm', 'xpm', 'eps', 'tif', 'tiff'];
+		},
 		getName: function (path) {
 			if (!path) {
 				return '';
@@ -874,27 +888,17 @@ exports.ext = function () {
 
 			return !!~supportedMimetype.indexOf(mimetype);
 		},
-		// http://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
 		isImage: function (mimetype) {
-			var imageSupportedFormats = ['bmp', 'gif', 'ico', 'jpg', 'jpe', 'jpeg', 'png', 'svg', 'svgz'];
-
-			return this.isSupportedMimetype(imageSupportedFormats, mimetype);
+			return this.isSupportedMimetype(this.getImageFormats(), mimetype);
 		},
 		isArchive: function (mimetype) {
-			var archiveFormats = ['zip', 'rar', 'tar', 'gtar', 'gz', 'tgz', 'apk', 'jar'];
-
-			return this.isSupportedMimetype(archiveFormats, mimetype);
+			return this.isSupportedMimetype(this.getArchiveFormats(), mimetype);
 		},
 		isVideo: function (mimetype) {
-			var videoFormats = ['3g2', '3gp', 'asf', 'asx', 'avi', 'dvix', 'f4v', 'fli', 'flv', 'fvt', 'h261', 'h263', 'h264', 'jpgm', 'jpgv', 'jpm', 'm1v', 'm2v', 'm4u', 'mj2', 'mjp2', 'mkv', 'mov', 'movie', 'mp4', 'mp4v', 'mpa', 'mpe', 'mpeg', 'mpg', 'mpg4', 'mxu', 'ogv', 'pyv', 'qt', 'viv', 'wm', 'wmv', 'wmx', 'wvx'];
-
-			return this.isSupportedMimetype(videoFormats, mimetype);
+			return this.isSupportedMimetype(this.getVideoFormats(), mimetype);
 		},
-		// http://en.wikipedia.org/wiki/LibreOffice#Supported_file_formats
 		isDocument: function (mimetype) {
-			var documentFormats = ['dxf', 'pdb', 'pdf', 'csv', 'txt', 'diff', 'xml', 'pct', 'docx', 'xlsx', 'pptx', 'doc', 'dot', 'vsd', 'xls', 'xlw', 'xlt', 'odt', 'odp', 'odb', 'odg', 'odf', 'sxw', 'stw', 'sxc', 'stc', 'sxi', 'sti', 'sxd', 'std', 'sxm', 'sdc', 'vor', 'wpd', 'wps', 'sda', 'sdd', 'sdp', 'sdw', 'sgl', 'rtf', 'wks', '123', 'html', 'htm', 'xhtml', 'ppt', 'pps', 'pot', 'pcx', 'psd', 'wmf', 'pgm', 'pbm', 'ppm', 'ras', 'xbm', 'xpm', 'eps', 'tif', 'tiff'];
-
-			return this.isSupportedMimetype(documentFormats, mimetype);
+			return this.isSupportedMimetype(this.getDocumentFormats(), mimetype);
 		},
 		getMediaType: function (mimetype) {
 			if (this.isImage(mimetype)) {
