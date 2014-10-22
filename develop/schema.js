@@ -1,12 +1,12 @@
 var async = require('async');
 
 mongoose.Schema.prototype.populateDevelop = function(callback){
-	var context = this.context;
-
 	if (!this.length) {
 		callback();
 		return;
 	};
+
+	var context = this.context;
 
 	if(!(this[0] instanceof mongoose.Document)){
 		callback(null, this);

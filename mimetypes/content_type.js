@@ -847,13 +847,9 @@ exports.ext = function () {
 		getExt: function (path) {
 			console.log('path:', path);
 
-			if (!path) {
-				return '';
-			}
+			var i = (path || '').lastIndexOf('.');
 
-			var i = path.lastIndexOf('.');
-
-			return (i < 0) ? '' : path.substr(++i);
+			return i === -1 ? '' : path.substr(++i);
 		},
 		getContentType: function (ext) {
 			var mimetype = extTypes[ext.toLowerCase()];

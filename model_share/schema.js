@@ -24,9 +24,9 @@ mongoose.Schema.prototype.publicFormat = function(modelName){
 			return [{type:'Number'}];
 		}
 		if(spec.options.type instanceof Array)
-			var publicSpec = [{type:spec.options.type[0].type.name, ref:spec.options.type[0].ref}];	
+			var publicSpec = [{type:spec.options.type[0].type?spec.options.type[0].type.name:undefined, ref:spec.options.type[0].ref}];	
 		else
-			var publicSpec = {type:spec.options.type.name, ref:spec.options.ref};
+			var publicSpec = {type:spec.options.type.name, ref:spec.options.ref, enum: spec.options.enum};
 		return publicSpec;
 	};
 

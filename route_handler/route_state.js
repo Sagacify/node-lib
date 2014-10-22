@@ -5,7 +5,7 @@ function RouteState(context, route, index){
 	route.states.push(this);
 	this.index = index;
 	//console.log("route part : " + this.pathPart())
-};
+}
 
 RouteState.prototype.previousState = function(){
 	return this.route.states[this.index-1];
@@ -25,7 +25,7 @@ RouteState.prototype.parentState = function () {
 		if(previousState.obj && previousState.obj.isObject() && previousState.type() != "Document" && previousState.type() != "DocumentArray"){
 			path = previousState.urlPart()+"."+path;
 			previousState = previousState.previousState();
-		}	
+		}
 		else {
 			this._parentState = {state:previousState, path:path};
 			return this._parentState;
@@ -79,7 +79,7 @@ RouteState.prototype.getObject = function(callback){
 	var nbPartsToSkip = 1;
 	//skip first (api)
 	if(this.index < nbPartsToSkip) {
-		return callback(null)
+		return callback();
 	}
 	//get model to start
 	if(this.index == nbPartsToSkip) {
@@ -118,11 +118,11 @@ RouteState.prototype.getObjectFromVariablePath = function(callback){
 	if(pathPart.endsWith("id")){
 		//parentState is Model
 		if(parentState.state.type() == "Model"){
-			parentState.state.obj.setContext(this.context).sgFindById(this.urlPart(), callback);
+			parentState.state.obj.sgFindById(this.urlPart(), callback, this.context);
 		}
 		//parentState is DocumentArray
-		else if(parentState.state.type() == "DocumentArray"){
-			callback(null, parentState.state.obj.id(this.urlPart()))
+		else if(parentState.state.type() === "DocumentArray"){
+			callback(null, parentState.state.obj.id(this.urlPart()));
 		}
 		else{
 			callback(null, this.urlPart());
@@ -163,9 +163,9 @@ RouteState.prototype.populateObject = function(callback){
 	if(this.type()=='Document' || this.type()=='Virtual' || this.type()=='Action' || this.type()=='Primitive' || this.type()=='DocumentArray' || !parentState || !(parentState.state.obj instanceof mongoose.Document)){
 		return callback(null);
 	}
-	if(this.index == this.route.length-1 || 
-		parentState.state.type() != "Document" || 
-		!parentState.state.obj.isRef(parentState.path) || 
+	if(this.index === this.route.length-1 ||
+		parentState.state.type() != "Document" ||
+		!parentState.state.obj.isRef(parentState.path) ||
 		!parentState.state.obj.isRefArray(parentState.path) ||
 		this.context.req.method == "DELETE" && this.index == this.route.length-2 && parentState.state.obj.get(parentState.path) instanceof Array && this.route.splitUrl[this.index+1] != this.route.splitPath[this.index+1]){
 
@@ -179,7 +179,7 @@ RouteState.prototype.populateObject = function(callback){
 				callback(null, parentState.state.obj.get(parentState.path));
 			}
 			else{
-				callback(err)
+				callback(err);
 			}
 		});
 	}

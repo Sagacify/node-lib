@@ -11,8 +11,7 @@ function SGError(type, code, verbose, args) {
 	FrostyBug('FrostyBug', {
 		msg: (type instanceof Error) ? type : this
 	});
-};
-
+}
 
 SGError.prototype.generatePrivateError = function(error) {
 	this.code = 500;

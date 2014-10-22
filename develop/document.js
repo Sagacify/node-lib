@@ -85,7 +85,6 @@ mongoose.Document.prototype.develop = function(callback, customContext){
 	var context = customContext || this.context || {};
 	var developedDoc = this.toObject();
 
-
 	var developOptions = typeof this.developOptions == "function"? this.developOptions(context.scope) : this.schema.developOptions(context.scope);
 
 
