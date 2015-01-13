@@ -122,9 +122,14 @@ Array.prototype.diff = function (a) {
 	});
 };
 
-Array.prototype.intersect = function (a) {
+Array.prototype.intersect = function (a, strict) {
 	return this.filter(function (i) {
-		return (a.indexOf(i) > -1);
+		if(strict) {
+			return a === i;
+		}
+		else {
+			return (a.indexOf(i) > -1);
+		}
 	});
 };
 
