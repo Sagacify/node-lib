@@ -1,3 +1,0 @@
-[submodule "webshot"]
-	path = webshot
-	url = git@github.com:skyless/node-webshot.git

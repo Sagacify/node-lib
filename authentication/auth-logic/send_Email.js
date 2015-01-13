@@ -18,6 +18,7 @@ module.exports = function (mixin, callback) {
 
 	if(typeof_email) {
 		var token = mixin.token;
+		var title = mixin.user.title || mixin.email.split('@')[0];
 		var name = mixin.user.name || mixin.user.firstname + ' ' + mixin.user.lastname;
 		var link = config.hostname + '/auth/' + (emailTypeMap[mixin.action] || mixin.template) + '/' + token;
 
@@ -26,7 +27,7 @@ module.exports = function (mixin, callback) {
 			mixin.email,
 			name,
 			link,
-			mixin.user.title,
+			title,
 			LanguageManager.getPreferedLanguage(mixin.user.prefLang),
 			token,
 		function (e, msg) {

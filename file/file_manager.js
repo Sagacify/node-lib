@@ -165,23 +165,29 @@ exports.removeFilesFromS3 = function (filenames, secure, callback) {
 	}, callback);
 };
 
-exports.getSecuredFilepath = function (filename) {
+exports.getSecuredFilepath = function (key, filename) {
 	// var params = {
 	// 	Bucket: this.getConfig().s3SecuredBucketName,
-	// 	Key: filename,
+	// 	Key: key,
 	// 	Expires: 30
 	// };
-	// return s3.client.getSignedUrl('getObject', params);
+	// return this.getS3().client.getSignedUrl('getObject', params);
 
 	var s3Client = knox.createClient({
-		key: config.AWS.accessKeyId,
-		secret: config.AWS.secretAccessKey,
-		bucket: config.AWS.s3SecuredBucketName
+		key: this.getConfig().accessKeyId,
+		secret: this.getConfig().secretAccessKey,
+		bucket: this.getConfig().s3SecuredBucketName
 	});
 
 	var expires = new Date();
 	expires.setMinutes(expires.getMinutes() + 30);
-	return s3Client.signedUrl(filename, expires);
+
+	if (filename) {
+		var headers = { 'response-content-disposition': 'attachment;filename="' + filename + '"'};
+		return s3Client.signedUrl(key, expires, { qs: headers });
+	}
+	
+	return s3Client.signedUrl(key, expires);
 };
 
 exports.uploadThenDeleteLocalFile = function (filepath, originalFilename, extension, secure, callback) {

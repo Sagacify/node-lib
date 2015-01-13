@@ -85,7 +85,6 @@ mongoose.Document.prototype.develop = function(callback, customContext){
 	var context = customContext || this.context || {};
 	var developedDoc = this.toObject();
 
-
 	var developOptions = typeof this.developOptions == "function"? this.developOptions(context.scope) : this.schema.developOptions(context.scope);
 
 
@@ -166,7 +165,7 @@ mongoose.Document.prototype.populateDevelopChildren = function(devObject, callba
 			if(keyPath in me.schema.paths && typeof me[keyPathGetter] != "function"){
 				val = me._get(keyPath);
 			}
-			else{
+			else {
 				val = obj._get(keyPath);
 			}
 			if(val instanceof mongoose.Document || val && val.isArray() && val.length > 0 && val[0] instanceof mongoose.Document){

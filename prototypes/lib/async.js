@@ -48,3 +48,4 @@ async.chainMethods = function (methodsName, args, instance, callback) {
 		callback();
 	}, callback);
 };
+
