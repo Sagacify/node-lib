@@ -144,6 +144,7 @@ mongoose.Schema.prototype.get = function (path, callback) {
 		return this._get(path);
 	}
 	var schema = this.schema?this.schema:this;
+	console.log('ppaath', path, schema.statics[path])
 	if(typeof schema.statics[path] == "function") {
 		if(schema.statics[path].getParamNames()[0] === "callback") {
 			schema.statics[path].apply(this, [callback]);
