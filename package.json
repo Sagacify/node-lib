@@ -12,7 +12,6 @@
 		"url": "https://github.com/Sagacify/node-lib"
 	},
 	"dependencies": {
-		"mongoose": "3.8.19",
 		"mongoose-schema-extend": "latest",
 		"simplesmtp": "latest",
 		"async": "latest",
