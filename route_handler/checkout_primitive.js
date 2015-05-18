@@ -29,6 +29,7 @@ CheckoutPrimitive.prototype.post = function(callback){
 
 CheckoutPrimitive.prototype.put = function(callback){
 	var me = this;
+	console.log('this.parentState.state.obj', this.parentState.state.obj, this.parentState.path)
 	if(this.parentState.state.obj.isRef(this.parentState.path)){
 		this.get(function(err, doc){
 			doc.sgUpdate.apply(doc, [me.context.req.body._item || me.context.req.body, callback]);

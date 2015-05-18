@@ -26,6 +26,7 @@ module.exports = function (mixin, callback) {
 			console.log(e.stack || e);
 			return callback(e);
 		}
+
 		callback(null, mixin);
 	});
 };

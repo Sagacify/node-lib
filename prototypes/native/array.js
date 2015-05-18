@@ -124,12 +124,7 @@ Array.prototype.diff = function (a) {
 
 Array.prototype.intersect = function (a, strict) {
 	return this.filter(function (i) {
-		if(strict) {
-			return a === i;
-		}
-		else {
-			return (a.indexOf(i) > -1);
-		}
+		return (a.indexOf(i) > -1);
 	});
 };
 

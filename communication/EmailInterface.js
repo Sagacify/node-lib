@@ -247,12 +247,15 @@ EmailInterface.prototype.assembleEmail = function (settings, data, callback) {
  * @api public
  */
 EmailInterface.prototype.send = function (settings, data, options, callback) {
+	console.log('send from EmailInterface')
 	var me = this
 	  , transport = this.transport;
 		this.assembleEmail(settings, data, function (error, emailContents) {
 		if(error) {
+			console.log('errorsend', error)
 			return callback(error);
 		}
+		console.log('will send from EmailInterface')
 		me.sender.send(transport, emailContents, options, callback);
 	});
 };

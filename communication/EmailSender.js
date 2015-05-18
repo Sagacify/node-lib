@@ -139,6 +139,8 @@ EmailSender.prototype.send = function (transportMethod, parameters, options, cal
 	var ensureSuccess = !!options.ensureSuccess
 	  , handler = ensureSuccess ? 'on' : 'once';
 
+
+	  console.log('sendMail from EmailSender', parameters)
 	transport.sendMail(parameters, function (error, response) {
 		if(error) {
 			return callback(error);

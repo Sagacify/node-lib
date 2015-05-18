@@ -1,4 +1,5 @@
 module.exports = function (mixin, callback) {
+	console.log('will saveee')
 	mixin.user.save(function (e, user) {
 		if(e) {
 			console.log(e.stack || e);
