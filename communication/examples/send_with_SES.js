@@ -4,8 +4,8 @@ var Flash = new Flash({
 	email: {
 		sender: {
 			ses: {
-				AWSAccessKeyID: 'AKIAIMQVLS3FLM3WQDXA',
-				AWSSecretKey: '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'
+				AWSAccessKeyID: 'AKIAJQIAKXARY5WMB3NA',
+				AWSSecretKey: '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'
 			}
 		},
 		templatesPath: '../../views/emails/templates',
