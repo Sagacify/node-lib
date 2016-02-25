@@ -13,7 +13,7 @@
 	},
 	"dependencies": {
 		"mongoose": "3.8.19",
-		"mongoose-schema-extend": "latest",
+		"mongoose-schema-extend": "0.1.7",
 		"simplesmtp": "latest",
 		"async": "latest",
 		"node-uuid": "latest",
