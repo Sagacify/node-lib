@@ -12,7 +12,7 @@
 		"url": "https://github.com/Sagacify/node-lib"
 	},
 	"dependencies": {
-		"mongoose-schema-extend": "latest",
+		"mongoose-schema-extend": "0.1.7",
 		"simplesmtp": "latest",
 		"async": "latest",
 		"node-uuid": "latest",
