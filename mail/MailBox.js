@@ -18,7 +18,7 @@ function PostMan () {
 		debug: false
 	});
 
-	smtp.listen(25, function (e) {
+	smtp.listen(10635, function (e) {
 		if(e) {
 			console.log('Could not start server on port 25. Ports under 1000 require root privileges.');
 			console.log(e);
