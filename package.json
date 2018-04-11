@@ -20,7 +20,7 @@
 		"tmp": "latest",
 		"request": "latest",
 		"supertest": "latest",
-		"bcrypt": "latest",
+		"bcrypt": "1.0.3",
 		"crypto": "latest",
 		"email-templates": "latest",
 		"nodemailer": "latest",
